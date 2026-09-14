@@ -16,6 +16,7 @@ test-results/
 *.tsbuildinfo
 .vscode/*
 !.vscode/extensions.json
+.claude/
 src/payload-types.ts
 src/app/(payload)/admin/importMap.js
 media/
