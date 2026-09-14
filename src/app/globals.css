@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/vazirmatn';
+
+@theme {
+  --font-sans: 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --color-bg: #fbfaf8;
+  --color-surface: #ffffff;
+  --color-text: #1f1b16;
+  --color-text-muted: #6b625a;
+  --color-border: #e7e1d8;
+
+  /* پیش‌فرض: طلایی روی تیره — با data-theme-color از SiteSettings عوض می‌شود */
+  --color-primary: #b8894a;
+  --color-primary-contrast: #ffffff;
+  --color-accent-soft: #f3e7d4;
+
+  --radius-base: 0.75rem;
+  --font-scale: 1;
+}
+
+html[data-theme-color='gold-rose'] {
+  --color-primary: #c08a6b;
+  --color-accent-soft: #f7e9e2;
+}
+
+html[data-theme-color='copper'] {
+  --color-primary: #a35d3a;
+  --color-accent-soft: #f2e0d3;
+}
+
+html[data-radius='sm'] {
+  --radius-base: 0.375rem;
+}
+html[data-radius='lg'] {
+  --radius-base: 1.25rem;
+}
+
+html[data-font-scale='sm'] {
+  --font-scale: 0.9;
+}
+html[data-font-scale='lg'] {
+  --font-scale: 1.1;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: calc(1rem * var(--font-scale));
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+.btn {
+  border-radius: var(--radius-base);
+}
+
+html[data-button-style='outline'] .btn-primary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+html[data-button-style='solid'] .btn-primary,
+:root .btn-primary {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

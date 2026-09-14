@@ -1,0 +1,100 @@
+name: sara-naghizadeh
+
+services:
+  postgres:
+    image: postgres:16.15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sara
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sara_dev_password}
+      POSTGRES_DB: sara_naghizadeh
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sara -d sara_naghizadeh']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-sara_minio_admin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-change-me-minio-secret}
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio-init:
+    image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z-cpuv1
+    depends_on:
+      minio:
+        condition: service_healthy
+    restart: 'no'
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${S3_ACCESS_KEY_ID:-sara_minio_admin} ${S3_SECRET_ACCESS_KEY:-change-me-minio-secret} &&
+      mc mb --ignore-existing local/${S3_BUCKET_PUBLIC:-media-public} &&
+      mc mb --ignore-existing local/${S3_BUCKET_PRIVATE:-media-private} &&
+      mc anonymous set download local/${S3_BUCKET_PUBLIC:-media-public} &&
+      mc anonymous set none local/${S3_BUCKET_PRIVATE:-media-private} &&
+      echo 'MinIO buckets ready'
+      "
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+        S3_PUBLIC_URL_PROTOCOL: ${S3_PUBLIC_URL_PROTOCOL:-http}
+        S3_PUBLIC_URL_HOSTNAME: ${S3_PUBLIC_URL_HOSTNAME:-localhost}
+        S3_PUBLIC_URL_PORT: ${S3_PUBLIC_URL_PORT:-9000}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URI: postgres://sara:${POSTGRES_PASSWORD:-sara_dev_password}@postgres:5432/sara_naghizadeh
+      S3_ENDPOINT: http://minio:9000
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URI: postgres://sara:${POSTGRES_PASSWORD:-sara_dev_password}@postgres:5432/sara_naghizadeh
+      S3_ENDPOINT: http://minio:9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  miniodata:
