@@ -43,7 +43,12 @@ jobs:
           node-version: '22'
           cache: npm
       - name: Install exact lockfile
+        id: install
+        continue-on-error: true
         run: npm ci
+      - name: Diagnostic install after lockfile failure
+        if: steps.install.outcome == 'failure'
+        run: npm install
       - name: Unit tests
         id: unit
         continue-on-error: true
@@ -71,6 +76,21 @@ jobs:
         continue-on-error: true
         timeout-minutes: 4
         run: npm run test:integration
+      - name: Start application and probe pages
+        if: always() && steps.generate.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          npm run dev > /tmp/sara-dev.log 2>&1 &
+          APP_PID=$!
+          trap 'kill "$APP_PID" 2>/dev/null || true; cat /tmp/sara-dev.log' EXIT
+          for attempt in $(seq 1 45); do
+            if curl -s --max-time 2 http://localhost:3000/api/health > /tmp/sara-health.json; then break; fi
+            sleep 2
+          done
+          cat /tmp/sara-health.json
+          curl -sS --max-time 60 -o /tmp/sara-home.html -w 'Home HTTP %{http_code}\n' http://localhost:3000/
+          curl -sS --max-time 60 -o /tmp/sara-stream.txt -w 'Stream API HTTP %{http_code}\n' http://localhost:3000/api/lessons/1/stream-url
       - name: Review result
         if: always()
         env:
