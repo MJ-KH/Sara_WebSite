@@ -56,6 +56,9 @@ export default buildConfig({
   sharp,
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },
+    // push خودکار schema در dev را عمداً غیرفعال می‌کنیم تا همیشه از طریق migration صریح
+    // (scripts/migrate) پیش برویم و بین محیط dev/production رفتار یکسان بماند.
+    push: false,
   }),
   collections: [
     AdminUsers,
