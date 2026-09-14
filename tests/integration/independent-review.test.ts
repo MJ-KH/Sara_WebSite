@@ -25,6 +25,7 @@ describe('Independent review: authorization and payment regressions', () => {
       data: {
         student: owner.id,
         subject: 'Private review fixture',
+        status: 'open',
         messages: [{ from: 'student', body: 'Private fixture message', createdAt: new Date().toISOString() }],
       },
       overrideAccess: true,
@@ -70,6 +71,7 @@ describe('Independent review: authorization and payment regressions', () => {
       collection: 'payment-attempts',
       where: { order: { equals: Number(pending.orderId) } }, overrideAccess: true,
     })).docs[0]
+    if (!attempt) throw new Error('Payment attempt fixture missing')
     await expect(completeOrderPayment(payload, attempt.providerRefId, {
       Authority: attempt.providerRefId, Status: 'OK',
     })).resolves.toMatchObject({ ok: true })
@@ -78,6 +80,7 @@ describe('Independent review: authorization and payment regressions', () => {
       where: { and: [{ student: { equals: student.id } }, { package: { equals: pkg.id } }] },
       overrideAccess: true,
     })).docs[0]
+    if (!access) throw new Error('Entitlement fixture missing')
     expect(access.revokedAt).toBeFalsy()
     expect(access.expiresAt === null || Date.parse(access.expiresAt!) > Date.now()).toBe(true)
   })
@@ -103,10 +106,12 @@ describe('Independent review: authorization and payment regressions', () => {
     const reservation = (await payload.find({
       collection: 'workshop-reservations', where: { order: { equals: Number(pending.orderId) } }, overrideAccess: true,
     })).docs[0]
+    if (!reservation) throw new Error('Reservation fixture missing')
     await releaseWorkshopSeat(payload, reservation.id, 'expired')
     const attempt = (await payload.find({
       collection: 'payment-attempts', where: { order: { equals: Number(pending.orderId) } }, overrideAccess: true,
     })).docs[0]
+    if (!attempt) throw new Error('Payment attempt fixture missing')
     const result = await completeOrderPayment(payload, attempt.providerRefId, { Authority: attempt.providerRefId, Status: 'OK' })
     const enrollments = await payload.find({
       collection: 'workshop-enrollments', where: { order: { equals: Number(pending.orderId) } }, overrideAccess: true,
