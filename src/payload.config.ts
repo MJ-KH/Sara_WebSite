@@ -42,6 +42,11 @@ const dirname = path.dirname(filename)
 
 const MAX_VIDEO_BYTES = Number(process.env.UPLOAD_MAX_VIDEO_MB || 2048) * 1024 * 1024
 
+const PUBLIC_BUCKET = process.env.S3_BUCKET_PUBLIC || 'media-public'
+// آدرسی که مرورگر می‌بیند؛ S3_ENDPOINT داخل Docker به «minio:9000» اشاره می‌کند که بیرون شبکه
+// کانتینرها قابل دسترسی نیست، پس لینک عمومی فایل‌ها نباید از آن ساخته شود.
+const PUBLIC_MEDIA_BASE = (process.env.S3_PUBLIC_BASE_URL || `${process.env.S3_ENDPOINT}/${PUBLIC_BUCKET}`).replace(/\/$/, '')
+
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   secret: process.env.PAYLOAD_SECRET || '',
@@ -102,8 +107,13 @@ export default buildConfig({
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'],
   plugins: [
     s3Storage({
-      collections: { media: { disablePayloadAccessControl: true } },
-      bucket: process.env.S3_BUCKET_PUBLIC || 'media-public',
+      collections: {
+        media: {
+          disablePayloadAccessControl: true,
+          generateFileURL: ({ filename, prefix }) => `${PUBLIC_MEDIA_BASE}/${prefix ? `${prefix}/` : ''}${filename}`,
+        },
+      },
+      bucket: PUBLIC_BUCKET,
       config: {
         endpoint: process.env.S3_ENDPOINT,
         region: process.env.S3_REGION || 'us-east-1',

@@ -61,6 +61,7 @@ services:
         S3_PUBLIC_URL_PROTOCOL: ${S3_PUBLIC_URL_PROTOCOL:-http}
         S3_PUBLIC_URL_HOSTNAME: ${S3_PUBLIC_URL_HOSTNAME:-localhost}
         S3_PUBLIC_URL_PORT: ${S3_PUBLIC_URL_PORT:-9000}
+        S3_INTERNAL_URL: http://minio:9000
     restart: unless-stopped
     env_file:
       - .env
