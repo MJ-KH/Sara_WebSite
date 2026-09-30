@@ -14,13 +14,14 @@ import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
 import { HERO_PALETTE, SHADES } from '@/lib/brand/swatches'
 import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
+import { getSiteSettings } from '@/lib/get-site-settings'
 import { getPackageStats } from '@/lib/packages/stats'
 
 /** ساختار بلوک از Payload می‌آید و شکل آن به نوع بلوک بستگی دارد؛ نوع دقیق در payload-types.ts تولید‌شده موجود است. */
 type AnyBlock = Record<string, any>
 
-/** اطلاعاتی از کل صفحه که یک بلوک ممکن است لازم داشته باشد (مثلاً لینک به فرم مشاوره همان صفحه). */
-type PageContext = { hasConsultationForm: boolean }
+/** اطلاعاتی از کل صفحه/سایت که یک بلوک ممکن است لازم داشته باشد (مثلاً لینک به فرم مشاوره همان صفحه). */
+type PageContext = { hasConsultationForm: boolean; instagramServices?: string | null }
 
 const CONSULTATION_ANCHOR = 'consultation'
 
@@ -209,8 +210,15 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
         </div>
         <div className={imageOnRight ? 'md:order-1' : ''}>
           {block.image?.url ? (
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-t-full bg-[var(--color-bg-alt)]">
-              <Image src={block.image.url} alt={block.image.alt || ''} fill priority sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
+            // عکس سارا ستاره این بخش است؛ بادبزن فقط یک نشانه کوچک برند کنار آن
+            <div className="relative mx-auto w-full max-w-[24rem] pb-6 md:max-w-[28rem]">
+              <div aria-hidden="true" className="absolute inset-x-[7%] bottom-0 top-[12%] rounded-t-full bg-[var(--color-accent-soft)]" />
+              <div className="relative aspect-[4/5] overflow-hidden rounded-t-full bg-[var(--color-bg-alt)]">
+                <Image src={block.image.url} alt={block.image.alt || ''} fill priority sizes="(max-width: 768px) 90vw, 28rem" className="object-cover" />
+              </div>
+              <div aria-hidden="true" className="absolute -start-2 bottom-2 w-20 md:-start-6 md:w-24">
+                <SwatchFan id="hero-accent" colors={[SHADES.blush, SHADES.petal, SHADES.rose, SHADES.raspberry]} spread={56} animate />
+              </div>
             </div>
           ) : (
             <div className="mx-auto w-full max-w-[34rem] translate-y-[8%] md:translate-y-[12%]">
@@ -225,9 +233,9 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
 
 /** رنگ تیپ‌های هر مسیر از روشن به عمیق می‌رود: همان ترتیب مبتدی ← باتجربه که مدیر چیده است. */
 const PATH_SWATCHES = [
-  [SHADES.milk, SHADES.nude, SHADES.dustyPink],
-  [SHADES.dustyPink, SHADES.rose, SHADES.oxblood],
-  [SHADES.rose, SHADES.oxblood, SHADES.aubergine],
+  [SHADES.milk, SHADES.blush, SHADES.petal],
+  [SHADES.petal, SHADES.rose, SHADES.raspberry],
+  [SHADES.rose, SHADES.raspberry, SHADES.berry],
 ]
 
 function StartGuideBlockView({ block }: { block: AnyBlock }) {
@@ -352,20 +360,43 @@ function ImageBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
-function GalleryBlockView({ block }: { block: AnyBlock }) {
-  const items: AnyBlock[] = block.items || []
+/**
+ * نمونه‌کارها: روی موبایل نوار افقی قابل کشیدن (مثل اینستاگرام که مخاطب از آن می‌آید)،
+ * روی دسکتاپ شبکه چهارتایی.
+ */
+function GalleryBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
+  const items: AnyBlock[] = (block.items || []).filter((item: AnyBlock) => item.image?.url)
   if (items.length === 0) return null
   return (
     <Section heading={block.heading}>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+      <ul className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--gutter)] pb-3 md:mx-0 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0 md:pb-0">
         {items.map((item, index) => (
-          <div key={index} className="relative aspect-square overflow-hidden rounded-[var(--radius-media)]">
-            {item.image?.url ? (
-              <Image src={item.image.url} alt={item.image.alt || item.caption || ''} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover" />
-            ) : null}
-          </div>
+          <li key={item.id || index} className="w-[70%] shrink-0 snap-start sm:w-[42%] md:w-auto">
+            <figure>
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-media)] bg-[var(--color-bg-alt)]">
+                <Image
+                  src={item.image.url}
+                  alt={item.image.alt || item.caption || ''}
+                  fill
+                  sizes="(max-width: 640px) 70vw, (max-width: 768px) 42vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+              {item.caption ? <figcaption className="mt-2 text-[0.875rem] text-[var(--color-text-muted)]">{item.caption}</figcaption> : null}
+            </figure>
+          </li>
         ))}
-      </div>
+      </ul>
+      {ctx.instagramServices ? (
+        <a
+          href={`https://instagram.com/${ctx.instagramServices}`}
+          target="_blank"
+          rel="noreferrer"
+          className="btn btn-ghost mt-8"
+        >
+          نمونه‌کارهای بیشتر در اینستاگرام
+        </a>
+      ) : null}
     </Section>
   )
 }
@@ -442,7 +473,11 @@ const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock; ctx: PageContext })
 
 export async function PageBlocks({ blocks }: { blocks: AnyBlock[] }) {
   const visible = (blocks || []).filter((b) => !b.hidden)
-  const ctx: PageContext = { hasConsultationForm: visible.some((b) => b.blockType === 'consultationForm') }
+  const settings = await getSiteSettings()
+  const ctx: PageContext = {
+    hasConsultationForm: visible.some((b) => b.blockType === 'consultationForm'),
+    instagramServices: settings.instagram?.servicesHandle,
+  }
   const rendered = await Promise.all(
     visible.map(async (block, index) => {
       const View = BLOCK_VIEWS[block.blockType]

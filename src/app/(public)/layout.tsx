@@ -50,6 +50,9 @@ export default async function PublicLayout({ children }: { children: React.React
         />
         <main>{children}</main>
         <SiteFooter
+          brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
+          tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}
+          phone={settings.contact?.phone}
           columns={(settings.footer?.columns || []).map((col) => ({
             title: col.title,
             links: col.links?.map((l) => ({ label: l.label, href: l.href })) || [],

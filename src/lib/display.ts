@@ -1,4 +1,13 @@
 import { toPersianDigits } from './digits'
+import { formatIranMobileForDisplay, normalizeIranMobile } from './phone'
+
+/** شماره تماس برای نمایش (ارقام فارسی، گروه‌بندی‌شده) و لینک tel: قابل لمس در موبایل. */
+export function phoneForDisplay(raw: string | null | undefined): { text: string; href: string } | null {
+  if (!raw) return null
+  const e164 = normalizeIranMobile(raw)
+  if (!e164) return { text: toPersianDigits(raw), href: `tel:${raw.replace(/\s/g, '')}` }
+  return { text: toPersianDigits(formatIranMobileForDisplay(e164)), href: `tel:${e164}` }
+}
 
 const SAMPLE_MARKER = /^\s*\[نمونه\]\s*/
 

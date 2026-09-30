@@ -11,7 +11,7 @@ type MenuItem = { label: string; href: string; children?: MenuChild[] | null }
 function TipMark() {
   return (
     <span className="block w-10">
-      <SwatchFan id="brand-mark" colors={[SHADES.nude, SHADES.rose, SHADES.oxblood]} spread={50} />
+      <SwatchFan id="brand-mark" colors={[SHADES.petal, SHADES.rose, SHADES.raspberry]} spread={50} />
     </span>
   )
 }
