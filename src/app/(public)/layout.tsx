@@ -3,6 +3,7 @@ import type React from 'react'
 import { AnnouncementBar } from '@/components/site/AnnouncementBar'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
+import { SocialRail } from '@/components/site/SocialRail'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import '../globals.css'
 
@@ -49,6 +50,7 @@ export default async function PublicLayout({ children }: { children: React.React
           }))}
         />
         <main>{children}</main>
+        <SocialRail academy={settings.instagram?.academyHandle} services={settings.instagram?.servicesHandle} />
         <SiteFooter
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
           tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}

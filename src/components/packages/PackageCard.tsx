@@ -35,10 +35,10 @@ export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: Pack
   return (
     <Link
       href={`/packages/${pkg.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[var(--radius-media)] border border-[var(--color-border)] bg-[var(--color-surface)] focus-visible:outline-offset-4"
+      className="card-soft group flex flex-col p-2.5 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-offset-4"
     >
       {pkg.coverImage?.url ? (
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--color-bg-alt)]">
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[calc(var(--radius-media)-0.5rem)] bg-[var(--color-bg-alt)]">
           <Image
             src={pkg.coverImage.url}
             alt={pkg.coverImage.alt || title.text}
@@ -48,18 +48,18 @@ export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: Pack
           />
         </div>
       ) : (
-        <div className="pkg-cover">
+        <div className="pkg-cover rounded-[calc(var(--radius-media)-0.5rem)]">
           <SwatchFan id={`pkg-${pkg.slug}`} colors={paletteForPackage(pkg)} spread={58} />
         </div>
       )}
 
-      <div className="flex flex-1 flex-col gap-3 p-5">
+      <div className="flex flex-1 flex-col gap-3 px-3 pb-3 pt-5">
         <div className="flex items-center gap-2 text-[0.8125rem] font-semibold text-[var(--color-text-muted)]">
           <span>{level}</span>
           {title.isSample ? <SampleBadge /> : null}
         </div>
 
-        <h3 className="text-[1.2rem] font-extrabold leading-[1.6] text-[var(--color-text)]">{title.text}</h3>
+        <h3 className="title-2 font-display text-[1.35rem] text-[var(--color-text)]">{title.text}</h3>
 
         {subtitle.text ? <p className="text-[0.9375rem] leading-[1.9] text-[var(--color-text-muted)]">{subtitle.text}</p> : null}
 

@@ -12,8 +12,18 @@ export const HeroBlock: Block = {
   fields: [
     { name: 'heading', type: 'text', required: true, label: 'عنوان' },
     { name: 'subheading', type: 'textarea', label: 'زیرعنوان' },
-    { name: 'image', type: 'upload', relationTo: 'media', label: 'تصویر' },
-    { name: 'imagePosition', type: 'select', defaultValue: 'right', options: [{ label: 'راست', value: 'right' }, { label: 'چپ', value: 'left' }] },
+    {
+      name: 'archImages',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      maxRows: 3,
+      label: 'سه عکس قاب طاقی',
+      admin: {
+        description: 'سه عکس برای بالای صفحه در قاب‌های طاقی؛ عکس دوم (وسط) بزرگ‌تر نمایش داده می‌شود. عکس‌های نمونه‌کار ناخن یا خود سارا.',
+      },
+    },
+    { name: 'image', type: 'upload', relationTo: 'media', label: 'تصویر تکی (اگر سه عکس بالا خالی باشد، در قاب وسط)' },
     { name: 'ctaLabel', type: 'text', label: 'متن دکمه' },
     { name: 'ctaHref', type: 'text', label: 'لینک دکمه' },
   ],

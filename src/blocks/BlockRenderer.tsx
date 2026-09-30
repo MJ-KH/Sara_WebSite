@@ -2,6 +2,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import { Ornament } from '@/components/brand/Ornament'
 import { SwatchFan } from '@/components/brand/SwatchFan'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
 import { FreeLessonCard } from '@/components/free-lessons/FreeLessonCard'
@@ -12,7 +13,7 @@ import { SampleBadge } from '@/components/ui/SampleBadge'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
 import { HERO_PALETTE, SHADES } from '@/lib/brand/swatches'
-import { splitSampleMarker } from '@/lib/display'
+import { phoneForDisplay, splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { getPackageStats } from '@/lib/packages/stats'
@@ -21,7 +22,12 @@ import { getPackageStats } from '@/lib/packages/stats'
 type AnyBlock = Record<string, any>
 
 /** اطلاعاتی از کل صفحه/سایت که یک بلوک ممکن است لازم داشته باشد (مثلاً لینک به فرم مشاوره همان صفحه). */
-type PageContext = { hasConsultationForm: boolean; instagramServices?: string | null }
+type PageContext = {
+  hasConsultationForm: boolean
+  instagramServices?: string | null
+  instagramAcademy?: string | null
+  phone?: string | null
+}
 
 const CONSULTATION_ANCHOR = 'consultation'
 
@@ -44,10 +50,14 @@ function Section({
     <section id={id} className={`section${tone === 'alt' ? ' band-alt' : ''}`}>
       <div className={width === 'narrow' ? 'container-narrow' : 'container-x'}>
         {title.text ? (
-          <h2 className="display-2 mb-8 flex flex-wrap items-center gap-3 md:mb-12">
-            {title.text}
-            {title.isSample ? <SampleBadge /> : null}
-          </h2>
+          <div className="mb-10 text-center md:mb-14">
+            {title.isSample ? (
+              <div className="mb-3 flex justify-center">
+                <SampleBadge />
+              </div>
+            ) : null}
+            <h2 className="display-2">{title.text}</h2>
+          </div>
         ) : null}
         {children}
       </div>
@@ -178,53 +188,91 @@ async function TestimonialsBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
+/** پالت بادبزن داخل هر قاب طاقی تا عکس واقعی برسد: کناره‌ها روشن‌تر، وسط پررنگ‌تر */
+const ARCH_FALLBACK_PALETTES = [
+  [SHADES.milk, SHADES.blush, SHADES.petal, SHADES.rose],
+  HERO_PALETTE,
+  [SHADES.milk, SHADES.nude, SHADES.blush, SHADES.lilac],
+]
+
+type ArchImage = { url?: string | null; alt?: string | null } | null
+
+/** یک قاب طاقی با حاشیه سفید و سایه نرم؛ بدون عکس، بادبزن تیپ رنگ نمایش می‌دهد. */
+function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
+  const center = position === 1
+  return (
+    <div className={center ? 'w-[40%] md:w-[36%]' : 'w-[28%] md:w-[27%]'}>
+      <div className="rounded-t-full bg-[var(--color-surface)] p-1.5 shadow-[var(--shadow-soft)] md:p-2.5">
+        <div
+          className={`relative overflow-hidden rounded-t-full bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-bg-alt)] ${
+            center ? 'aspect-[5/7]' : 'aspect-[3/4]'
+          }`}
+        >
+          {image?.url ? (
+            <Image
+              src={image.url}
+              alt={image.alt || ''}
+              fill
+              priority={center}
+              sizes={center ? '(max-width: 768px) 40vw, 26rem' : '(max-width: 768px) 28vw, 20rem'}
+              className="object-cover"
+            />
+          ) : (
+            <div className="absolute inset-x-[6%] bottom-[-6%]">
+              <SwatchFan
+                id={`hero-arch-${position}`}
+                colors={ARCH_FALLBACK_PALETTES[position] as string[]}
+                spread={center ? 80 : 60}
+                animate={center}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * بالای صفحه به سبک مرجع Gloss Bar: سه قاب طاقی کنار هم (وسطی بزرگ‌تر) و زیرش عنوان
+ * وسط‌چین با تیتر نسخ و جداکننده تزئینی.
+ */
 function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   const heading = splitSampleMarker(block.heading)
   const subheading = splitSampleMarker(block.subheading)
-  // در RTL اولین ستون گرید سمت راست است؛ اگر تصویر باید راست باشد، ترتیب را در دسکتاپ برمی‌گردانیم.
-  // روی موبایل همیشه اول متن می‌آید.
-  const imageOnRight = block.imagePosition === 'right'
+  const archImages: ArchImage[] = (block.archImages || []).filter((img: AnyBlock) => typeof img === 'object' && img?.url)
+  const slots: ArchImage[] =
+    archImages.length > 0
+      ? [archImages[0] ?? null, archImages[1] ?? archImages[0] ?? null, archImages[2] ?? null]
+      : [null, block.image?.url ? block.image : null, null]
   return (
-    <section className="overflow-hidden border-b border-[var(--color-border)]">
-      <div className="container-x grid items-center gap-8 pb-4 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-12 md:py-20">
-        <div className={imageOnRight ? 'md:order-2' : ''}>
-          {heading.isSample ? (
-            <div className="mb-4">
-              <SampleBadge />
-            </div>
-          ) : null}
-          <h1 className="display-1 max-w-[15ch]">{heading.text}</h1>
-          {subheading.text ? <p className="lead mt-5 max-w-[32rem]">{subheading.text}</p> : null}
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            {block.ctaLabel && block.ctaHref ? (
-              <Link href={block.ctaHref} className="btn btn-primary btn-lg">
-                {block.ctaLabel}
-              </Link>
-            ) : null}
-            {ctx.hasConsultationForm ? (
-              <Link href={`#${CONSULTATION_ANCHOR}`} className="btn btn-ghost btn-lg">
-                مشاوره انتخاب پکیج
-              </Link>
-            ) : null}
+    <section className="band-alt overflow-hidden">
+      {/* عرض محدود تا در دسکتاپ هم تیتر در همان صفحه اول دیده شود */}
+      <div className="container-x flex max-w-[42rem] items-end justify-center gap-2.5 pt-8 sm:gap-4 md:gap-6 md:pt-10">
+        <Arch image={slots[0] ?? null} position={0} />
+        <Arch image={slots[1] ?? null} position={1} />
+        <Arch image={slots[2] ?? null} position={2} />
+      </div>
+      <div className="container-narrow pb-16 pt-9 text-center md:pb-24 md:pt-10">
+        {heading.isSample ? (
+          <div className="mb-4 flex justify-center">
+            <SampleBadge />
           </div>
-        </div>
-        <div className={imageOnRight ? 'md:order-1' : ''}>
-          {block.image?.url ? (
-            // عکس سارا ستاره این بخش است؛ بادبزن فقط یک نشانه کوچک برند کنار آن
-            <div className="relative mx-auto w-full max-w-[24rem] pb-6 md:max-w-[28rem]">
-              <div aria-hidden="true" className="absolute inset-x-[7%] bottom-0 top-[12%] rounded-t-full bg-[var(--color-accent-soft)]" />
-              <div className="relative aspect-[4/5] overflow-hidden rounded-t-full bg-[var(--color-bg-alt)]">
-                <Image src={block.image.url} alt={block.image.alt || ''} fill priority sizes="(max-width: 768px) 90vw, 28rem" className="object-cover" />
-              </div>
-              <div aria-hidden="true" className="absolute -start-2 bottom-2 w-20 md:-start-6 md:w-24">
-                <SwatchFan id="hero-accent" colors={[SHADES.blush, SHADES.petal, SHADES.rose, SHADES.raspberry]} spread={56} animate />
-              </div>
-            </div>
-          ) : (
-            <div className="mx-auto w-full max-w-[34rem] translate-y-[8%] md:translate-y-[12%]">
-              <SwatchFan id="hero" colors={HERO_PALETTE} spread={84} animate />
-            </div>
-          )}
+        ) : null}
+        <h1 className="display-1">{heading.text}</h1>
+        {subheading.text ? <p className="lead mx-auto mt-3 max-w-[34rem]">{subheading.text}</p> : null}
+        <Ornament className="mt-6" />
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          {block.ctaLabel && block.ctaHref ? (
+            <Link href={block.ctaHref} className="btn btn-primary btn-lg">
+              {block.ctaLabel}
+            </Link>
+          ) : null}
+          {ctx.hasConsultationForm ? (
+            <Link href={`#${CONSULTATION_ANCHOR}`} className="btn btn-ghost btn-lg bg-[var(--color-surface)]">
+              مشاوره انتخاب پکیج
+            </Link>
+          ) : null}
         </div>
       </div>
     </section>
@@ -251,7 +299,7 @@ function StartGuideBlockView({ block }: { block: AnyBlock }) {
           const description = splitSampleMarker(path.description)
           const packages: AnyBlock[] = (path.recommendedPackages || []).filter((p: AnyBlock) => typeof p === 'object' && p?.status !== 'draft')
           return (
-            <div key={path.id || index} className="flex flex-col rounded-[var(--radius-media)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 md:p-8">
+            <div key={path.id || index} className="card-soft flex flex-col p-6 md:p-8">
               {audience.isSample || description.isSample ? (
                 <div className="mb-3">
                   <SampleBadge />
@@ -291,6 +339,10 @@ function StartGuideBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
+/**
+ * معرفی و روش آموزش به سبک بخش «About» مرجع: متن وسط‌چین، جداکننده تزئینی، و موارد روش
+ * آموزش به‌صورت کارت‌های نرم شناور. اگر عکس سارا بارگذاری شده باشد، در قاب طاقی بالای متن.
+ */
 function AboutIntroBlockView({ block }: { block: AnyBlock }) {
   const heading = splitSampleMarker(block.heading)
   const body = splitSampleMarker(block.body)
@@ -299,38 +351,42 @@ function AboutIntroBlockView({ block }: { block: AnyBlock }) {
   const isSample = heading.isSample || body.isSample || points.some((p) => splitSampleMarker(p.title).isSample)
   return (
     <section className="section">
-      <div className={`container-x grid gap-10 ${photo ? 'md:grid-cols-[1fr_0.8fr] md:items-center md:gap-16' : ''}`}>
-        <div className={photo ? '' : 'max-w-[44rem]'}>
-          {isSample ? (
-            <div className="mb-4">
-              <SampleBadge />
-            </div>
-          ) : null}
-          <h2 className="display-2">{heading.text}</h2>
-          <p className="lead mt-5 whitespace-pre-line">{body.text}</p>
-          {block.linkLabel && block.linkHref ? (
-            <Link href={block.linkHref} className="btn btn-ghost mt-8">
-              {block.linkLabel}
-            </Link>
-          ) : null}
-        </div>
+      <div className="container-narrow text-center">
         {photo ? (
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-t-full bg-[var(--color-bg-alt)]">
-            <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="(max-width: 768px) 90vw, 30vw" className="object-cover" />
+          <div className="mx-auto mb-10 w-[62%] max-w-[18rem] rounded-t-full bg-[var(--color-surface)] p-2 shadow-[var(--shadow-soft)]">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-t-full">
+              <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="18rem" className="object-cover" />
+            </div>
           </div>
         ) : null}
+        {isSample ? (
+          <div className="mb-4 flex justify-center">
+            <SampleBadge />
+          </div>
+        ) : null}
+        <h2 className="display-2">{heading.text}</h2>
+        <p className="lead mx-auto mt-5 max-w-[38rem] whitespace-pre-line">{body.text}</p>
+        <Ornament className="mt-8" />
       </div>
 
       {points.length > 0 ? (
-        <div className="container-x mt-12 md:mt-16">
-          <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="container-x mt-10 md:mt-14">
+          <dl className={`grid gap-5 sm:grid-cols-2 ${points.length >= 3 ? 'lg:grid-cols-3' : ''} ${points.length >= 4 ? 'xl:grid-cols-4' : ''}`}>
             {points.map((point, index) => (
-              <div key={point.id || index} className="border-t-2 border-[var(--color-text)] pt-5">
+              <div key={point.id || index} className="card-soft p-6 text-center md:p-8">
                 <dt className="title-2">{splitSampleMarker(point.title).text}</dt>
                 <dd className="mt-2 text-[0.9375rem] text-[var(--color-text-muted)]">{splitSampleMarker(point.text).text}</dd>
               </div>
             ))}
           </dl>
+        </div>
+      ) : null}
+
+      {block.linkLabel && block.linkHref ? (
+        <div className="mt-10 text-center">
+          <Link href={block.linkHref} className="btn btn-ghost">
+            {block.linkLabel}
+          </Link>
         </div>
       ) : null}
     </section>
@@ -429,11 +485,43 @@ function FaqBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
-function ConsultationFormBlockView({ block }: { block: AnyBlock }) {
+/** فرم مشاوره کنار کارت «راه‌های ارتباط» — مثل بخش Get In Touch مرجع. */
+function ConsultationFormBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
+  const tel = phoneForDisplay(ctx.phone)
+  const hasContact = Boolean(tel || ctx.instagramAcademy)
   return (
-    <section id={CONSULTATION_ANCHOR} className="section band-alt scroll-mt-20">
-      <div className="container-narrow">
-        <ConsultationForm heading={block.heading} description={block.description} />
+    <section id={CONSULTATION_ANCHOR} className="section band-alt">
+      <div className={`container-x grid items-start gap-6 ${hasContact ? 'md:grid-cols-[1.35fr_1fr] md:gap-8' : 'max-w-[40rem]'}`}>
+        <div className="card-soft p-6 md:p-10">
+          <ConsultationForm heading={block.heading} description={block.description} />
+        </div>
+        {hasContact ? (
+          <aside className="card-soft p-6 md:p-8">
+            <h3 className="title-1">راه‌های ارتباط</h3>
+            <dl className="mt-5 flex flex-col gap-5">
+              {tel ? (
+                <div>
+                  <dt className="text-[0.875rem] text-[var(--color-text-muted)]">تلفن</dt>
+                  <dd className="mt-1">
+                    <a href={tel.href} dir="ltr" className="text-[1.125rem] font-bold text-[var(--color-primary)]">
+                      {tel.text}
+                    </a>
+                  </dd>
+                </div>
+              ) : null}
+              {ctx.instagramAcademy ? (
+                <div>
+                  <dt className="text-[0.875rem] text-[var(--color-text-muted)]">اینستاگرام آموزش</dt>
+                  <dd className="mt-1">
+                    <a href={`https://instagram.com/${ctx.instagramAcademy}`} target="_blank" rel="noreferrer" dir="ltr" className="font-bold text-[var(--color-primary)]">
+                      @{ctx.instagramAcademy}
+                    </a>
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          </aside>
+        ) : null}
       </div>
     </section>
   )
@@ -477,6 +565,8 @@ export async function PageBlocks({ blocks }: { blocks: AnyBlock[] }) {
   const ctx: PageContext = {
     hasConsultationForm: visible.some((b) => b.blockType === 'consultationForm'),
     instagramServices: settings.instagram?.servicesHandle,
+    instagramAcademy: settings.instagram?.academyHandle,
+    phone: settings.contact?.phone,
   }
   const rendered = await Promise.all(
     visible.map(async (block, index) => {

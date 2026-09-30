@@ -36,48 +36,54 @@ export function ConsultationForm({ heading, description }: { heading?: string; d
 
   if (status === 'done') {
     return (
-      <div className="rounded-[var(--radius-base)] border border-[var(--color-border)] bg-[var(--color-accent-soft)] p-6 text-center">
-        درخواست شما ثبت شد. به‌زودی با شما تماس گرفته می‌شود.
+      <div role="status" className="py-6 text-center">
+        <p className="title-1">درخواست شما ثبت شد</p>
+        <p className="mt-2 text-[var(--color-text-muted)]">به‌زودی برای مشاوره با شما تماس گرفته می‌شود.</p>
       </div>
     )
   }
 
+  const field =
+    'min-h-12 w-full rounded-[var(--radius-base)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-4 py-2.5 transition-colors focus:border-[var(--color-primary)] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]'
+  const label = 'flex flex-col gap-1.5 text-[0.9375rem] font-semibold'
+
   return (
-    <form onSubmit={handleSubmit} className="mx-auto flex max-w-md flex-col gap-3">
-      {heading ? <h2 className="text-xl font-bold">{heading}</h2> : null}
-      {description ? <p className="text-sm text-[var(--color-text-muted)]">{description}</p> : null}
-      <label className="flex flex-col gap-1 text-sm">
-        نام
-        <input name="name" required className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2" />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        موبایل
-        <input
-          name="mobile"
-          required
-          inputMode="tel"
-          className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        شهر
-        <input name="city" className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2" />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        سطح
-        <select name="skillLevel" className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2">
-          <option value="">انتخاب کنید</option>
-          <option value="beginner">مبتدی</option>
-          <option value="experienced">دارای تجربه</option>
-          <option value="professional">حرفه‌ای</option>
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {heading ? <h2 className="title-1">{heading}</h2> : null}
+      {description ? <p className="-mt-1 text-[var(--color-text-muted)]">{description}</p> : null}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className={label}>
+          نام
+          <input name="name" required autoComplete="name" className={field} />
+        </label>
+        <label className={label}>
+          موبایل
+          <input name="mobile" required inputMode="tel" autoComplete="tel" dir="ltr" placeholder="۰۹۱۲ ..." className={`${field} text-end`} />
+        </label>
+        <label className={label}>
+          شهر
+          <input name="city" autoComplete="address-level2" className={field} />
+        </label>
+        <label className={label}>
+          سطح
+          <select name="skillLevel" className={field}>
+            <option value="">انتخاب کنید</option>
+            <option value="beginner">مبتدی</option>
+            <option value="experienced">دارای تجربه</option>
+            <option value="professional">حرفه‌ای</option>
+          </select>
+        </label>
+      </div>
+      <label className={label}>
         هدف از یادگیری
-        <textarea name="goal" rows={3} className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2" />
+        <textarea name="goal" rows={3} className={`${field} py-3`} />
       </label>
-      {status === 'error' ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
-      <button type="submit" disabled={status === 'submitting'} className="btn btn-primary p-3 font-bold disabled:opacity-60">
+      {status === 'error' ? (
+        <p role="alert" className="text-[0.9375rem] text-[var(--state-danger)]">
+          {errorMessage}
+        </p>
+      ) : null}
+      <button type="submit" disabled={status === 'submitting'} className="btn btn-primary btn-lg mt-1 disabled:opacity-60 sm:self-start">
         {status === 'submitting' ? 'در حال ارسال...' : 'ارسال درخواست مشاوره'}
       </button>
     </form>

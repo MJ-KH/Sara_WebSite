@@ -28,8 +28,9 @@ export function SiteHeader({
   menu: MenuItem[]
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface)_92%,transparent)] backdrop-blur-sm">
-      <div className="container-x relative flex h-16 items-center gap-4 md:h-20">
+    // سربرگ شناور (مثل مرجع Gloss Bar): کارت گرد با سایه نرم که روی صفحه می‌ماند
+    <header className="sticky top-0 z-40 px-3 pt-3 md:px-6 md:pt-4">
+      <div className="relative mx-auto flex h-16 max-w-[var(--container-wide)] items-center gap-4 rounded-[1.75rem] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] px-4 shadow-[var(--shadow-float)] backdrop-blur-md md:h-20 md:px-8">
         <Link href="/" className="flex items-center gap-3">
           {logoUrl ? <Image src={logoUrl} alt={brandName} width={44} height={44} className="h-11 w-auto" /> : <TipMark />}
           <span className="flex flex-col leading-tight">

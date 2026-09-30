@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/vazirmatn';
+@import '@fontsource-variable/noto-naskh-arabic';
 
 /* =============================================================================
    سیستم طراحی «آتلیه» — سارا نقی‌زاده
@@ -11,6 +12,9 @@
 
 @theme {
   --font-sans: 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
+  /* تیترها: نسخ — معادل فارسیِ ظرافت سریف‌های مجله‌ای (مثل Playfair در مرجع Gloss Bar).
+     متن بدنه همچنان وزیرمتن است چون برای خواندن طولانی روی موبایل خواناتر است. */
+  --font-display: 'Noto Naskh Arabic Variable', 'Vazirmatn Variable', serif;
   /* فقط برای لهجه‌های لاتین (شماره بخش‌ها، ایتالیک تزئینی). فونت لاتین نصب‌شده‌ای
      در پروژه نداریم؛ این پشته روی سیستم‌های مختلف به یک سریف کلاسیک می‌رسد. */
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Didot, 'Bodoni MT', Georgia, serif;
@@ -88,9 +92,15 @@
   --section-y-sm: clamp(2.75rem, 5vw, 4.5rem);
 
   /* ---------- گردی ----------
-     دو سطح مجزا، نه یک عدد برای همه‌چیز: کنترل‌ها (دکمه/فیلد) و سطوح بزرگ (کارت/رسانه). */
-  --radius-base: 0.625rem;
-  --radius-media: 1.125rem;
+     سه سطح مجزا، نه یک عدد برای همه‌چیز: فیلدها، کارت/رسانه، و دکمه‌های کپسولی. */
+  --radius-base: 0.75rem;
+  --radius-media: 1.5rem;
+  --radius-pill: 999px;
+
+  /* ---------- سایه نرم لایه‌ای (سبک مرجع Gloss Bar) ----------
+     سایه کمی صورتی است تا روی زمینه صورتی «کثیف» (خاکستری) دیده نشود. */
+  --shadow-soft: 0 30px 60px -34px rgba(156, 17, 73, 0.32), 0 10px 24px -16px rgba(43, 29, 36, 0.1);
+  --shadow-float: 0 20px 44px -22px rgba(156, 17, 73, 0.3), 0 4px 14px -6px rgba(43, 29, 36, 0.08);
 
   /* ---------- حرکت ---------- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -123,12 +133,13 @@ html[data-theme-color='copper'] {
 
 /* ---------- گزینه «گردی اجزا» ---------- */
 html[data-radius='sm'] {
-  --radius-base: 0.25rem;
-  --radius-media: 0.5rem;
+  --radius-base: 0.375rem;
+  --radius-media: 0.75rem;
+  --radius-pill: 0.5rem;
 }
 html[data-radius='lg'] {
   --radius-base: 1rem;
-  --radius-media: 1.75rem;
+  --radius-media: 2rem;
 }
 
 /* ---------- گزینه «اندازه پایه متن» ---------- */
@@ -236,8 +247,36 @@ html[data-font-scale='lg'] {
   }
 
   /* نوار تمام‌عرض کاغذی یا تیره — برای شکستن ریتم صفحه */
+  /* نوار صورتی با بافت خط‌های عمودی بسیار محو (الهام از بافت پس‌زمینه مرجع) */
   .band-alt {
-    background: var(--color-bg-alt);
+    background:
+      repeating-linear-gradient(90deg, rgba(194, 24, 91, 0.028) 0 1px, transparent 1px 9px),
+      var(--color-bg-alt);
+  }
+
+  /* کارت نرم شناور: بدون خط دور، سایه لایه‌ای صورتی */
+  .card-soft {
+    background: var(--color-surface);
+    border-radius: var(--radius-media);
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* جداکننده تزئینی: خط — تیپ کوچک — خط */
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--color-primary);
+  }
+
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    inline-size: 3rem;
+    block-size: 1px;
+    background: currentColor;
+    opacity: 0.45;
   }
 
   .band-ink {
@@ -268,21 +307,24 @@ html[data-font-scale='lg'] {
   }
 
   .display-1 {
-    font-size: clamp(2.2rem, 7vw, 4.25rem);
-    font-weight: 850;
-    line-height: 1.3;
+    font-family: var(--font-display);
+    font-size: clamp(2.3rem, 6.5vw, 3.9rem);
+    font-weight: 700;
+    line-height: 1.55;
   }
 
   .display-2 {
-    font-size: clamp(1.75rem, 4.4vw, 2.85rem);
-    font-weight: 800;
-    line-height: 1.38;
+    font-family: var(--font-display);
+    font-size: clamp(1.85rem, 4.6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.6;
   }
 
   .title-1 {
-    font-size: clamp(1.4rem, 2.8vw, 2rem);
-    font-weight: 750;
-    line-height: 1.5;
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.65;
   }
 
   .title-2 {
@@ -360,7 +402,7 @@ html[data-font-scale='lg'] {
     min-height: 3rem;
     padding-inline: 1.75rem;
     padding-block: 0.75rem;
-    border-radius: var(--radius-base);
+    border-radius: var(--radius-pill);
     border: 1px solid transparent;
     font-weight: 600;
     font-size: 0.9375rem;

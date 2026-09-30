@@ -26,7 +26,7 @@ export function MobileMenu({ menu }: { menu: MenuItem[] }) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-base)] border border-[var(--color-border-strong)] text-[var(--color-text)]"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-text)]"
       >
         <span className="sr-only">{open ? 'بستن منو' : 'باز کردن منو'}</span>
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -42,9 +42,9 @@ export function MobileMenu({ menu }: { menu: MenuItem[] }) {
         onClick={(event) => {
           if ((event.target as HTMLElement).closest('a')) setOpen(false)
         }}
-        className="absolute inset-x-0 top-full border-b border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_18px_30px_-24px_rgba(36,27,31,0.45)]"
+        className="absolute inset-x-0 top-[calc(100%+0.5rem)] rounded-[1.5rem] bg-[var(--color-surface)] shadow-[var(--shadow-float)]"
       >
-        <ul className="container-x flex flex-col py-3">
+        <ul className="flex flex-col px-5 py-3">
           {menu.map((item) => (
             <li key={item.href}>
               <Link href={item.href} className="flex min-h-12 items-center border-b border-[var(--color-border)] text-[1.0625rem] font-semibold">
