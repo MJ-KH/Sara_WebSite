@@ -95,6 +95,38 @@ services:
       postgres:
         condition: service_healthy
 
+  # سرور توسعه با hot reload برای کار روی ظاهر: از ایمیج app (که node_modules لینوکسی دارد)
+  # استفاده می‌کند و فقط سورس را زنده mount می‌کند. فقط با `--profile dev` بالا می‌آید.
+  web-dev:
+    image: sara-naghizadeh-app
+    profiles: ['dev']
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      DATABASE_URI: postgres://sara:${POSTGRES_PASSWORD:-sara_dev_password}@postgres:5432/sara_naghizadeh
+      S3_ENDPOINT: http://minio:9000
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3001
+      # mount از ویندوز رویداد فایل نمی‌فرستد؛ بدون polling تغییرات دیده نمی‌شوند
+      WATCHPACK_POLLING: 'true'
+    command: ['npx', 'next', 'dev', '--webpack', '-p', '3000']
+    ports:
+      - '3001:3000'
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./next.config.ts:/app/next.config.ts
+      - ./postcss.config.mjs:/app/postcss.config.mjs
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./package.json:/app/package.json
+      - next-dev-cache:/app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
 volumes:
   pgdata:
   miniodata:
+  next-dev-cache:
