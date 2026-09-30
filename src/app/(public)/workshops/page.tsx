@@ -1,4 +1,7 @@
 import type { Metadata } from 'next'
+import type { CSSProperties } from 'react'
+import Link from 'next/link'
+import { PageIntro } from '@/components/site/PageIntro'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
 import { getPayloadClient } from '@/lib/get-payload'
 
@@ -15,17 +18,26 @@ export default async function WorkshopsPage() {
   })
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold">ورکشاپ‌ها</h1>
-      {sessions.docs.length === 0 ? (
-        <p className="text-[var(--color-text-muted)]">در حال حاضر ورکشاپ فعالی برای ثبت‌نام وجود ندارد.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {sessions.docs.map((session) => (
-            <WorkshopSessionCard key={session.id} session={session as any} />
-          ))}
+    <>
+      <PageIntro title="ورکشاپ‌ها" lead="آموزش حضوری و عملی در کلاس، با ظرفیت محدود. زمان و ظرفیت باقی‌مانده هر ورکشاپ روی کارت آن آمده است." />
+      <section className="section">
+        <div className="container-x">
+          {sessions.docs.length === 0 ? (
+            <div className="card-soft mx-auto max-w-[32rem] p-8 text-center">
+              <p className="text-[var(--color-text-muted)]">در حال حاضر ورکشاپ فعالی برای ثبت‌نام وجود ندارد.</p>
+              <Link href="/contact" className="btn btn-ghost mt-5">
+                تماس با ما
+              </Link>
+            </div>
+          ) : (
+            <div className="card-grid" style={{ '--card-min': '19rem' } as CSSProperties}>
+              {sessions.docs.map((session) => (
+                <WorkshopSessionCard key={session.id} session={session as never} />
+              ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </section>
+    </>
   )
 }

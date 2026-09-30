@@ -88,8 +88,8 @@
   --container-narrow: 44rem;
   --gutter: clamp(1.25rem, 5vw, 3rem);
 
-  --section-y: clamp(4rem, 8vw, 8rem);
-  --section-y-sm: clamp(2.75rem, 5vw, 4.5rem);
+  --section-y: clamp(3.25rem, 6vw, 5.5rem);
+  --section-y-sm: clamp(2.25rem, 4vw, 3.5rem);
 
   /* ---------- گردی ----------
      سه سطح مجزا، نه یک عدد برای همه‌چیز: فیلدها، کارت/رسانه، و دکمه‌های کپسولی. */
@@ -1010,4 +1010,69 @@ html[data-font-scale='lg'] {
   bottom: -20%;
   margin-inline: auto;
   width: 84%;
+}
+
+/*
+ * شبکه کارت‌ها: کارت‌ها عرض سقف‌دار دارند و وسط‌چین می‌شوند، پس یک یا دو کارت تنها گوشه
+ * یک ردیف پهن نمی‌چسبند. --card-min عرض پایه هر کارت است (۲۰rem ≈ سه کارت در هر ردیف).
+ */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.card-grid > * {
+  flex: 1 1 var(--card-min, 20rem);
+  min-width: 0;
+}
+
+/* سقف عرض فقط از تبلت به بالا؛ در موبایل هر کارت تمام‌عرض است */
+@media (min-width: 640px) {
+  .card-grid > * {
+    max-width: min(100%, var(--card-max, 24rem));
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    gap: 1.75rem;
+  }
+}
+
+/* نوار فیلتر فهرست‌ها: یک کارت نرم کپسولی زیر سربرگ صفحه */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-media);
+  box-shadow: var(--shadow-soft);
+}
+
+.filter-bar .field {
+  flex: 1 1 10rem;
+  width: auto;
+  border-radius: var(--radius-pill);
+  padding-block: 0.625rem;
+}
+
+.filter-bar .field[type='search'],
+.filter-bar input.field {
+  flex-basis: 14rem;
+}
+
+.filter-bar .btn {
+  flex: 0 0 auto;
+}
+
+/* دکمه‌های بالای صفحه در موبایل کنار هم می‌نشینند تا صفحه اول بلند نشود */
+@media (max-width: 639px) {
+  .hero-actions .btn-lg {
+    min-height: 3rem;
+    padding-inline: 1.35rem;
+    font-size: 0.9375rem;
+  }
 }

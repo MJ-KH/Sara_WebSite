@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Ornament } from '@/components/brand/Ornament'
+import { PageIntro } from '@/components/site/PageIntro'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
 import { phoneForDisplay, whatsappLink } from '@/lib/display'
 import { getSiteSettings } from '@/lib/get-site-settings'
@@ -31,13 +31,7 @@ export default async function ContactPage() {
 
   return (
     <>
-      <section className="band-alt">
-        <div className="container-narrow py-14 text-center md:py-20">
-          <h1 className="display-1">تماس با ما</h1>
-          <p className="lead mx-auto mt-3 max-w-[32rem]">برای مشاوره انتخاب دوره، ثبت‌نام ورکشاپ یا رزرو خدمات سالن با ما در ارتباط باشید.</p>
-          <Ornament className="mt-6" />
-        </div>
-      </section>
+      <PageIntro title="تماس با ما" lead="برای مشاوره انتخاب دوره، ثبت‌نام ورکشاپ یا رزرو خدمات سالن با ما در ارتباط باشید." />
 
       <section className="section">
         <div className="container-x grid gap-6 md:grid-cols-2 md:gap-8">

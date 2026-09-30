@@ -1,7 +1,7 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { Ornament } from '@/components/brand/Ornament'
 import { SwatchFan } from '@/components/brand/SwatchFan'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
@@ -14,6 +14,7 @@ import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
 import { HERO_PALETTE, SHADES } from '@/lib/brand/swatches'
 import { phoneForDisplay, splitSampleMarker, whatsappLink } from '@/lib/display'
+import { toPersianDigits } from '@/lib/digits'
 import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { getPackageStats } from '@/lib/packages/stats'
@@ -53,7 +54,7 @@ function Section({
     <section id={id} className={`section${tone === 'alt' ? ' band-alt' : ''}`}>
       <div className={width === 'narrow' ? 'container-narrow' : 'container-x'}>
         {title.text ? (
-          <div className="mb-10 text-center md:mb-14">
+          <div className="mb-8 text-center md:mb-10">
             {title.isSample ? (
               <div className="mb-3 flex justify-center">
                 <SampleBadge />
@@ -92,7 +93,7 @@ async function PackageListBlockView({ block }: { block: AnyBlock }) {
   )
   return (
     <Section heading={block.heading}>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+      <div className="card-grid">
         {docs.map((pkg) => (
           <PackageCard key={pkg.id} pkg={pkg as never} stats={stats.get(String(pkg.id))} />
         ))}
@@ -121,7 +122,7 @@ async function WorkshopListBlockView({ block }: { block: AnyBlock }) {
   if (docs.length === 0) return null
   return (
     <Section heading={block.heading} tone="alt">
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="card-grid" style={{ '--card-min': '19rem' } as CSSProperties}>
         {docs.map((session) => (
           <WorkshopSessionCard key={session.id} session={session as never} />
         ))}
@@ -154,7 +155,7 @@ async function FreeLessonListBlockView({ block }: { block: AnyBlock }) {
   if (docs.length === 0) return null
   return (
     <Section heading={block.heading}>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="card-grid" style={{ '--card-min': '15rem', '--card-max': '19rem' } as CSSProperties}>
         {docs.map((item) => (
           <FreeLessonCard key={item.id} item={item as never} />
         ))}
@@ -182,7 +183,7 @@ async function TestimonialsBlockView({ block }: { block: AnyBlock }) {
   if (docs.length === 0) return null
   return (
     <Section heading={block.heading} tone="alt">
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="card-grid" style={{ '--card-min': '19rem' } as CSSProperties}>
         {docs.map((item) => (
           <TestimonialCard key={item.id} item={item as never} />
         ))}
@@ -191,24 +192,22 @@ async function TestimonialsBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
-/** پالت بادبزن داخل هر قاب طاقی تا عکس واقعی برسد: کناره‌ها روشن‌تر، وسط پررنگ‌تر */
-const ARCH_FALLBACK_PALETTES = [
-  [SHADES.milk, SHADES.blush, SHADES.petal, SHADES.rose],
-  HERO_PALETTE,
-  [SHADES.milk, SHADES.nude, SHADES.blush, SHADES.lilac],
-]
-
 type ArchImage = { url?: string | null; alt?: string | null } | null
 
-/** یک قاب طاقی با حاشیه سفید و سایه نرم؛ بدون عکس، بادبزن تیپ رنگ نمایش می‌دهد. */
+/**
+ * یک قاب طاقی با حاشیه سفید و سایه نرم. بدون عکس، فقط قاب وسط بادبزن تیپ رنگ دارد و
+ * قاب‌های کناری شیب ملایم صورتی می‌مانند تا بادبزن در صفحه تکراری نشود.
+ */
 function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
   const center = position === 1
   return (
-    <div className={center ? 'w-[40%] md:w-[36%]' : 'w-[28%] md:w-[27%]'}>
+    <div className={center ? 'w-[36%] md:w-[36%]' : 'w-[26%] md:w-[27%]'}>
       <div className="rounded-t-full bg-[var(--color-surface)] p-1.5 shadow-[var(--shadow-soft)] md:p-2.5">
         <div
-          className={`relative overflow-hidden rounded-t-full bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-bg-alt)] ${
-            center ? 'aspect-[5/7]' : 'aspect-[3/4]'
+          className={`relative overflow-hidden rounded-t-full ${
+            center
+              ? 'aspect-[4/5] bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-bg-alt)] md:aspect-[5/7]'
+              : 'aspect-[5/6] bg-gradient-to-b from-[var(--color-bg-alt)] to-[var(--color-accent-soft)] md:aspect-[3/4]'
           }`}
         >
           {image?.url ? (
@@ -217,19 +216,14 @@ function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
               alt={image.alt || ''}
               fill
               priority={center}
-              sizes={center ? '(max-width: 768px) 40vw, 26rem' : '(max-width: 768px) 28vw, 20rem'}
+              sizes={center ? '(max-width: 768px) 36vw, 26rem' : '(max-width: 768px) 26vw, 20rem'}
               className="object-cover"
             />
-          ) : (
+          ) : center ? (
             <div className="absolute inset-x-[6%] bottom-[-6%]">
-              <SwatchFan
-                id={`hero-arch-${position}`}
-                colors={ARCH_FALLBACK_PALETTES[position] as string[]}
-                spread={center ? 80 : 60}
-                animate={center}
-              />
+              <SwatchFan id="hero-arch" colors={HERO_PALETTE} spread={80} animate />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
@@ -251,12 +245,12 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   return (
     <section className="band-alt overflow-hidden">
       {/* عرض محدود تا در دسکتاپ هم تیتر در همان صفحه اول دیده شود */}
-      <div className="container-x flex max-w-[42rem] items-end justify-center gap-2.5 pt-8 sm:gap-4 md:gap-6 md:pt-10">
+      <div className="container-x flex max-w-[42rem] items-end justify-center gap-2.5 pt-6 sm:gap-4 md:gap-6 md:pt-10">
         <Arch image={slots[0] ?? null} position={0} />
         <Arch image={slots[1] ?? null} position={1} />
         <Arch image={slots[2] ?? null} position={2} />
       </div>
-      <div className="container-narrow pb-16 pt-9 text-center md:pb-24 md:pt-10">
+      <div className="container-narrow pb-12 pt-7 text-center md:pb-20 md:pt-10">
         {heading.isSample ? (
           <div className="mb-4 flex justify-center">
             <SampleBadge />
@@ -264,8 +258,8 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
         ) : null}
         <h1 className="display-1">{heading.text}</h1>
         {subheading.text ? <p className="lead mx-auto mt-3 max-w-[34rem]">{subheading.text}</p> : null}
-        <Ornament className="mt-6" />
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <Ornament className="mt-5 md:mt-6" />
+        <div className="hero-actions mt-6 flex flex-wrap justify-center gap-3 md:mt-8">
           {block.ctaLabel && block.ctaHref ? (
             /^https?:\/\//.test(block.ctaHref) ? (
               <a href={block.ctaHref} target="_blank" rel="noreferrer" className="btn btn-primary btn-lg">
@@ -354,8 +348,9 @@ function StartGuideBlockView({ block }: { block: AnyBlock }) {
 }
 
 /**
- * معرفی و روش آموزش به سبک بخش «About» مرجع: متن وسط‌چین، جداکننده تزئینی، و موارد روش
- * آموزش به‌صورت کارت‌های نرم شناور. اگر عکس سارا بارگذاری شده باشد، در قاب طاقی بالای متن.
+ * معرفی و روش آموزش. در دسکتاپ دوستونه است (متن یک طرف، موارد روش آموزش به‌صورت فهرست
+ * شماره‌دار طرف دیگر) تا ریتم صفحه از پشت‌سرهم بودن بخش‌های وسط‌چین بیرون بیاید.
+ * اگر عکس سارا بارگذاری شده باشد، در قاب طاقی بالای متن.
  */
 function AboutIntroBlockView({ block }: { block: AnyBlock }) {
   const heading = splitSampleMarker(block.heading)
@@ -363,46 +358,54 @@ function AboutIntroBlockView({ block }: { block: AnyBlock }) {
   const points: AnyBlock[] = block.points || []
   const photo = block.photo && typeof block.photo === 'object' && block.photo.url ? block.photo : null
   const isSample = heading.isSample || body.isSample || points.some((p) => splitSampleMarker(p.title).isSample)
+  const twoColumns = points.length > 0
   return (
     <section className="section">
-      <div className="container-narrow text-center">
-        {photo ? (
-          <div className="mx-auto mb-10 w-[62%] max-w-[18rem] rounded-t-full bg-[var(--color-surface)] p-2 shadow-[var(--shadow-soft)]">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-t-full">
-              <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="18rem" className="object-cover" />
-            </div>
-          </div>
-        ) : null}
-        {isSample ? (
-          <div className="mb-4 flex justify-center">
-            <SampleBadge />
-          </div>
-        ) : null}
-        <h2 className="display-2">{heading.text}</h2>
-        <p className="lead mx-auto mt-5 max-w-[38rem] whitespace-pre-line">{body.text}</p>
-        <Ornament className="mt-8" />
-      </div>
-
-      {points.length > 0 ? (
-        <div className="container-x mt-10 md:mt-14">
-          <dl className={`grid gap-5 sm:grid-cols-2 ${points.length >= 3 ? 'lg:grid-cols-3' : ''} ${points.length >= 4 ? 'xl:grid-cols-4' : ''}`}>
-            {points.map((point, index) => (
-              <div key={point.id || index} className="card-soft p-6 text-center md:p-8">
-                <dt className="title-2">{splitSampleMarker(point.title).text}</dt>
-                <dd className="mt-2 text-[0.9375rem] text-[var(--color-text-muted)]">{splitSampleMarker(point.text).text}</dd>
+      <div className={twoColumns ? 'container-x grid items-center gap-10 md:grid-cols-[1fr_1.1fr] md:gap-14 lg:gap-20' : 'container-narrow'}>
+        <div className={`text-center ${twoColumns ? 'md:text-start' : ''}`}>
+          {photo ? (
+            <div
+              className={`mx-auto mb-8 w-[62%] max-w-[16rem] rounded-t-full bg-[var(--color-surface)] p-2 shadow-[var(--shadow-soft)] ${twoColumns ? 'md:mx-0' : ''}`}
+            >
+              <div className="relative aspect-[4/5] overflow-hidden rounded-t-full">
+                <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="16rem" className="object-cover" />
               </div>
-            ))}
-          </dl>
+            </div>
+          ) : null}
+          {isSample ? (
+            <div className={`mb-4 flex justify-center ${twoColumns ? 'md:justify-start' : ''}`}>
+              <SampleBadge />
+            </div>
+          ) : null}
+          <h2 className="display-2">{heading.text}</h2>
+          <p className={`lead mx-auto mt-5 max-w-[38rem] whitespace-pre-line ${twoColumns ? 'md:mx-0' : ''}`}>{body.text}</p>
+          <Ornament className={`mt-7 ${twoColumns ? 'md:justify-start' : ''}`} />
+          {block.linkLabel && block.linkHref ? (
+            <Link href={block.linkHref} className="btn btn-ghost mt-8">
+              {block.linkLabel}
+            </Link>
+          ) : null}
         </div>
-      ) : null}
 
-      {block.linkLabel && block.linkHref ? (
-        <div className="mt-10 text-center">
-          <Link href={block.linkHref} className="btn btn-ghost">
-            {block.linkLabel}
-          </Link>
-        </div>
-      ) : null}
+        {twoColumns ? (
+          <ol className="card-soft divide-y divide-[var(--color-border)] px-5 py-2 md:px-8 md:py-4">
+            {points.map((point, index) => (
+              <li key={point.id || index} className="flex items-start gap-4 py-5">
+                <span
+                  aria-hidden="true"
+                  className="font-display flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-soft)] text-[1.1rem] font-bold text-[var(--color-primary)]"
+                >
+                  {toPersianDigits(index + 1)}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="title-2">{splitSampleMarker(point.title).text}</h3>
+                  <p className="mt-1.5 text-[0.9375rem] leading-[1.9] text-[var(--color-text-muted)]">{splitSampleMarker(point.text).text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : null}
+      </div>
     </section>
   )
 }

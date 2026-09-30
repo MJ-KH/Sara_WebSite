@@ -35,13 +35,14 @@ export function FreeLessonCard({ item }: { item: FreeLessonCardData }) {
             className="object-cover"
           />
         </div>
-      ) : (
-        <div className="pkg-cover rounded-[calc(var(--radius-media)-0.5rem)]">
-          <SwatchFan id={`free-${item.slug}`} colors={paletteForPackage({ slug: item.slug })} spread={58} />
-        </div>
-      )}
-      <div className="flex flex-col gap-2 px-3 pb-3 pt-4">
+      ) : null}
+      <div className={`flex flex-col gap-2 px-3 pb-3 ${item.coverImage?.url ? 'pt-4' : 'pt-3'}`}>
         <div className="flex items-center gap-2 text-[0.8125rem] font-semibold text-[var(--color-text-muted)]">
+          {item.coverImage?.url ? null : (
+            <span className="block w-7 shrink-0" aria-hidden="true">
+              <SwatchFan id={`free-${item.slug}`} colors={paletteForPackage({ slug: item.slug })} spread={50} />
+            </span>
+          )}
           <span>{CONTENT_TYPE_LABELS[item.contentType] ?? ''}</span>
           {title.isSample ? <SampleBadge /> : null}
         </div>
