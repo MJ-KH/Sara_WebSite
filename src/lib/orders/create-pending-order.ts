@@ -68,7 +68,7 @@ export async function createPendingPackageOrder(
   const paymentResult = await gateway.createPayment({
     orderId: String(order.id),
     amountRial: price.totalRial,
-    description: `خرید پکیج «${pkg.title}»`,
+    description: `خرید دوره «${pkg.title}»`,
     callbackUrl,
     payerMobile: student.mobile,
   })

@@ -16,9 +16,9 @@ export default async function FreePreviewLessonPage({ params }: { params: Promis
       <h1 className="mb-4 text-xl font-bold">{lesson.title}</h1>
       <LessonPlayer lessonId={String(lesson.id)} initialPositionSeconds={0} />
       <div className="mt-8 rounded-[var(--radius-base)] bg-[var(--color-accent-soft)] p-4 text-center">
-        <p>برای دسترسی به همه درس‌های این پکیج، آن را خریداری کنید.</p>
+        <p>برای دسترسی به همه درس‌های این دوره، آن را خریداری کنید.</p>
         <Link href={`/packages/${slug}`} className="btn btn-primary mt-3 inline-block px-6 py-2 font-bold">
-          مشاهده پکیج
+          مشاهده دوره
         </Link>
       </div>
     </div>

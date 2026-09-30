@@ -13,7 +13,7 @@ import { SampleBadge } from '@/components/ui/SampleBadge'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
 import { HERO_PALETTE, SHADES } from '@/lib/brand/swatches'
-import { phoneForDisplay, splitSampleMarker } from '@/lib/display'
+import { phoneForDisplay, splitSampleMarker, whatsappLink } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { getPackageStats } from '@/lib/packages/stats'
@@ -27,6 +27,9 @@ type PageContext = {
   instagramServices?: string | null
   instagramAcademy?: string | null
   phone?: string | null
+  whatsapp?: string | null
+  hasWorkshopList: boolean
+  hasUpcomingWorkshop: boolean
 }
 
 const CONSULTATION_ANCHOR = 'consultation'
@@ -264,13 +267,24 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
         <Ornament className="mt-6" />
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           {block.ctaLabel && block.ctaHref ? (
-            <Link href={block.ctaHref} className="btn btn-primary btn-lg">
-              {block.ctaLabel}
-            </Link>
+            /^https?:\/\//.test(block.ctaHref) ? (
+              <a href={block.ctaHref} target="_blank" rel="noreferrer" className="btn btn-primary btn-lg">
+                {block.ctaLabel}
+              </a>
+            ) : (
+              <Link href={block.ctaHref} className="btn btn-primary btn-lg">
+                {block.ctaLabel}
+              </Link>
+            )
           ) : null}
-          {ctx.hasConsultationForm ? (
+          {/* دکمه دوم: اگر ورکشاپ پیش رو هست ثبت‌نام آن، وگرنه مشاوره (فقط اگر همین صفحه فرم مشاوره دارد) */}
+          {ctx.hasWorkshopList && ctx.hasUpcomingWorkshop ? (
+            <Link href="/workshops" className="btn btn-ghost btn-lg bg-[var(--color-surface)]">
+              ثبت‌نام ورکشاپ
+            </Link>
+          ) : ctx.hasConsultationForm ? (
             <Link href={`#${CONSULTATION_ANCHOR}`} className="btn btn-ghost btn-lg bg-[var(--color-surface)]">
-              مشاوره انتخاب پکیج
+              مشاوره انتخاب دوره
             </Link>
           ) : null}
         </div>
@@ -457,6 +471,48 @@ function GalleryBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext })
   )
 }
 
+/** قبل و بعد: فقط نمونه‌هایی که هر دو عکس و رضایت صاحب عکس را دارند نمایش داده می‌شوند. */
+function BeforeAfterBlockView({ block }: { block: AnyBlock }) {
+  const items: AnyBlock[] = (block.items || []).filter(
+    (item: AnyBlock) => item.consent === true && item.before?.url && item.after?.url,
+  )
+  if (items.length === 0) return null
+  const intro = splitSampleMarker(block.intro)
+  return (
+    <Section heading={block.heading}>
+      {intro.text ? <p className="lead mx-auto -mt-6 mb-10 max-w-[36rem] text-center">{intro.text}</p> : null}
+      <ul className="grid gap-6 md:grid-cols-2">
+        {items.map((item, index) => (
+          <li key={item.id || index} className="card-soft p-3">
+            <div className="grid grid-cols-2 gap-2">
+              {(['before', 'after'] as const).map((side) => (
+                <figure key={side} className="relative aspect-[4/5] overflow-hidden rounded-[calc(var(--radius-media)-0.5rem)] bg-[var(--color-bg-alt)]">
+                  <Image
+                    src={item[side].url}
+                    alt={item[side].alt || `${side === 'before' ? 'قبل' : 'بعد'}${item.caption ? `: ${item.caption}` : ''}`}
+                    fill
+                    sizes="(max-width: 768px) 45vw, 22vw"
+                    className="object-cover"
+                  />
+                  <figcaption className="absolute start-2 top-2 rounded-full bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] px-3 py-0.5 text-[0.8125rem] font-bold">
+                    {side === 'before' ? 'قبل' : 'بعد'}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            {item.caption || item.studentName ? (
+              <p className="px-2 pb-1 pt-3 text-center text-[0.9375rem]">
+                {item.caption}
+                {item.studentName ? <span className="text-[var(--color-text-muted)]"> — {item.studentName}</span> : null}
+              </p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}
+
 function VideoBlockView({ block }: { block: AnyBlock }) {
   const src = block.sourceType === 'external' ? block.externalUrl : block.mediaFile?.url
   if (!src) return null
@@ -488,7 +544,7 @@ function FaqBlockView({ block }: { block: AnyBlock }) {
 /** فرم مشاوره کنار کارت «راه‌های ارتباط» — مثل بخش Get In Touch مرجع. */
 function ConsultationFormBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   const tel = phoneForDisplay(ctx.phone)
-  const hasContact = Boolean(tel || ctx.instagramAcademy)
+  const hasContact = Boolean(tel || ctx.instagramAcademy || ctx.whatsapp)
   return (
     <section id={CONSULTATION_ANCHOR} className="section band-alt">
       <div className={`container-x grid items-start gap-6 ${hasContact ? 'md:grid-cols-[1.35fr_1fr] md:gap-8' : 'max-w-[40rem]'}`}>
@@ -520,6 +576,14 @@ function ConsultationFormBlockView({ block, ctx }: { block: AnyBlock; ctx: PageC
                 </div>
               ) : null}
             </dl>
+            {ctx.whatsapp ? (
+              <a href={ctx.whatsapp} target="_blank" rel="noreferrer" className="btn btn-ghost mt-6">
+                پیام در واتساپ
+              </a>
+            ) : null}
+            <Link href="/contact" className="mt-4 block text-[0.9375rem] text-[var(--color-text-muted)] underline-offset-4 hover:underline">
+              آدرس سالن و مسیریابی
+            </Link>
           </aside>
         ) : null}
       </div>
@@ -549,6 +613,7 @@ const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock; ctx: PageContext })
   text: TextBlockView,
   image: ImageBlockView,
   gallery: GalleryBlockView,
+  beforeAfter: BeforeAfterBlockView,
   video: VideoBlockView,
   packageList: PackageListBlockView,
   workshopList: WorkshopListBlockView,
@@ -562,11 +627,24 @@ const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock; ctx: PageContext })
 export async function PageBlocks({ blocks }: { blocks: AnyBlock[] }) {
   const visible = (blocks || []).filter((b) => !b.hidden)
   const settings = await getSiteSettings()
+  const hasWorkshopList = visible.some((b) => b.blockType === 'workshopList')
+  let hasUpcomingWorkshop = false
+  if (hasWorkshopList) {
+    const payload = await getPayloadClient()
+    const upcoming = await payload.count({
+      collection: 'workshop-sessions',
+      where: { status: { equals: 'published' }, startAt: { greater_than: new Date().toISOString() } },
+    })
+    hasUpcomingWorkshop = upcoming.totalDocs > 0
+  }
   const ctx: PageContext = {
     hasConsultationForm: visible.some((b) => b.blockType === 'consultationForm'),
     instagramServices: settings.instagram?.servicesHandle,
     instagramAcademy: settings.instagram?.academyHandle,
     phone: settings.contact?.phone,
+    whatsapp: whatsappLink(settings.contact?.whatsapp, settings.contact?.whatsappGreeting),
+    hasWorkshopList,
+    hasUpcomingWorkshop,
   }
   const rendered = await Promise.all(
     visible.map(async (block, index) => {

@@ -18,9 +18,9 @@ export default async function MyWorkshopsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold">ثبت‌نام‌های دوره حضوری</h1>
+      <h1 className="mb-6 text-xl font-bold">ثبت‌نام‌های ورکشاپ</h1>
       {enrollments.docs.length === 0 ? (
-        <p className="text-[var(--color-text-muted)]">هنوز در دوره حضوری ثبت‌نام نکرده‌اید.</p>
+        <p className="text-[var(--color-text-muted)]">هنوز در ورکشاپی ثبت‌نام نکرده‌اید.</p>
       ) : (
         <div className="flex flex-col gap-3">
           {enrollments.docs.map((enrollment) => {
@@ -28,7 +28,7 @@ export default async function MyWorkshopsPage() {
             const workshop = session && typeof session.workshop === 'object' ? session.workshop : null
             return (
               <div key={enrollment.id} className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-4">
-                <h2 className="font-bold">{workshop?.title || 'دوره حضوری'}</h2>
+                <h2 className="font-bold">{workshop?.title || 'ورکشاپ'}</h2>
                 {session?.startAt ? <p className="text-sm text-[var(--color-text-muted)]">{formatJalaliDate(new Date(session.startAt))}</p> : null}
                 <p className="mt-1 text-sm">وضعیت: {enrollment.status === 'confirmed' ? 'قطعی' : 'لغوشده'}</p>
               </div>

@@ -25,4 +25,9 @@ describe('normalizeIranMobile', () => {
     expect(normalizeIranMobile('+14155552671')).toBeNull()
     expect(normalizeIranMobile('')).toBeNull()
   })
+
+  it('تلفن ثابت را به‌عنوان موبایل قبول نمی‌کند', () => {
+    expect(normalizeIranMobile('02188683502')).toBeNull()
+    expect(normalizeIranMobile('۰۲۱-۸۸۶۸۳۵۰۲')).toBeNull()
+  })
 })

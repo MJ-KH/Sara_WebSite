@@ -17,12 +17,12 @@ export default async function WorkshopCheckoutPage({ params }: { params: Promise
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-14">
-      <h1 className="mb-8 text-center text-2xl font-bold">ثبت‌نام دوره حضوری</h1>
+      <h1 className="mb-8 text-center text-2xl font-bold">ثبت‌نام ورکشاپ</h1>
       <CheckoutFlow
         isLoggedIn={user?.collection === 'students'}
         kind="workshop_session"
         workshopSessionId={sessionId}
-        title={workshop?.title || 'دوره حضوری'}
+        title={workshop?.title || 'ورکشاپ'}
         priceRial={session.priceRial}
       />
     </div>

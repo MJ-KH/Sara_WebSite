@@ -35,7 +35,7 @@ export async function createPendingWorkshopOrder(
       student: Number(student.id),
       subjectType: 'workshop_session',
       subjectWorkshopSession: Number(sessionId),
-      titleSnapshot: workshop?.title || 'دوره حضوری',
+      titleSnapshot: workshop?.title || 'ورکشاپ',
       unitPriceRialSnapshot: session.priceRial,
       discountAmountRialSnapshot: 0,
       totalRialSnapshot: session.priceRial,
@@ -56,7 +56,7 @@ export async function createPendingWorkshopOrder(
   const paymentResult = await gateway.createPayment({
     orderId: String(order.id),
     amountRial: session.priceRial,
-    description: `ثبت‌نام دوره حضوری «${workshop?.title || ''}»`,
+    description: `ثبت‌نام ورکشاپ «${workshop?.title || ''}»`,
     callbackUrl: `${callbackBaseUrl}/api/payments/callback`,
     payerMobile: student.mobile,
   })

@@ -20,7 +20,7 @@ export function MobileMenu({ menu }: { menu: MenuItem[] }) {
   }, [open])
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -63,11 +63,6 @@ export function MobileMenu({ menu }: { menu: MenuItem[] }) {
               ) : null}
             </li>
           ))}
-          <li>
-            <Link href="/account" className="flex min-h-12 items-center text-[1.0625rem] font-semibold">
-              حساب کاربری من
-            </Link>
-          </li>
         </ul>
       </nav>
     </div>

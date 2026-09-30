@@ -72,7 +72,7 @@ export default async function FreeLessonDetailPage({ params }: Params) {
         <div className="mt-10 rounded-[var(--radius-base)] bg-[var(--color-accent-soft)] p-4">
           <p className="text-sm">علاقه‌مند به یادگیری بیشتر؟</p>
           <Link href={`/packages/${relatedPackage.slug}`} className="mt-1 inline-block font-bold text-[var(--color-primary)]">
-            مشاهده پکیج «{relatedPackage.title}»
+            مشاهده دوره «{relatedPackage.title}»
           </Link>
         </div>
       ) : null}

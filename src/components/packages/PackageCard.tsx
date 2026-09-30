@@ -78,7 +78,7 @@ export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: Pack
             </span>
           ) : null}
           <span className="ms-auto text-[0.875rem] font-bold text-[var(--color-primary)] group-hover:underline">
-            مشاهده پکیج
+            مشاهده دوره
           </span>
         </div>
       </div>

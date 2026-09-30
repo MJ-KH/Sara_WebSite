@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { getPayloadClient } from '@/lib/get-payload'
 
-export const metadata: Metadata = { title: 'پکیج‌های آموزشی' }
+export const metadata: Metadata = { title: 'دوره‌های آموزشی' }
 
 type SearchParams = Promise<{ level?: string; topic?: string; sort?: string; q?: string }>
 
@@ -33,7 +33,7 @@ export default async function PackagesPage({ searchParams }: { searchParams: Sea
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-2xl font-bold">پکیج‌های آموزشی</h1>
+      <h1 className="text-2xl font-bold">دوره‌های آموزشی</h1>
       <form className="mt-6 flex flex-wrap gap-3" method="get">
         <input
           name="q"
@@ -67,7 +67,7 @@ export default async function PackagesPage({ searchParams }: { searchParams: Sea
       </form>
 
       {result.docs.length === 0 ? (
-        <p className="mt-10 text-center text-[var(--color-text-muted)]">پکیجی با این فیلتر یافت نشد.</p>
+        <p className="mt-10 text-center text-[var(--color-text-muted)]">دوره‌ای با این فیلتر یافت نشد.</p>
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {result.docs.map((pkg) => (

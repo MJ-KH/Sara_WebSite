@@ -11,6 +11,8 @@ export function normalizeIranMobile(raw: string): string | null {
   if (!ascii) return null
   const phone = parsePhoneNumberFromString(ascii, 'IR')
   if (!phone || !phone.isValid() || phone.country !== 'IR') return null
+  // شماره ثابت (مثلاً ۰۲۱...) هم معتبر است ولی پیامک دریافت نمی‌کند؛ موبایل‌های ایران با ۹ شروع می‌شوند
+  if (!phone.nationalNumber.startsWith('9')) return null
   return phone.number
 }
 

@@ -23,7 +23,7 @@ import { extractIdString } from '@/lib/relation'
 type Params = { params: Promise<{ slug: string }> }
 
 const LEVEL_LABELS: Record<string, string> = { beginner: 'مبتدی', intermediate: 'متوسط', advanced: 'پیشرفته' }
-const KIND_LABELS: Record<string, string> = { comprehensive: 'پکیج جامع', short: 'آموزش تخصصی کوتاه' }
+const KIND_LABELS: Record<string, string> = { comprehensive: 'دوره جامع', short: 'آموزش تخصصی کوتاه' }
 
 async function getData(slug: string) {
   const payload = await getPayloadClient()
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 }
 
-/** یک بخش از محتوای اصلی صفحه پکیج */
+/** یک بخش از محتوای اصلی صفحه دوره */
 function Block({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
     <section id={id} className="border-t border-[var(--color-border)] py-10 first:border-t-0 first:pt-0 md:py-12">
@@ -88,6 +88,45 @@ function Block({ id, title, children }: { id?: string; title: string; children: 
 
 function Prose({ text }: { text: string }) {
   return <p className="max-w-[40rem] whitespace-pre-line text-[var(--color-text-muted)]">{splitSampleMarker(text).text}</p>
+}
+
+/** متن چندخطی پنل (هر مورد در یک خط) → فهرست */
+function toLines(text: string | null | undefined): string[] {
+  return (text || '')
+    .split('\n')
+    .map((line) => splitSampleMarker(line.replace(/^[-•*\s]+/, '')).text.trim())
+    .filter(Boolean)
+}
+
+function CheckMark({ muted = false }: { muted?: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false" className="mt-1 shrink-0">
+      <circle cx="10" cy="10" r="9" fill={muted ? 'var(--color-bg-alt)' : 'var(--color-accent-soft)'} />
+      {muted ? (
+        <path d="M7 7l6 6M13 7l-6 6" stroke="var(--color-text-muted)" strokeWidth="1.8" strokeLinecap="round" />
+      ) : (
+        <path d="M6 10.5l2.6 2.6L14 7.5" fill="none" stroke="var(--color-primary)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      )}
+    </svg>
+  )
+}
+
+/** کارت فهرست دوستونه (قبل/بعد، مناسب/نامناسب) */
+function LineList({ title, lines, tone }: { title: string; lines: string[]; tone: 'accent' | 'muted' }) {
+  if (lines.length === 0) return null
+  return (
+    <div className={`rounded-[var(--radius-media)] p-5 ${tone === 'accent' ? 'card-soft' : 'bg-[var(--color-bg-alt)]'}`}>
+      <h3 className={`mb-3 font-bold ${tone === 'accent' ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-muted)]'}`}>{title}</h3>
+      <ul className="flex flex-col gap-2.5">
+        {lines.map((line) => (
+          <li key={line} className="flex gap-3">
+            <CheckMark muted={tone === 'muted'} />
+            <span className={tone === 'muted' ? 'text-[var(--color-text-muted)]' : ''}>{line}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }
 
 export default async function PackageDetailPage({ params }: Params) {
@@ -123,6 +162,11 @@ export default async function PackageDetailPage({ params }: Params) {
   const coverImage = typeof pkg.coverImage === 'object' ? pkg.coverImage : null
   const hasDiscount = Boolean(pkg.compareAtPriceRial && pkg.compareAtPriceRial > pkg.priceRial)
   const freePreviewCount = lessons.filter((l) => l.isFreePreview).length
+  const skillBefore = toLines(pkg.skillShift?.before)
+  const skillAfter = toLines(pkg.skillShift?.after)
+  const promoVideo = typeof pkg.promoVideo === 'object' && pkg.promoVideo?.url ? pkg.promoVideo : null
+  const projects = pkg.projects || []
+  const benefits = pkg.benefits || []
   const meta = [KIND_LABELS[pkg.kind] ?? null, pkg.level ? `سطح ${LEVEL_LABELS[pkg.level] ?? pkg.level}` : null].filter(Boolean).join('، ')
 
   const facts: { label: string; value: string }[] = [
@@ -136,8 +180,8 @@ export default async function PackageDetailPage({ params }: Params) {
   const action = hasAccess
     ? { kind: 'continue' as const, href: `/account/my-packages/${pkg.slug}`, label: 'ادامه آموزش' }
     : pkg.status === 'stopped'
-      ? { kind: 'stopped' as const, label: 'فروش این پکیج متوقف شده است' }
-      : { kind: 'buy' as const, href: `/checkout/${pkg.slug}`, label: 'خرید پکیج' }
+      ? { kind: 'stopped' as const, label: 'فروش این دوره متوقف شده است' }
+      : { kind: 'buy' as const, href: `/checkout/${pkg.slug}`, label: 'خرید دوره' }
 
   const actionButton = (extra = '') =>
     action.kind === 'stopped' ? (
@@ -163,13 +207,13 @@ export default async function PackageDetailPage({ params }: Params) {
 
   return (
     <div className="pb-28 md:pb-0">
-      {/* سربرگ پکیج */}
+      {/* سربرگ دوره */}
       <header className="border-b border-[var(--color-border)]">
         <div className="container-x grid gap-8 pb-10 pt-6 md:grid-cols-[1.25fr_1fr] md:items-end md:gap-12 md:pb-14 md:pt-10">
           <div>
             <nav aria-label="مسیر" className="mb-6 text-[0.875rem] text-[var(--color-text-muted)]">
               <Link href="/packages" className="hover:text-[var(--color-text)]">
-                پکیج‌ها
+                دوره‌ها
               </Link>
               <span aria-hidden="true" className="mx-2">
                 /
@@ -212,23 +256,33 @@ export default async function PackageDetailPage({ params }: Params) {
             ))}
           </dl>
 
-          {pkg.description ? (
-            <Block title="درباره این پکیج">
-              <div className="rich-text max-w-[40rem]">
-                <RichText data={pkg.description} />
+          {pkg.problem ? (
+            <Block title="مشکلی که حل می‌کند">
+              <Prose text={pkg.problem} />
+            </Block>
+          ) : null}
+
+          {pkg.description || pkg.expectedOutcome ? (
+            <Block title="این دوره چه چیزی یاد می‌دهد">
+              {pkg.description ? (
+                <div className="rich-text max-w-[40rem]">
+                  <RichText data={pkg.description} />
+                </div>
+              ) : null}
+              {pkg.expectedOutcome ? (
+                <div className={pkg.description ? 'mt-5' : ''}>
+                  <Prose text={pkg.expectedOutcome} />
+                </div>
+              ) : null}
+            </Block>
+          ) : null}
+
+          {skillBefore.length > 0 || skillAfter.length > 0 ? (
+            <Block title="مهارت شما، قبل و بعد از دوره">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <LineList title="قبل" lines={skillBefore} tone="muted" />
+                <LineList title="بعد" lines={skillAfter} tone="accent" />
               </div>
-            </Block>
-          ) : null}
-
-          {pkg.targetAudience ? (
-            <Block title="این پکیج برای چه کسی است">
-              <Prose text={pkg.targetAudience} />
-            </Block>
-          ) : null}
-
-          {pkg.expectedOutcome ? (
-            <Block title="بعد از این پکیج">
-              <Prose text={pkg.expectedOutcome} />
             </Block>
           ) : null}
 
@@ -278,6 +332,79 @@ export default async function PackageDetailPage({ params }: Params) {
             </Block>
           ) : null}
 
+          {promoVideo?.url || freePreviewCount > 0 ? (
+            <Block id="sample" title="نمونه ویدئو">
+              {promoVideo?.url ? (
+                <video
+                  controls
+                  preload="none"
+                  playsInline
+                  className="w-full rounded-[var(--radius-media)] bg-[var(--color-bg-alt)]"
+                  src={promoVideo.url}
+                  aria-label={promoVideo.alt || `ویدئوی معرفی ${title.text}`}
+                >
+                  <track kind="captions" />
+                </video>
+              ) : null}
+              {freePreviewCount > 0 ? (
+                <p className={`text-[var(--color-text-muted)] ${promoVideo?.url ? 'mt-4' : ''}`}>
+                  {toPersianDigits(freePreviewCount)} درس از این دوره بدون خرید قابل تماشاست؛ در{' '}
+                  <a href="#curriculum" className="font-bold text-[var(--color-primary)] underline-offset-4 hover:underline">
+                    سرفصل‌ها
+                  </a>{' '}
+                  گزینه «تماشای رایگان» را بزنید.
+                </p>
+              ) : null}
+            </Block>
+          ) : null}
+
+          {projects.length > 0 ? (
+            <Block title="پروژه‌های عملی">
+              <ul className="grid gap-4 sm:grid-cols-2">
+                {projects.map((project, index) => {
+                  const image = typeof project.image === 'object' && project.image?.url ? project.image : null
+                  return (
+                    <li key={project.id || index} className="card-soft overflow-hidden">
+                      {image ? (
+                        <div className="relative aspect-[4/3]">
+                          <Image src={image.url as string} alt={image.alt || project.title} fill sizes="(max-width: 640px) 100vw, 20rem" className="object-cover" />
+                        </div>
+                      ) : null}
+                      <div className="p-5">
+                        <h3 className="font-bold">{splitSampleMarker(project.title).text}</h3>
+                        {project.description ? (
+                          <p className="mt-1 text-[0.9375rem] text-[var(--color-text-muted)]">{splitSampleMarker(project.description).text}</p>
+                        ) : null}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            </Block>
+          ) : null}
+
+          {pkg.targetAudience || pkg.notFor ? (
+            <Block title="این دوره مناسب شماست؟">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {pkg.targetAudience ? <LineList title="مناسب است برای" lines={toLines(pkg.targetAudience)} tone="accent" /> : null}
+                {pkg.notFor ? <LineList title="مناسب نیست برای" lines={toLines(pkg.notFor)} tone="muted" /> : null}
+              </div>
+            </Block>
+          ) : null}
+
+          {benefits.length > 0 ? (
+            <Block title="مزایای دوره">
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {benefits.map((benefit, index) => (
+                  <li key={benefit.id || index} className="flex gap-3">
+                    <CheckMark />
+                    <span>{splitSampleMarker(benefit.text).text}</span>
+                  </li>
+                ))}
+              </ul>
+            </Block>
+          ) : null}
+
           {pkg.toolsAndMaterials ? (
             <Block title="ابزار و مواد لازم">
               <Prose text={pkg.toolsAndMaterials} />
@@ -287,6 +414,18 @@ export default async function PackageDetailPage({ params }: Params) {
           {pkg.supportScope ? (
             <Block title="پشتیبانی">
               <Prose text={pkg.supportScope} />
+            </Block>
+          ) : null}
+
+          {pkg.certificate?.issued ? (
+            <Block title="مدرک">
+              <Prose text={pkg.certificate.description || 'برای این دوره مدرک صادر می‌شود.'} />
+            </Block>
+          ) : null}
+
+          {pkg.paymentTerms ? (
+            <Block id="payment" title="شرایط پرداخت">
+              <Prose text={pkg.paymentTerms} />
             </Block>
           ) : null}
 
@@ -311,6 +450,13 @@ export default async function PackageDetailPage({ params }: Params) {
               <Prose text={pkg.cancellationPolicy} />
             </Block>
           ) : null}
+
+          {/* دعوت پایانی به خرید، بعد از خواندن همه جزئیات */}
+          <section className="card-soft mt-4 p-6 text-center md:p-10">
+            <p className="title-1">{title.text}</p>
+            <div className="mt-4 flex justify-center">{price}</div>
+            <div className="mt-6 flex justify-center">{actionButton('btn-lg')}</div>
+          </section>
         </div>
 
         {/* کادر خرید چسبان — فقط دسکتاپ */}
@@ -338,7 +484,7 @@ export default async function PackageDetailPage({ params }: Params) {
       {related.length > 0 ? (
         <section className="section band-alt mt-14">
           <div className="container-x">
-            <h2 className="display-2 mb-8">پکیج‌های مرتبط</h2>
+            <h2 className="display-2 mb-8">دوره‌های مرتبط</h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((item) => (
                 <PackageCard key={item.id} pkg={item as never} stats={relatedStats.get(String(item.id))} />

@@ -1,33 +1,60 @@
-/** ستون شناور شبکه‌های اجتماعی کنار صفحه (فقط دسکتاپ) — مخاطب سارا بیشتر از اینستاگرام می‌آید. */
-function InstagramGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true" focusable="false">
+/**
+ * ستون شناور کنار صفحه (فقط دسکتاپ): اینستاگرام آکادمی، واتساپ و یوتیوب.
+ * پیج‌های خدمات و سالن عمداً اینجا نیستند تا تمرکز سایت روی آموزش بماند؛ آن‌ها در فوتر
+ * و صفحه خدمات آمده‌اند. آیکون‌ها طرح ساده عمومی‌اند، نه لوگوی رسمی برندها.
+ */
+const ICONS = {
+  instagram: (
+    <>
       <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
       <circle cx="12" cy="12" r="4" />
       <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
-  )
+    </>
+  ),
+  whatsapp: (
+    <>
+      <path d="M4 20l1.3-4A8 8 0 1 1 8 18.7L4 20z" />
+      <path d="M9.2 8.8c.2 2.4 1.9 4.4 4.3 5.1" />
+    </>
+  ),
+  youtube: (
+    <>
+      <rect x="2.8" y="5.5" width="18.4" height="13" rx="4" />
+      <path d="M10.3 9.3v5.4l4.6-2.7z" fill="currentColor" stroke="none" />
+    </>
+  ),
 }
 
-export function SocialRail({ academy, services }: { academy?: string | null; services?: string | null }) {
+export function SocialRail({
+  academy,
+  whatsapp,
+  youtube,
+}: {
+  academy?: string | null
+  whatsapp?: string | null
+  youtube?: string | null
+}) {
   const links = [
-    academy ? { handle: academy, label: 'اینستاگرام آموزش' } : null,
-    services ? { handle: services, label: 'اینستاگرام خدمات ناخن' } : null,
-  ].filter(Boolean) as { handle: string; label: string }[]
+    academy ? { href: `https://instagram.com/${academy}`, label: `اینستاگرام آکادمی (@${academy})`, icon: ICONS.instagram } : null,
+    whatsapp ? { href: whatsapp, label: 'پیام در واتساپ', icon: ICONS.whatsapp } : null,
+    youtube ? { href: youtube, label: 'کانال یوتیوب', icon: ICONS.youtube } : null,
+  ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[]
   if (links.length === 0) return null
   return (
     <nav aria-label="شبکه‌های اجتماعی" className="fixed end-5 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
       {links.map((link) => (
         <a
-          key={link.handle}
-          href={`https://instagram.com/${link.handle}`}
+          key={link.href}
+          href={link.href}
           target="_blank"
           rel="noreferrer"
-          aria-label={`${link.label} (@${link.handle})`}
-          title={`@${link.handle}`}
+          aria-label={link.label}
+          title={link.label}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-surface)] text-[var(--color-primary)] shadow-[var(--shadow-float)] transition-transform hover:-translate-y-0.5"
         >
-          <InstagramGlyph />
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" focusable="false">
+            {link.icon}
+          </svg>
         </a>
       ))}
     </nav>

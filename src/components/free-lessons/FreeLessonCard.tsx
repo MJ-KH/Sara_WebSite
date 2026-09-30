@@ -1,5 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { SwatchFan } from '@/components/brand/SwatchFan'
+import { SampleBadge } from '@/components/ui/SampleBadge'
+import { paletteForPackage } from '@/lib/brand/swatches'
+import { splitSampleMarker } from '@/lib/display'
 
 const CONTENT_TYPE_LABELS: Record<string, string> = {
   article: 'مقاله',
@@ -15,19 +19,33 @@ export type FreeLessonCardData = {
 }
 
 export function FreeLessonCard({ item }: { item: FreeLessonCardData }) {
+  const title = splitSampleMarker(item.title)
   return (
     <Link
       href={`/free-lessons/${item.slug}`}
-      className="flex flex-col overflow-hidden rounded-[var(--radius-base)] border border-[var(--color-border)] bg-[var(--color-surface)]"
+      className="card-soft group flex flex-col p-2.5 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-offset-4"
     >
-      <div className="relative aspect-video w-full bg-[var(--color-accent-soft)]">
-        {item.coverImage?.url ? (
-          <Image src={item.coverImage.url} alt={item.coverImage.alt || item.title} fill className="object-cover" />
-        ) : null}
-      </div>
-      <div className="flex flex-col gap-1 p-3">
-        <span className="text-xs text-[var(--color-text-muted)]">{CONTENT_TYPE_LABELS[item.contentType] ?? ''}</span>
-        <h3 className="font-bold leading-relaxed">{item.title}</h3>
+      {item.coverImage?.url ? (
+        <div className="relative aspect-video w-full overflow-hidden rounded-[calc(var(--radius-media)-0.5rem)] bg-[var(--color-bg-alt)]">
+          <Image
+            src={item.coverImage.url}
+            alt={item.coverImage.alt || title.text}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover"
+          />
+        </div>
+      ) : (
+        <div className="pkg-cover rounded-[calc(var(--radius-media)-0.5rem)]">
+          <SwatchFan id={`free-${item.slug}`} colors={paletteForPackage({ slug: item.slug })} spread={58} />
+        </div>
+      )}
+      <div className="flex flex-col gap-2 px-3 pb-3 pt-4">
+        <div className="flex items-center gap-2 text-[0.8125rem] font-semibold text-[var(--color-text-muted)]">
+          <span>{CONTENT_TYPE_LABELS[item.contentType] ?? ''}</span>
+          {title.isSample ? <SampleBadge /> : null}
+        </div>
+        <h3 className="title-2 font-display text-[1.2rem] text-[var(--color-text)]">{title.text}</h3>
       </div>
     </Link>
   )

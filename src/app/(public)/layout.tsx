@@ -4,6 +4,8 @@ import { AnnouncementBar } from '@/components/site/AnnouncementBar'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
 import { SocialRail } from '@/components/site/SocialRail'
+import { getRequestUser } from '@/lib/auth/get-request-user'
+import { whatsappLink } from '@/lib/display'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import '../globals.css'
 
@@ -27,6 +29,9 @@ export default async function PublicLayout({ children }: { children: React.React
   const settings = await getSiteSettings()
   const theme = settings.theme || {}
   const logo = typeof settings.brand?.logo === 'object' ? settings.brand?.logo : null
+  const user = await getRequestUser()
+  const contact = settings.contact || {}
+  const whatsapp = whatsappLink(contact.whatsapp, contact.whatsappGreeting)
 
   return (
     <html
@@ -43,6 +48,7 @@ export default async function PublicLayout({ children }: { children: React.React
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
           tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}
           logoUrl={logo?.url}
+          isStudentLoggedIn={user?.collection === 'students'}
           menu={(settings.headerMenu || []).map((item) => ({
             label: item.label,
             href: item.href,
@@ -50,18 +56,25 @@ export default async function PublicLayout({ children }: { children: React.React
           }))}
         />
         <main>{children}</main>
-        <SocialRail academy={settings.instagram?.academyHandle} services={settings.instagram?.servicesHandle} />
+        <SocialRail academy={settings.instagram?.academyHandle} whatsapp={whatsapp} youtube={settings.socials?.youtubeUrl} />
         <SiteFooter
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
           tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}
-          phone={settings.contact?.phone}
+          phone={contact.phone}
+          landline={contact.landline}
+          whatsapp={whatsapp}
           columns={(settings.footer?.columns || []).map((col) => ({
             title: col.title,
             links: col.links?.map((l) => ({ label: l.label, href: l.href })) || [],
           }))}
           copyrightText={settings.footer?.copyrightText}
-          instagramAcademy={settings.instagram?.academyHandle}
-          instagramServices={settings.instagram?.servicesHandle}
+          instagram={[
+            { handle: settings.instagram?.academyHandle, label: 'آکادمی آموزش' },
+            { handle: settings.instagram?.servicesHandle, label: 'خدمات ناخن' },
+            { handle: settings.instagram?.salonHandle, label: 'سالن زیبایی' },
+          ]}
+          youtube={settings.socials?.youtubeUrl}
+          telegram={settings.socials?.telegramHandle}
         />
       </body>
     </html>

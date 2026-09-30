@@ -3,7 +3,7 @@ import type { Block } from 'payload'
 /**
  * بلوک‌های صفحه‌ساز. هر بلوک فقط فیلدهای محتوایی محدود و معتبر دارد (بدون HTML/CSS آزاد)
  * تا سارا نتواند چیدمان یا خوانایی موبایل را با یک ویرایش اشتباه خراب کند. بلوک‌های فهرستی
- * (پکیج/حضوری/آموزش رایگان/نظرات) هم حالت «انتخاب دستی» و هم «فیلتر خودکار» دارند.
+ * (دوره/ورکشاپ/آموزش رایگان/نظرات) هم حالت «انتخاب دستی» و هم «فیلتر خودکار» دارند.
  */
 
 export const HeroBlock: Block = {
@@ -82,11 +82,11 @@ export const VideoBlock: Block = {
 
 export const PackageListBlock: Block = {
   slug: 'packageList',
-  labels: { singular: 'فهرست پکیج', plural: 'فهرست‌های پکیج' },
+  labels: { singular: 'فهرست دوره‌ها', plural: 'فهرست‌های دوره' },
   fields: [
     { name: 'heading', type: 'text', label: 'عنوان' },
     { name: 'mode', type: 'select', required: true, defaultValue: 'featured', options: [
-      { label: 'پکیج‌های منتخب (featured)', value: 'featured' },
+      { label: 'دوره‌های شاخص (منتخب)', value: 'featured' },
       { label: 'جدیدترین‌ها', value: 'latest' },
       { label: 'انتخاب دستی', value: 'manual' },
     ] },
@@ -97,7 +97,7 @@ export const PackageListBlock: Block = {
 
 export const WorkshopListBlock: Block = {
   slug: 'workshopList',
-  labels: { singular: 'فهرست دوره حضوری', plural: 'فهرست‌های دوره حضوری' },
+  labels: { singular: 'فهرست ورکشاپ‌ها', plural: 'فهرست‌های ورکشاپ' },
   fields: [
     { name: 'heading', type: 'text', label: 'عنوان' },
     { name: 'mode', type: 'select', required: true, defaultValue: 'upcoming', options: [
@@ -161,7 +161,7 @@ export const ConsultationFormBlock: Block = {
   slug: 'consultationForm',
   labels: { singular: 'فرم مشاوره', plural: 'فرم‌های مشاوره' },
   fields: [
-    { name: 'heading', type: 'text', defaultValue: 'مشاوره رایگان انتخاب پکیج' },
+    { name: 'heading', type: 'text', defaultValue: 'مشاوره رایگان انتخاب دوره' },
     { name: 'description', type: 'textarea' },
   ],
 }
@@ -203,7 +203,7 @@ export const StartGuideBlock: Block = {
           relationTo: 'packages',
           hasMany: true,
           maxRows: 3,
-          label: 'پکیج‌های پیشنهادی',
+          label: 'دوره‌های پیشنهادی',
         },
         { name: 'linkLabel', type: 'text', label: 'متن دکمه (اختیاری)' },
         { name: 'linkHref', type: 'text', label: 'لینک دکمه (اختیاری)' },
@@ -240,6 +240,33 @@ export const AboutIntroBlock: Block = {
   ],
 }
 
+export const BeforeAfterBlock: Block = {
+  slug: 'beforeAfter',
+  labels: { singular: 'قبل و بعد', plural: 'قبل و بعدها' },
+  fields: [
+    { name: 'heading', type: 'text', label: 'عنوان' },
+    { name: 'intro', type: 'textarea', label: 'توضیح کوتاه (اختیاری)' },
+    {
+      name: 'items',
+      type: 'array',
+      labels: { singular: 'نمونه', plural: 'نمونه‌ها' },
+      fields: [
+        { name: 'before', type: 'upload', relationTo: 'media', required: true, label: 'عکس قبل' },
+        { name: 'after', type: 'upload', relationTo: 'media', required: true, label: 'عکس بعد' },
+        { name: 'caption', type: 'text', label: 'توضیح (مثلاً «رفع لیفت و ترمیم فرم»)' },
+        { name: 'studentName', type: 'text', label: 'نام هنرجو (فقط با رضایت خودش)' },
+        {
+          name: 'consent',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'رضایت هنرجو/مشتری برای انتشار این عکس‌ها گرفته شده است',
+          validate: (value: unknown) => value === true || 'بدون رضایت صاحب عکس نمی‌توان آن را منتشر کرد',
+        },
+      ],
+    },
+  ],
+}
+
 const rawBlocks: Block[] = [
   HeroBlock,
   AboutIntroBlock,
@@ -247,6 +274,7 @@ const rawBlocks: Block[] = [
   TextBlock,
   ImageBlock,
   GalleryBlock,
+  BeforeAfterBlock,
   VideoBlock,
   PackageListBlock,
   WorkshopListBlock,

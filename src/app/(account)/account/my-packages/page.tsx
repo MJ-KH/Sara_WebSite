@@ -28,9 +28,9 @@ export default async function MyPackagesPage() {
       <h1 className="mb-6 text-xl font-bold">آموزش‌های من</h1>
       {active.length === 0 ? (
         <p className="text-[var(--color-text-muted)]">
-          هنوز پکیجی خریداری نکرده‌اید.{' '}
+          هنوز دوره‌ای خریداری نکرده‌اید.{' '}
           <Link href="/packages" className="text-[var(--color-primary)] underline">
-            مشاهده پکیج‌ها
+            مشاهده دوره‌ها
           </Link>
         </p>
       ) : (

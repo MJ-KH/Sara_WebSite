@@ -29,9 +29,25 @@ export const SiteSettings: GlobalConfig = {
       name: 'instagram',
       type: 'group',
       label: 'اینستاگرام',
+      admin: { description: 'فقط نام کاربری، بدون @ و بدون آدرس کامل.' },
       fields: [
-        { name: 'academyHandle', type: 'text', defaultValue: 'saranaghizadeh_nailacademy', label: 'پیج آموزش' },
-        { name: 'servicesHandle', type: 'text', defaultValue: 'sara_vip_nailfashion', label: 'پیج خدمات' },
+        {
+          name: 'academyHandle',
+          type: 'text',
+          defaultValue: 'saranaghizadeh_nailacademy',
+          label: 'پیج آکادمی (اصلی؛ همه‌جای سایت)',
+        },
+        { name: 'servicesHandle', type: 'text', defaultValue: 'sara_vip_nailfashion', label: 'پیج خدمات ناخن (فوتر و صفحه خدمات)' },
+        { name: 'salonHandle', type: 'text', label: 'پیج سالن زیبایی (فوتر و صفحه خدمات)' },
+      ],
+    },
+    {
+      name: 'socials',
+      type: 'group',
+      label: 'سایر شبکه‌ها',
+      fields: [
+        { name: 'youtubeUrl', type: 'text', label: 'آدرس کانال یوتیوب' },
+        { name: 'telegramHandle', type: 'text', label: 'نام کاربری تلگرام (بدون @)' },
       ],
     },
     {
@@ -39,10 +55,30 @@ export const SiteSettings: GlobalConfig = {
       type: 'group',
       label: 'اطلاعات تماس',
       fields: [
-        { name: 'phone', type: 'text', label: 'تلفن (نمونه — پیش از انتشار عمومی تکمیل شود)' },
+        { name: 'phone', type: 'text', label: 'موبایل' },
+        { name: 'landline', type: 'text', label: 'تلفن ثابت' },
+        {
+          name: 'whatsapp',
+          type: 'text',
+          label: 'شماره واتساپ',
+          admin: { description: 'دکمه «پیام در واتساپ» با این شماره ساخته می‌شود.' },
+        },
+        {
+          name: 'whatsappGreeting',
+          type: 'text',
+          label: 'پیام آماده واتساپ',
+          admin: { description: 'متنی که هنگام باز شدن واتساپ از قبل نوشته شده است (اختیاری).' },
+        },
         { name: 'email', type: 'email', label: 'ایمیل' },
-        { name: 'address', type: 'textarea', label: 'آدرس (نمونه — پیش از انتشار عمومی تکمیل شود)' },
-        { name: 'mapEmbedUrl', type: 'text', label: 'لینک نقشه (اختیاری)' },
+        { name: 'address', type: 'textarea', label: 'آدرس سالن' },
+        { name: 'neshanUrl', type: 'text', label: 'لینک مسیریابی نشان' },
+        { name: 'googleMapsUrl', type: 'text', label: 'لینک مسیریابی گوگل' },
+        {
+          name: 'visitNotes',
+          type: 'textarea',
+          label: 'نکات مراجعه حضوری',
+          admin: { description: 'مثلاً پارکینگ، نحوه پرداخت در سالن، قانون لغو وقت. هر مورد در یک خط.' },
+        },
       ],
     },
     {

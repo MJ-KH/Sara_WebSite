@@ -44,7 +44,7 @@ async function main() {
       data: {
         headerMenu: [
           { label: 'خانه', href: '/' },
-          { label: 'پکیج‌ها', href: '/packages' },
+          { label: 'دوره‌ها', href: '/packages' },
           { label: 'آموزش رایگان', href: '/free-lessons' },
           { label: 'دوره حضوری', href: '/workshops' },
           { label: 'درباره سارا', href: '/about' },
@@ -55,7 +55,7 @@ async function main() {
             {
               title: 'دسترسی سریع',
               links: [
-                { label: 'پکیج‌ها', href: '/packages' },
+                { label: 'دوره‌ها', href: '/packages' },
                 { label: 'آموزش رایگان', href: '/free-lessons' },
               ],
             },
@@ -82,7 +82,7 @@ async function main() {
     title: 'زیرسازی ناخن',
   })
 
-  console.log('\n۳) پکیج‌های نمونه...')
+  console.log('\n۳) دوره‌های نمونه...')
   const basicPackage = await upsertBySlug(payload, 'packages', 'paye-poodr-gel', {
     slug: 'paye-poodr-gel',
     title: '[نمونه] پایه پودر و ژل',
@@ -96,7 +96,7 @@ async function main() {
     status: 'published',
     targetAudience: '[نمونه] مناسب افرادی که می‌خواهند از پایه شروع کنند.',
     expectedOutcome: '[نمونه] آشنایی کامل با اصول پودر و ژل.',
-    faqs: [{ question: '[نمونه] آیا نیاز به تجربه قبلی است؟', answer: '[نمونه] خیر، این پکیج برای مبتدیان طراحی شده.' }],
+    faqs: [{ question: '[نمونه] آیا نیاز به تجربه قبلی است؟', answer: '[نمونه] خیر، این دوره برای مبتدیان طراحی شده.' }],
   })
 
   const extensionsPackage = await upsertBySlug(payload, 'packages', 'moadgozari-herfei', {
@@ -255,10 +255,10 @@ async function main() {
             blockType: 'hero',
             heading: '[نمونه] یادگیری تخصصی ناخن، قدم‌به‌قدم و کاربردی',
             subheading: '[نمونه] با سارا نقی‌زاده، از پایه تا رفع اشکال حرفه‌ای',
-            ctaLabel: 'مشاهده پکیج‌ها',
+            ctaLabel: 'مشاهده دوره‌ها',
             ctaHref: '/packages',
           },
-          { blockType: 'packageList', heading: 'پکیج‌های منتخب', mode: 'featured', limit: 6 },
+          { blockType: 'packageList', heading: 'دوره‌های شاخص', mode: 'featured', limit: 6 },
           homeStartGuideBlock({
             beginner: [basicPackage.id],
             experienced: [extensionsPackage.id, troubleshootingPackage.id],
@@ -270,9 +270,9 @@ async function main() {
           {
             blockType: 'faq',
             heading: 'پرسش‌های متداول',
-            items: [{ question: '[نمونه] چطور پکیج مناسب را انتخاب کنم؟', answer: '[نمونه] از فرم مشاوره رایگان استفاده کنید.' }],
+            items: [{ question: '[نمونه] چطور دوره مناسب را انتخاب کنم؟', answer: '[نمونه] از فرم مشاوره رایگان استفاده کنید.' }],
           },
-          { blockType: 'consultationForm', heading: 'مشاوره رایگان انتخاب پکیج' },
+          { blockType: 'consultationForm', heading: 'مشاوره رایگان انتخاب دوره' },
         ],
         seo: { metaTitle: 'سارا نقی‌زاده — آموزش تخصصی ناخن' },
       },
@@ -297,7 +297,7 @@ async function main() {
             heading: '[نمونه] درباره سارا نقی‌زاده',
             subheading: '[نمونه] این متن نمونه است و باید با داستان واقعی و تأییدشده جایگزین شود.',
           },
-          { blockType: 'cta', heading: 'آماده شروع یادگیری هستید؟', buttonLabel: 'مشاهده پکیج‌ها', buttonHref: '/packages' },
+          { blockType: 'cta', heading: 'آماده شروع یادگیری هستید؟', buttonLabel: 'مشاهده دوره‌ها', buttonHref: '/packages' },
         ],
       },
       overrideAccess: true,

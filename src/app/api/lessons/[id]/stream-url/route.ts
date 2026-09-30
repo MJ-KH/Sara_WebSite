@@ -15,7 +15,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
   const access = await checkLessonAccess(payload, id, studentId)
   if (!access.ok) {
     const status = access.error === 'not_found' ? 404 : 403
-    const message = access.error === 'not_found' ? 'درس یافت نشد' : 'برای تماشای این درس باید پکیج مربوطه را خریداری کنید'
+    const message = access.error === 'not_found' ? 'درس یافت نشد' : 'برای تماشای این درس باید دوره مربوطه را خریداری کنید'
     return NextResponse.json({ ok: false, message }, { status })
   }
 

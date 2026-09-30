@@ -8,14 +8,14 @@ import { isRateLimited } from '@/lib/rate-limit'
 const bodySchema = z.object({ packageSlug: z.string().min(1), discountCode: z.string().optional() })
 
 const ERROR_MESSAGES: Record<string, string> = {
-  package_not_found: 'پکیج یافت نشد',
-  package_not_purchasable: 'فروش این پکیج در حال حاضر متوقف است',
-  already_has_access: 'شما قبلاً به این پکیج دسترسی دارید',
+  package_not_found: 'دوره یافت نشد',
+  package_not_purchasable: 'فروش این دوره در حال حاضر متوقف است',
+  already_has_access: 'شما قبلاً به این دوره دسترسی دارید',
   discount_code_invalid: 'کد تخفیف نامعتبر است',
   discount_code_not_started: 'کد تخفیف هنوز فعال نشده است',
   discount_code_expired: 'کد تخفیف منقضی شده است',
   discount_code_exhausted: 'ظرفیت استفاده از این کد تخفیف تمام شده است',
-  discount_code_not_applicable: 'این کد تخفیف برای این پکیج معتبر نیست',
+  discount_code_not_applicable: 'این کد تخفیف برای این دوره معتبر نیست',
   discount_code_already_used: 'شما قبلاً از این کد تخفیف استفاده کرده‌اید',
 }
 

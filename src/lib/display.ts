@@ -1,11 +1,24 @@
 import { toPersianDigits } from './digits'
 import { formatIranMobileForDisplay, normalizeIranMobile } from './phone'
 
+/** لینک «پیام در واتساپ» با متن آماده اختیاری (شماره ایران به قالب بین‌المللی تبدیل می‌شود). */
+export function whatsappLink(number: string | null | undefined, greeting?: string | null): string | null {
+  if (!number) return null
+  const e164 = normalizeIranMobile(number)
+  const digits = (e164 ?? number).replace(/\D/g, '').replace(/^0/, '98')
+  return `https://wa.me/${digits}${greeting ? `?text=${encodeURIComponent(greeting)}` : ''}`
+}
+
 /** شماره تماس برای نمایش (ارقام فارسی، گروه‌بندی‌شده) و لینک tel: قابل لمس در موبایل. */
 export function phoneForDisplay(raw: string | null | undefined): { text: string; href: string } | null {
   if (!raw) return null
   const e164 = normalizeIranMobile(raw)
-  if (!e164) return { text: toPersianDigits(raw), href: `tel:${raw.replace(/\s/g, '')}` }
+  if (!e164) {
+    // تلفن ثابت (مثلاً ۰۲۱۸۸۶۸۳۵۰۲): کد شهر جدا نمایش داده می‌شود
+    const digits = raw.replace(/\D/g, '')
+    const text = /^0\d{10}$/.test(digits) ? `${digits.slice(0, 3)}-${digits.slice(3)}` : raw
+    return { text: toPersianDigits(text), href: `tel:${digits || raw}` }
+  }
   return { text: toPersianDigits(formatIranMobileForDisplay(e164)), href: `tel:${e164}` }
 }
 
