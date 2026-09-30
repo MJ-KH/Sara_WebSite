@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
-import { extractId } from '@/lib/relation'
+import { extractIdString } from '@/lib/relation'
 
 export default async function MyPackageEntryPage({ params }: { params: Promise<{ slug: string }> }) {
   const student = await requireStudent()
@@ -40,7 +40,7 @@ export default async function MyPackageEntryPage({ params }: { params: Promise<{
   })
 
   const incomplete = lessons.docs.find((lesson) => {
-    const p = progress.docs.find((pr) => extractId(pr.lesson) === String(lesson.id))
+    const p = progress.docs.find((pr) => extractIdString(pr.lesson) === String(lesson.id))
     return !p?.completed
   })
 

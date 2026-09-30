@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { LessonPlayer } from '@/components/lessons/LessonPlayer'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
-import { extractId } from '@/lib/relation'
+import { extractIdString } from '@/lib/relation'
 
 export default async function LessonPage({ params }: { params: Promise<{ slug: string; lessonId: string }> }) {
   const student = await requireStudent()
@@ -47,7 +47,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
     limit: 500,
     overrideAccess: true,
   })
-  const currentProgress = progress.docs.find((p) => extractId(p.lesson) === String(currentLesson.id))
+  const currentProgress = progress.docs.find((p) => extractIdString(p.lesson) === String(currentLesson.id))
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
@@ -60,13 +60,13 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         <h2 className="mb-2 font-bold">{pkg.title}</h2>
         <div className="flex flex-col gap-4">
           {chapters.docs.map((chapter) => {
-            const chapterLessons = lessons.docs.filter((l) => extractId(l.chapter) === String(chapter.id))
+            const chapterLessons = lessons.docs.filter((l) => extractIdString(l.chapter) === String(chapter.id))
             return (
               <div key={chapter.id}>
                 <h3 className="mb-1 text-sm font-bold text-[var(--color-text-muted)]">{chapter.title}</h3>
                 <ul className="flex flex-col gap-1">
                   {chapterLessons.map((lesson) => {
-                    const p = progress.docs.find((pr) => extractId(pr.lesson) === String(lesson.id))
+                    const p = progress.docs.find((pr) => extractIdString(pr.lesson) === String(lesson.id))
                     const isActive = String(lesson.id) === lessonId
                     return (
                       <li key={lesson.id}>
