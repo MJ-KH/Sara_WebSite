@@ -1,78 +1,918 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/vazirmatn';
 
+/* =============================================================================
+   سیستم طراحی «آتلیه» — سارا نقی‌زاده
+   جهت بصری: لوک‌بوک چاپی یک آتلیه زیبایی؛ کاغذ گرم، خطوط مویی، تیترهای بزرگ و آرام،
+   یک رنگ فلزی به‌عنوان تنها تأکید، و فضای سفید سخاوتمند. بدون سایه شناور، گرادیان
+   بنفش، شیشه‌ای‌سازی یا کارت گرد و تپل.
+   همه‌چیز با توکن ساخته می‌شود تا انتخاب‌های پنل (رنگ/گردی/اندازه فونت/سبک دکمه) کار کند.
+   ========================================================================== */
+
 @theme {
   --font-sans: 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
+  /* فقط برای لهجه‌های لاتین (شماره بخش‌ها، ایتالیک تزئینی). فونت لاتین نصب‌شده‌ای
+     در پروژه نداریم؛ این پشته روی سیستم‌های مختلف به یک سریف کلاسیک می‌رسد. */
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Didot, 'Bodoni MT', Georgia, serif;
 }
 
 :root {
-  --color-bg: #fbfaf8;
-  --color-surface: #ffffff;
-  --color-text: #1f1b16;
-  --color-text-muted: #6b625a;
-  --color-border: #e7e1d8;
+  /* ---------- پالت پایه: رنگ‌های لاک ژل ----------
+     زمینه «شیری» (بیس میلکی ژل)، سطح‌ها «نود»، و یک قرمز لاکی تیره فقط برای خرید و
+     تأکید اصلی. مرکب کمی بادمجانی است تا با نودها هم‌خانواده باشد، نه مشکی خنثی. */
+  --ink-900: #241b1f;
+  --ink-800: #2f2429;
+  --ink-700: #43363c;
+  --ink-500: #6b5d63;
+  --ink-400: #8a7c82;
+  --ink-300: #aa9da2;
 
-  /* پیش‌فرض: طلایی روی تیره — با data-theme-color از SiteSettings عوض می‌شود */
-  --color-primary: #b8894a;
+  --paper: #faf6f6;
+  --paper-2: #f4e9e6;
+  --paper-3: #ecdad4;
+  --porcelain: #ffffff;
+
+  --line: #ecdfdb;
+  --line-strong: #d8c3bd;
+
+  --accent-700: #5e1628;
+  --accent-600: #7a1f35;
+  --accent-500: #973049;
+  --accent-200: #ebc4ca;
+  --accent-100: #f7e7e9;
+
+  --nude-300: #e6c7bc;
+  --blush-100: #f6e8e6;
+  --blush-300: #e4b9b6;
+  --rose-700: #a8475b;
+
+  --state-danger: #9b3b2e;
+  --state-success: #4c6b52;
+
+  /* ---------- نقش‌های معنایی (سازگار با کد قبلی) ---------- */
+  --color-bg: var(--paper);
+  --color-bg-alt: var(--paper-2);
+  --color-surface: var(--porcelain);
+  --color-text: var(--ink-900);
+  --color-text-muted: var(--ink-500);
+  --color-border: var(--line);
+  --color-border-strong: var(--line-strong);
+  --color-primary: var(--accent-600);
+  --color-primary-strong: var(--accent-700);
   --color-primary-contrast: #ffffff;
-  --color-accent-soft: #f3e7d4;
+  --color-accent-soft: var(--accent-100);
 
-  --radius-base: 0.75rem;
+  /* دکمه خرید تنها جایی است که قرمز لاکی تمام‌رنگ دیده می‌شود. */
+  --cta-bg: var(--accent-600);
+  --cta-bg-hover: var(--accent-700);
+  --cta-fg: #ffffff;
+
+  /* ---------- فاصله‌گذاری (پایه ۴px) ---------- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+
+  --container: 76rem;
+  --container-wide: 88rem;
+  --container-narrow: 44rem;
+  --gutter: clamp(1.25rem, 5vw, 3rem);
+
+  --section-y: clamp(4rem, 8vw, 8rem);
+  --section-y-sm: clamp(2.75rem, 5vw, 4.5rem);
+
+  /* ---------- گردی ----------
+     دو سطح مجزا، نه یک عدد برای همه‌چیز: کنترل‌ها (دکمه/فیلد) و سطوح بزرگ (کارت/رسانه). */
+  --radius-base: 0.625rem;
+  --radius-media: 1.125rem;
+
+  /* ---------- حرکت ---------- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 180ms;
+  --dur-2: 320ms;
+  --dur-3: 620ms;
+  --dur-4: 900ms;
+
   --font-scale: 1;
 }
 
+/* ---------- گزینه «رنگ اصلی تأکید» از پنل ---------- */
+/* پیش‌فرض (lacquer / مقدار قدیمی gold-dark) همان پالت :root است. دو گزینه دیگر فقط
+   رنگ تأکید را عوض می‌کنند و همه با متن سفید روی دکمه کنتراست AA دارند. */
 html[data-theme-color='gold-rose'] {
-  --color-primary: #c08a6b;
-  --color-accent-soft: #f7e9e2;
+  --accent-700: #7d3d4c;
+  --accent-600: #9a4d5f;
+  --accent-500: #b26374;
+  --accent-200: #eccad0;
+  --accent-100: #f8eaed;
 }
 
 html[data-theme-color='copper'] {
-  --color-primary: #a35d3a;
-  --color-accent-soft: #f2e0d3;
+  --accent-700: #6f3a22;
+  --accent-600: #8c4a2c;
+  --accent-500: #a65d3b;
+  --accent-200: #ebcdb9;
+  --accent-100: #f6e8de;
 }
 
+/* ---------- گزینه «گردی اجزا» ---------- */
 html[data-radius='sm'] {
-  --radius-base: 0.375rem;
+  --radius-base: 0.25rem;
+  --radius-media: 0.5rem;
 }
 html[data-radius='lg'] {
-  --radius-base: 1.25rem;
+  --radius-base: 1rem;
+  --radius-media: 1.75rem;
 }
 
+/* ---------- گزینه «اندازه پایه متن» ---------- */
 html[data-font-scale='sm'] {
-  --font-scale: 0.9;
+  --font-scale: 0.94;
 }
 html[data-font-scale='lg'] {
-  --font-scale: 1.1;
+  --font-scale: 1.08;
 }
 
-html,
-body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: calc(1rem * var(--font-scale));
+@layer base {
+  html {
+    /* فقط روی html ست می‌شود؛ ست‌کردن هم‌زمان روی body مقیاس را دوبار اعمال می‌کرد. */
+    font-size: calc(1rem * var(--font-scale));
+    scroll-behavior: smooth;
+    /* سربرگ چسبان است؛ پرش به لنگر نباید تیتر را زیر آن پنهان کند */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.9;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* یوتیلیتی‌های border تیلویند بدون رنگ صریح، رنگ مویی سیستم را می‌گیرند. */
+  * {
+    border-color: var(--color-border);
+  }
+
+  /* فاصله حروف منفی در خط پیوسته فارسی اتصال حروف را خراب می‌کند؛ همیشه صفر. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--accent-200);
+    color: var(--ink-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+  }
+
+  /* اعداد قیمت و شمارنده‌ها هم‌عرض بمانند تا در کارت‌ها نپرند. */
+  time,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-* {
-  border-color: var(--color-border);
+@layer components {
+  /* =========================================================================
+     چیدمان
+     ====================================================================== */
+  .container-x {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .container-narrow {
+    width: 100%;
+    max-width: var(--container-narrow);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .section {
+    padding-block: var(--section-y);
+  }
+
+  .section-sm {
+    padding-block: var(--section-y-sm);
+  }
+
+  /* نوار تمام‌عرض کاغذی یا تیره — برای شکستن ریتم صفحه */
+  .band-alt {
+    background: var(--color-bg-alt);
+  }
+
+  .band-ink {
+    background: var(--ink-900);
+    color: #f3ece3;
+  }
+
+  .band-ink .muted {
+    color: var(--ink-300);
+  }
+
+  .hairline {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 0;
+  }
+
+  /* =========================================================================
+     تایپوگرافی
+     ====================================================================== */
+  /* شخصیت تایپوگرافی از تضاد وزن می‌آید: تیتر خیلی سنگین، متن آرام.
+     balance جلوی تنها ماندن حرف ربط («و») در انتهای سطر را می‌گیرد. */
+  .display-1,
+  .display-2,
+  .title-1,
+  .title-2 {
+    text-wrap: balance;
+  }
+
+  .display-1 {
+    font-size: clamp(2.2rem, 7vw, 4.25rem);
+    font-weight: 850;
+    line-height: 1.3;
+  }
+
+  .display-2 {
+    font-size: clamp(1.75rem, 4.4vw, 2.85rem);
+    font-weight: 800;
+    line-height: 1.38;
+  }
+
+  .title-1 {
+    font-size: clamp(1.4rem, 2.8vw, 2rem);
+    font-weight: 750;
+    line-height: 1.5;
+  }
+
+  .title-2 {
+    font-size: clamp(1.08rem, 1.5vw, 1.25rem);
+    font-weight: 700;
+    line-height: 1.65;
+  }
+
+  .lead {
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 400;
+    line-height: 2.05;
+    color: var(--color-text-muted);
+  }
+
+  .body-sm {
+    font-size: 0.875rem;
+    line-height: 1.95;
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+  }
+
+  .measure {
+    max-width: 38rem;
+  }
+
+  .measure-wide {
+    max-width: 46rem;
+  }
+
+  /* برچسب ریز بالای تیترها: یک خط مویی طلایی + متن با فاصله حروف زیاد */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .eyebrow::before {
+    content: '';
+    inline-size: 1.75rem;
+    block-size: 1px;
+    background: currentColor;
+    opacity: 0.55;
+    flex: none;
+  }
+
+  .eyebrow-plain {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  /* شماره بخش به‌صورت ایتالیک سریف — لهجه مجله‌ای */
+  .section-index {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+
+  /* =========================================================================
+     دکمه‌ها
+     ====================================================================== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding-inline: 1.75rem;
+    padding-block: 0.75rem;
+    border-radius: var(--radius-base);
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    letter-spacing: 0.005em;
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-2) var(--ease),
+      border-color var(--dur-2) var(--ease),
+      color var(--dur-2) var(--ease),
+      transform var(--dur-1) var(--ease);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn[disabled],
+  .btn[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .btn-lg {
+    min-height: 3.5rem;
+    padding-inline: 2.25rem;
+    font-size: 1rem;
+  }
+
+  .btn-sm {
+    min-height: 2.5rem;
+    padding-inline: 1.125rem;
+    font-size: 0.8125rem;
+  }
+
+  .btn-block {
+    display: flex;
+    width: 100%;
+  }
+
+  html[data-button-style='solid'] .btn-primary,
+  :root .btn-primary {
+    background: var(--cta-bg);
+    color: var(--cta-fg);
+    border-color: var(--cta-bg);
+  }
+
+  html[data-button-style='solid'] .btn-primary:hover,
+  :root .btn-primary:hover {
+    background: var(--cta-bg-hover);
+    border-color: var(--cta-bg-hover);
+  }
+
+  html[data-button-style='outline'] .btn-primary {
+    background: transparent;
+    color: var(--color-primary-strong);
+    border-color: var(--color-primary);
+  }
+
+  html[data-button-style='outline'] .btn-primary:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--cta-fg);
+  }
+
+  /* روی نوار تیره، دکمه اصلی کاغذی می‌شود */
+  .band-ink .btn-primary {
+    background: var(--paper);
+    color: var(--ink-900);
+    border-color: var(--paper);
+  }
+
+  .band-ink .btn-primary:hover {
+    background: var(--accent-200);
+    border-color: var(--accent-200);
+  }
+
+  .band-ink .btn-ghost {
+    color: #f3ece3;
+    border-color: rgba(243, 236, 227, 0.35);
+  }
+
+  .band-ink .btn-ghost:hover {
+    background: rgba(243, 236, 227, 0.1);
+    border-color: rgba(243, 236, 227, 0.6);
+    color: #ffffff;
+  }
+
+  /* لینک متنی با زیرخط کشویی + پیکان (در RTL به سمت چپ) */
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-primary-strong);
+    padding-block-end: 0.25rem;
+    position: relative;
+  }
+
+  .link-arrow::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur-2) var(--ease);
+  }
+
+  .link-arrow:hover::after,
+  .link-arrow:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .link-arrow .arrow {
+    transition: transform var(--dur-2) var(--ease);
+  }
+
+  .link-arrow:hover .arrow {
+    transform: translateX(-0.25rem);
+  }
+
+  /* لینک ناوبری با زیرخط مویی */
+  .nav-link {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.375rem;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    transition: color var(--dur-2) var(--ease);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 1px;
+    background: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur-2) var(--ease);
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current='page'] {
+    color: var(--color-primary-strong);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after,
+  .nav-link[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  /* =========================================================================
+     سطح‌ها و کارت‌ها — بدون سایه، فقط خط مویی
+     ====================================================================== */
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    transition:
+      border-color var(--dur-2) var(--ease),
+      background-color var(--dur-2) var(--ease);
+  }
+
+  .card:hover {
+    border-color: var(--color-border-strong);
+  }
+
+  .card-flat {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+
+  /* قاب تصویر: برش ثابت + زوم بسیار آرام هنگام هاور */
+  .media {
+    position: relative;
+    overflow: hidden;
+    background: var(--paper-3);
+    border-radius: var(--radius-media);
+  }
+
+  .media img {
+    object-fit: cover;
+    transition: transform var(--dur-4) var(--ease);
+  }
+
+  .group:hover .media img,
+  .media:hover img {
+    transform: scale(1.045);
+  }
+
+  .media-4x5 {
+    aspect-ratio: 4 / 5;
+  }
+  .media-3x2 {
+    aspect-ratio: 3 / 2;
+  }
+  .media-1x1 {
+    aspect-ratio: 1 / 1;
+  }
+  .media-16x9 {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* لایه تیره روی تصویر برای خوانایی متن روی عکس */
+  .media-scrim::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(23, 18, 15, 0.62), rgba(23, 18, 15, 0.12) 45%, rgba(23, 18, 15, 0));
+    pointer-events: none;
+  }
+
+  /* برچسب ریز با قاب مویی — جای «pill» رنگی */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-base);
+    padding-inline: 0.625rem;
+    padding-block: 0.1875rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .tag-accent {
+    border-color: var(--accent-200);
+    background: var(--accent-100);
+    color: var(--color-primary-strong);
+  }
+
+  .tag-alert {
+    border-color: #e6cdc6;
+    background: var(--blush-100);
+    color: var(--rose-700);
+  }
+
+  /* قیمت */
+  .price {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-lg {
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-was {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* =========================================================================
+     فرم‌ها
+     ====================================================================== */
+  .field {
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding-inline: 0.875rem;
+    padding-block: 0.75rem;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    color: var(--color-text);
+    transition: border-color var(--dur-2) var(--ease);
+  }
+
+  .field::placeholder {
+    color: var(--ink-300);
+  }
+
+  .field:hover {
+    border-color: var(--color-border-strong);
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+  }
+
+  .field-label {
+    display: block;
+    margin-block-end: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  select.field {
+    appearance: none;
+    padding-inline-end: 2rem;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-400) 50%),
+      linear-gradient(135deg, var(--ink-400) 50%, transparent 50%);
+    background-position:
+      calc(0.85rem - 1px) calc(50% + 1px),
+      calc(0.85rem + 4px) calc(50% + 1px);
+    background-size:
+      5px 5px,
+      5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  /* =========================================================================
+     نقل‌قول و آکاردئون
+     ====================================================================== */
+  .quote-mark {
+    font-family: var(--font-serif);
+    font-size: 3.5rem;
+    line-height: 0.8;
+    color: var(--accent-200);
+    display: block;
+  }
+
+  .accordion-item {
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .accordion-trigger {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.375rem;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    text-align: start;
+    transition: color var(--dur-2) var(--ease);
+  }
+
+  .accordion-trigger::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion-trigger:hover {
+    color: var(--color-primary-strong);
+  }
+
+  .accordion-icon {
+    position: relative;
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-block-start: 0.45rem;
+  }
+
+  .accordion-icon::before,
+  .accordion-icon::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: 1px;
+    background: var(--color-primary);
+  }
+
+  .accordion-icon::after {
+    transform: rotate(90deg);
+    transition: opacity var(--dur-2) var(--ease);
+  }
+
+  details[open] > .accordion-trigger .accordion-icon::after {
+    opacity: 0;
+  }
+
+  .accordion-panel {
+    padding-block-end: 1.5rem;
+    color: var(--color-text-muted);
+    animation: panel-in var(--dur-2) var(--ease) both;
+  }
+
+  /* =========================================================================
+     کمکی‌ها
+     ====================================================================== */
+  .skip-link {
+    position: absolute;
+    inset-block-start: -100%;
+    inset-inline-start: 1rem;
+    z-index: 100;
+    background: var(--ink-900);
+    color: var(--paper);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-base);
+  }
+
+  .skip-link:focus {
+    inset-block-start: 1rem;
+  }
+
+  /* متن غنی (RichText پنل) */
+  .rich-text {
+    line-height: 2.05;
+    color: var(--ink-700);
+  }
+
+  .rich-text > * + * {
+    margin-block-start: 1.25rem;
+  }
+
+  .rich-text h2 {
+    font-size: clamp(1.35rem, 2vw, 1.7rem);
+    font-weight: 500;
+    color: var(--color-text);
+    margin-block-start: 2.5rem;
+  }
+
+  .rich-text h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-block-start: 2rem;
+  }
+
+  .rich-text a {
+    color: var(--color-primary-strong);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1px;
+  }
+
+  .rich-text ul,
+  .rich-text ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .rich-text ul {
+    list-style: none;
+  }
+
+  .rich-text ul > li {
+    position: relative;
+    padding-inline-start: 1rem;
+  }
+
+  .rich-text ul > li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.95em;
+    inline-size: 0.375rem;
+    block-size: 1px;
+    background: var(--color-primary);
+  }
+
+  .rich-text ol {
+    list-style: decimal;
+    padding-inline-start: 1.25rem;
+  }
+
+  .rich-text blockquote {
+    border-inline-start: 2px solid var(--color-primary);
+    padding-inline-start: 1.25rem;
+    color: var(--color-text);
+  }
 }
 
-.btn {
-  border-radius: var(--radius-base);
+/* =============================================================================
+   زبان حرکتی
+   ========================================================================== */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-html[data-button-style='outline'] .btn-primary {
-  background: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+@keyframes drawer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-html[data-button-style='solid'] .btn-primary,
-:root .btn-primary {
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+/* ظاهرشدن هنگام اسکرول — کلاس is-visible را IntersectionObserver اضافه می‌کند */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-3) var(--ease),
+    transform var(--dur-3) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.drawer-in {
+  animation: drawer-in var(--dur-2) var(--ease) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   *,
   *::before,
   *::after {
@@ -80,4 +920,52 @@ html[data-button-style='solid'] .btn-primary,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* =============================================================================
+   بادبزن تیپ رنگ (عنصر امضا)
+   محور چرخش هر تیپ نقطه (0,0) مختصات SVG است — همان «پیچ» پایین بادبزن.
+   ========================================================================== */
+.swatch-fan {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.swatch-tip {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  transform: rotate(var(--a));
+}
+
+/* تنها حرکت خودکار سایت: یک بار باز شدن بادبزن هنگام بارگذاری. */
+.swatch-fan--animate .swatch-tip {
+  animation: swatch-open 1100ms var(--ease) both;
+  animation-delay: calc(var(--i) * 45ms + 150ms);
+}
+
+@keyframes swatch-open {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(var(--a));
+  }
+}
+
+/* جلد پکیج وقتی عکس واقعی نداریم: بادبزن از لبه پایین جلد بیرون می‌آید. */
+.pkg-cover {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--paper-2);
+}
+
+.pkg-cover .swatch-fan {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -20%;
+  margin-inline: auto;
+  width: 84%;
 }

@@ -171,8 +171,69 @@ export const CtaBlock: Block = {
   ],
 }
 
+export const StartGuideBlock: Block = {
+  slug: 'startGuide',
+  labels: { singular: 'راهنمای شروع', plural: 'راهنماهای شروع' },
+  fields: [
+    { name: 'heading', type: 'text', defaultValue: 'از کجا شروع کنم؟', label: 'عنوان' },
+    { name: 'intro', type: 'textarea', label: 'توضیح کوتاه (اختیاری)' },
+    {
+      name: 'paths',
+      type: 'array',
+      minRows: 1,
+      maxRows: 3,
+      labels: { singular: 'مسیر', plural: 'مسیرها' },
+      admin: { description: 'مثلاً یک مسیر برای مبتدی و یک مسیر برای ناخن‌کار باتجربه. به ترتیب از ساده به پیشرفته بچینید.' },
+      fields: [
+        { name: 'audience', type: 'text', required: true, label: 'برای چه کسی (مثلاً «تازه شروع می‌کنم»)' },
+        { name: 'description', type: 'textarea', required: true, label: 'توضیح کوتاه' },
+        {
+          name: 'recommendedPackages',
+          type: 'relationship',
+          relationTo: 'packages',
+          hasMany: true,
+          maxRows: 3,
+          label: 'پکیج‌های پیشنهادی',
+        },
+        { name: 'linkLabel', type: 'text', label: 'متن دکمه (اختیاری)' },
+        { name: 'linkHref', type: 'text', label: 'لینک دکمه (اختیاری)' },
+      ],
+    },
+  ],
+}
+
+export const AboutIntroBlock: Block = {
+  slug: 'aboutIntro',
+  labels: { singular: 'معرفی و روش آموزش', plural: 'معرفی‌ها' },
+  fields: [
+    { name: 'heading', type: 'text', required: true, label: 'عنوان' },
+    { name: 'body', type: 'textarea', required: true, label: 'متن معرفی' },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'عکس سارا (اختیاری)',
+      admin: { description: 'فقط عکس واقعی خود سارا. تا بارگذاری نشده، این بخش بدون عکس نمایش داده می‌شود.' },
+    },
+    {
+      name: 'points',
+      type: 'array',
+      maxRows: 4,
+      labels: { singular: 'مورد', plural: 'روش آموزش و پشتیبانی' },
+      fields: [
+        { name: 'title', type: 'text', required: true, label: 'عنوان کوتاه' },
+        { name: 'text', type: 'textarea', required: true, label: 'توضیح' },
+      ],
+    },
+    { name: 'linkLabel', type: 'text', label: 'متن لینک (اختیاری)' },
+    { name: 'linkHref', type: 'text', label: 'آدرس لینک (اختیاری)' },
+  ],
+}
+
 const rawBlocks: Block[] = [
   HeroBlock,
+  AboutIntroBlock,
+  StartGuideBlock,
   TextBlock,
   ImageBlock,
   GalleryBlock,

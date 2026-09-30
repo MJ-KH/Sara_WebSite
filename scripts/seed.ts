@@ -8,6 +8,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import type { CollectionSlug } from 'payload'
+import { HOME_ABOUT_INTRO_BLOCK, homeStartGuideBlock } from './seed-content/home-blocks'
 
 /**
  * این تابع عمداً با نوع بازگشتی گسترده (any) کار می‌کند: هدف اسکریپت seed سادگی و
@@ -98,7 +99,7 @@ async function main() {
     faqs: [{ question: '[نمونه] آیا نیاز به تجربه قبلی است؟', answer: '[نمونه] خیر، این پکیج برای مبتدیان طراحی شده.' }],
   })
 
-  await upsertBySlug(payload, 'packages', 'moadgozari-herfei', {
+  const extensionsPackage = await upsertBySlug(payload, 'packages', 'moadgozari-herfei', {
     slug: 'moadgozari-herfei',
     title: '[نمونه] موادگذاری حرفه‌ای',
     level: 'advanced',
@@ -108,7 +109,7 @@ async function main() {
     status: 'published',
   })
 
-  await upsertBySlug(payload, 'packages', 'raf-eshkal', {
+  const troubleshootingPackage = await upsertBySlug(payload, 'packages', 'raf-eshkal', {
     slug: 'raf-eshkal',
     title: '[نمونه] رفع اشکال ناخن',
     level: 'intermediate',
@@ -258,7 +259,12 @@ async function main() {
             ctaHref: '/packages',
           },
           { blockType: 'packageList', heading: 'پکیج‌های منتخب', mode: 'featured', limit: 6 },
+          homeStartGuideBlock({
+            beginner: [basicPackage.id],
+            experienced: [extensionsPackage.id, troubleshootingPackage.id],
+          }),
           { blockType: 'freeLessonList', heading: 'آموزش رایگان', mode: 'latest', limit: 4 },
+          HOME_ABOUT_INTRO_BLOCK,
           { blockType: 'testimonials', heading: 'نظر هنرجوها', mode: 'all', limit: 6 },
           { blockType: 'workshopList', heading: 'دوره حضوری پیش رو', mode: 'upcoming', limit: 3 },
           {

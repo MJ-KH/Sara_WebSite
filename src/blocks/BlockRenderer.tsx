@@ -2,16 +2,57 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import { SwatchFan } from '@/components/brand/SwatchFan'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
 import { FreeLessonCard } from '@/components/free-lessons/FreeLessonCard'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { FaqAccordion } from '@/components/ui/FaqAccordion'
+import { Money } from '@/components/ui/Money'
+import { SampleBadge } from '@/components/ui/SampleBadge'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
+import { HERO_PALETTE, SHADES } from '@/lib/brand/swatches'
+import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
+import { getPackageStats } from '@/lib/packages/stats'
 
 /** ساختار بلوک از Payload می‌آید و شکل آن به نوع بلوک بستگی دارد؛ نوع دقیق در payload-types.ts تولید‌شده موجود است. */
 type AnyBlock = Record<string, any>
+
+/** اطلاعاتی از کل صفحه که یک بلوک ممکن است لازم داشته باشد (مثلاً لینک به فرم مشاوره همان صفحه). */
+type PageContext = { hasConsultationForm: boolean }
+
+const CONSULTATION_ANCHOR = 'consultation'
+
+/** قاب یکسان همه بخش‌ها: فاصله عمودی و عرض از توکن‌های سیستم طراحی، نه عدد دلخواه. */
+function Section({
+  heading,
+  children,
+  tone = 'plain',
+  width = 'default',
+  id,
+}: {
+  heading?: string | null
+  children: ReactNode
+  tone?: 'plain' | 'alt'
+  width?: 'default' | 'narrow'
+  id?: string
+}) {
+  const title = splitSampleMarker(heading)
+  return (
+    <section id={id} className={`section${tone === 'alt' ? ' band-alt' : ''}`}>
+      <div className={width === 'narrow' ? 'container-narrow' : 'container-x'}>
+        {title.text ? (
+          <h2 className="display-2 mb-8 flex flex-wrap items-center gap-3 md:mb-12">
+            {title.text}
+            {title.isSample ? <SampleBadge /> : null}
+          </h2>
+        ) : null}
+        {children}
+      </div>
+    </section>
+  )
+}
 
 async function PackageListBlockView({ block }: { block: AnyBlock }) {
   const payload = await getPayloadClient()
@@ -31,15 +72,18 @@ async function PackageListBlockView({ block }: { block: AnyBlock }) {
     docs = result.docs
   }
   if (docs.length === 0) return null
+  const stats = await getPackageStats(
+    payload,
+    docs.map((d) => d.id),
+  )
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      {block.heading ? <h2 className="mb-6 text-2xl font-bold">{block.heading}</h2> : null}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <Section heading={block.heading}>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
         {docs.map((pkg) => (
-          <PackageCard key={pkg.id} pkg={pkg as never} />
+          <PackageCard key={pkg.id} pkg={pkg as never} stats={stats.get(String(pkg.id))} />
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
@@ -62,14 +106,13 @@ async function WorkshopListBlockView({ block }: { block: AnyBlock }) {
   }
   if (docs.length === 0) return null
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      {block.heading ? <h2 className="mb-6 text-2xl font-bold">{block.heading}</h2> : null}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <Section heading={block.heading} tone="alt">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {docs.map((session) => (
           <WorkshopSessionCard key={session.id} session={session as never} />
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
@@ -96,14 +139,13 @@ async function FreeLessonListBlockView({ block }: { block: AnyBlock }) {
   }
   if (docs.length === 0) return null
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      {block.heading ? <h2 className="mb-6 text-2xl font-bold">{block.heading}</h2> : null}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <Section heading={block.heading}>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {docs.map((item) => (
           <FreeLessonCard key={item.id} item={item as never} />
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
@@ -125,33 +167,162 @@ async function TestimonialsBlockView({ block }: { block: AnyBlock }) {
   }
   if (docs.length === 0) return null
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      {block.heading ? <h2 className="mb-6 text-2xl font-bold">{block.heading}</h2> : null}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <Section heading={block.heading} tone="alt">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {docs.map((item) => (
           <TestimonialCard key={item.id} item={item as never} />
         ))}
+      </div>
+    </Section>
+  )
+}
+
+function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
+  const heading = splitSampleMarker(block.heading)
+  const subheading = splitSampleMarker(block.subheading)
+  // در RTL اولین ستون گرید سمت راست است؛ اگر تصویر باید راست باشد، ترتیب را در دسکتاپ برمی‌گردانیم.
+  // روی موبایل همیشه اول متن می‌آید.
+  const imageOnRight = block.imagePosition === 'right'
+  return (
+    <section className="overflow-hidden border-b border-[var(--color-border)]">
+      <div className="container-x grid items-center gap-8 pb-4 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-12 md:py-20">
+        <div className={imageOnRight ? 'md:order-2' : ''}>
+          {heading.isSample ? (
+            <div className="mb-4">
+              <SampleBadge />
+            </div>
+          ) : null}
+          <h1 className="display-1 max-w-[15ch]">{heading.text}</h1>
+          {subheading.text ? <p className="lead mt-5 max-w-[32rem]">{subheading.text}</p> : null}
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {block.ctaLabel && block.ctaHref ? (
+              <Link href={block.ctaHref} className="btn btn-primary btn-lg">
+                {block.ctaLabel}
+              </Link>
+            ) : null}
+            {ctx.hasConsultationForm ? (
+              <Link href={`#${CONSULTATION_ANCHOR}`} className="btn btn-ghost btn-lg">
+                مشاوره انتخاب پکیج
+              </Link>
+            ) : null}
+          </div>
+        </div>
+        <div className={imageOnRight ? 'md:order-1' : ''}>
+          {block.image?.url ? (
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-t-full bg-[var(--color-bg-alt)]">
+              <Image src={block.image.url} alt={block.image.alt || ''} fill priority sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
+            </div>
+          ) : (
+            <div className="mx-auto w-full max-w-[34rem] translate-y-[8%] md:translate-y-[12%]">
+              <SwatchFan id="hero" colors={HERO_PALETTE} spread={84} animate />
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )
 }
 
-function HeroBlockView({ block }: { block: AnyBlock }) {
-  const imgFirst = block.imagePosition === 'left'
+/** رنگ تیپ‌های هر مسیر از روشن به عمیق می‌رود: همان ترتیب مبتدی ← باتجربه که مدیر چیده است. */
+const PATH_SWATCHES = [
+  [SHADES.milk, SHADES.nude, SHADES.dustyPink],
+  [SHADES.dustyPink, SHADES.rose, SHADES.oxblood],
+  [SHADES.rose, SHADES.oxblood, SHADES.aubergine],
+]
+
+function StartGuideBlockView({ block }: { block: AnyBlock }) {
+  const paths: AnyBlock[] = block.paths || []
+  if (paths.length === 0) return null
+  const intro = splitSampleMarker(block.intro)
   return (
-    <section className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-4 py-12 md:grid-cols-2">
-      <div className={imgFirst ? 'md:order-2' : ''}>
-        <h1 className="text-3xl font-bold leading-relaxed">{block.heading}</h1>
-        {block.subheading ? <p className="mt-4 text-[var(--color-text-muted)]">{block.subheading}</p> : null}
-        {block.ctaLabel && block.ctaHref ? (
-          <Link href={block.ctaHref} className="btn btn-primary mt-6 inline-block px-6 py-3 font-bold">
-            {block.ctaLabel}
-          </Link>
+    <Section heading={block.heading || 'از کجا شروع کنم؟'} tone="alt">
+      {intro.text ? <p className="lead -mt-4 mb-10 max-w-[36rem]">{intro.text}</p> : null}
+      <div className={`grid grid-cols-1 gap-5 ${paths.length > 1 ? 'md:grid-cols-2' : ''} ${paths.length > 2 ? 'lg:grid-cols-3' : ''}`}>
+        {paths.map((path, index) => {
+          const audience = splitSampleMarker(path.audience)
+          const description = splitSampleMarker(path.description)
+          const packages: AnyBlock[] = (path.recommendedPackages || []).filter((p: AnyBlock) => typeof p === 'object' && p?.status !== 'draft')
+          return (
+            <div key={path.id || index} className="flex flex-col rounded-[var(--radius-media)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 md:p-8">
+              {audience.isSample || description.isSample ? (
+                <div className="mb-3">
+                  <SampleBadge />
+                </div>
+              ) : null}
+              <div className="mb-5 flex items-start gap-3">
+                <span className="mt-1 block w-10 shrink-0">
+                  <SwatchFan id={`path-${index}`} colors={PATH_SWATCHES[index % PATH_SWATCHES.length] as string[]} spread={50} />
+                </span>
+                <h3 className="title-1 min-w-0 flex-1">{audience.text}</h3>
+              </div>
+              <p className="text-[var(--color-text-muted)]">{description.text}</p>
+
+              {packages.length > 0 ? (
+                <ul className="mt-6 border-t border-[var(--color-border)]">
+                  {packages.map((pkg) => (
+                    <li key={pkg.id} className="border-b border-[var(--color-border)]">
+                      <Link href={`/packages/${pkg.slug}`} className="flex min-h-14 items-center justify-between gap-4 py-3 hover:text-[var(--color-primary)]">
+                        <span className="font-bold">{splitSampleMarker(pkg.title).text}</span>
+                        <Money rial={pkg.priceRial} className="shrink-0 text-[0.9375rem] text-[var(--color-text-muted)]" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {path.linkLabel && path.linkHref ? (
+                <Link href={path.linkHref} className="btn btn-ghost mt-6 self-start">
+                  {path.linkLabel}
+                </Link>
+              ) : null}
+            </div>
+          )
+        })}
+      </div>
+    </Section>
+  )
+}
+
+function AboutIntroBlockView({ block }: { block: AnyBlock }) {
+  const heading = splitSampleMarker(block.heading)
+  const body = splitSampleMarker(block.body)
+  const points: AnyBlock[] = block.points || []
+  const photo = block.photo && typeof block.photo === 'object' && block.photo.url ? block.photo : null
+  const isSample = heading.isSample || body.isSample || points.some((p) => splitSampleMarker(p.title).isSample)
+  return (
+    <section className="section">
+      <div className={`container-x grid gap-10 ${photo ? 'md:grid-cols-[1fr_0.8fr] md:items-center md:gap-16' : ''}`}>
+        <div className={photo ? '' : 'max-w-[44rem]'}>
+          {isSample ? (
+            <div className="mb-4">
+              <SampleBadge />
+            </div>
+          ) : null}
+          <h2 className="display-2">{heading.text}</h2>
+          <p className="lead mt-5 whitespace-pre-line">{body.text}</p>
+          {block.linkLabel && block.linkHref ? (
+            <Link href={block.linkHref} className="btn btn-ghost mt-8">
+              {block.linkLabel}
+            </Link>
+          ) : null}
+        </div>
+        {photo ? (
+          <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-t-full bg-[var(--color-bg-alt)]">
+            <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="(max-width: 768px) 90vw, 30vw" className="object-cover" />
+          </div>
         ) : null}
       </div>
-      {block.image?.url ? (
-        <div className={`relative aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-base)] ${imgFirst ? 'md:order-1' : ''}`}>
-          <Image src={block.image.url} alt={block.image.alt || ''} fill className="object-cover" />
+
+      {points.length > 0 ? (
+        <div className="container-x mt-12 md:mt-16">
+          <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+            {points.map((point, index) => (
+              <div key={point.id || index} className="border-t-2 border-[var(--color-text)] pt-5">
+                <dt className="title-2">{splitSampleMarker(point.title).text}</dt>
+                <dd className="mt-2 text-[0.9375rem] text-[var(--color-text-muted)]">{splitSampleMarker(point.text).text}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       ) : null}
     </section>
@@ -161,23 +332,22 @@ function HeroBlockView({ block }: { block: AnyBlock }) {
 function TextBlockView({ block }: { block: AnyBlock }) {
   if (!block.content) return null
   return (
-    <section className="mx-auto max-w-3xl px-4 py-8">
-      {block.heading ? <h2 className="mb-4 text-2xl font-bold">{block.heading}</h2> : null}
-      <div className="prose prose-neutral max-w-none leading-loose">
+    <Section heading={block.heading} width="narrow">
+      <div className="rich-text">
         <RichText data={block.content} />
       </div>
-    </section>
+    </Section>
   )
 }
 
 function ImageBlockView({ block }: { block: AnyBlock }) {
   if (!block.image?.url) return null
   return (
-    <figure className="mx-auto max-w-4xl px-4 py-8">
-      <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-base)]">
-        <Image src={block.image.url} alt={block.image.alt || block.caption || ''} fill className="object-cover" />
+    <figure className="container-x section-sm">
+      <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-media)]">
+        <Image src={block.image.url} alt={block.image.alt || block.caption || ''} fill sizes="100vw" className="object-cover" />
       </div>
-      {block.caption ? <figcaption className="mt-2 text-center text-sm text-[var(--color-text-muted)]">{block.caption}</figcaption> : null}
+      {block.caption ? <figcaption className="mt-3 text-center text-sm text-[var(--color-text-muted)]">{block.caption}</figcaption> : null}
     </figure>
   )
 }
@@ -186,18 +356,17 @@ function GalleryBlockView({ block }: { block: AnyBlock }) {
   const items: AnyBlock[] = block.items || []
   if (items.length === 0) return null
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8">
-      {block.heading ? <h2 className="mb-6 text-2xl font-bold">{block.heading}</h2> : null}
+    <Section heading={block.heading}>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         {items.map((item, index) => (
-          <div key={index} className="relative aspect-square overflow-hidden rounded-[var(--radius-base)]">
+          <div key={index} className="relative aspect-square overflow-hidden rounded-[var(--radius-media)]">
             {item.image?.url ? (
-              <Image src={item.image.url} alt={item.image.alt || item.caption || ''} fill className="object-cover" />
+              <Image src={item.image.url} alt={item.image.alt || item.caption || ''} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover" />
             ) : null}
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
@@ -205,24 +374,17 @@ function VideoBlockView({ block }: { block: AnyBlock }) {
   const src = block.sourceType === 'external' ? block.externalUrl : block.mediaFile?.url
   if (!src) return null
   return (
-    <section className="mx-auto max-w-4xl px-4 py-8">
-      {block.heading ? <h2 className="mb-4 text-2xl font-bold">{block.heading}</h2> : null}
+    <Section heading={block.heading} width="narrow">
       {block.sourceType === 'upload' ? (
-        <video
-          controls
-          preload="none"
-          poster={block.posterImage?.url}
-          className="w-full rounded-[var(--radius-base)]"
-          src={src}
-        >
+        <video controls preload="none" poster={block.posterImage?.url} className="w-full rounded-[var(--radius-media)]" src={src}>
           <track kind="captions" />
         </video>
       ) : (
-        <a href={src} target="_blank" rel="noreferrer" className="text-[var(--color-primary)] underline">
+        <a href={src} target="_blank" rel="noreferrer" className="btn btn-ghost">
           مشاهده ویدئو
         </a>
       )}
-    </section>
+    </Section>
   )
 }
 
@@ -230,17 +392,18 @@ function FaqBlockView({ block }: { block: AnyBlock }) {
   const items = (block.items || []) as { question: string; answer: string }[]
   if (items.length === 0) return null
   return (
-    <section className="mx-auto max-w-3xl px-4 py-10">
-      <h2 className="mb-6 text-2xl font-bold">{block.heading || 'پرسش‌های متداول'}</h2>
+    <Section heading={block.heading || 'پرسش‌های متداول'} width="narrow">
       <FaqAccordion items={items} />
-    </section>
+    </Section>
   )
 }
 
 function ConsultationFormBlockView({ block }: { block: AnyBlock }) {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      <ConsultationForm heading={block.heading} description={block.description} />
+    <section id={CONSULTATION_ANCHOR} className="section band-alt scroll-mt-20">
+      <div className="container-narrow">
+        <ConsultationForm heading={block.heading} description={block.description} />
+      </div>
     </section>
   )
 }
@@ -248,22 +411,22 @@ function ConsultationFormBlockView({ block }: { block: AnyBlock }) {
 function CtaBlockView({ block }: { block: AnyBlock }) {
   const isPrimary = block.style !== 'secondary'
   return (
-    <section
-      className={`mx-auto my-8 max-w-6xl rounded-[var(--radius-base)] px-6 py-10 text-center ${
-        isPrimary ? 'bg-[var(--color-accent-soft)]' : 'border border-[var(--color-border)]'
-      }`}
-    >
-      <h2 className="text-2xl font-bold">{block.heading}</h2>
-      {block.description ? <p className="mt-3 text-[var(--color-text-muted)]">{block.description}</p> : null}
-      <Link href={block.buttonHref} className="btn btn-primary mt-6 inline-block px-6 py-3 font-bold">
-        {block.buttonLabel}
-      </Link>
+    <section className={`section ${isPrimary ? 'band-ink' : 'band-alt'}`}>
+      <div className="container-narrow text-center">
+        <h2 className="display-2">{block.heading}</h2>
+        {block.description ? <p className="lead mx-auto mt-4 max-w-[34rem]">{block.description}</p> : null}
+        <Link href={block.buttonHref} className="btn btn-primary btn-lg mt-8">
+          {block.buttonLabel}
+        </Link>
+      </div>
     </section>
   )
 }
 
-const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock }) => ReactNode | Promise<ReactNode>> = {
+const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock; ctx: PageContext }) => ReactNode | Promise<ReactNode>> = {
   hero: HeroBlockView,
+  startGuide: StartGuideBlockView,
+  aboutIntro: AboutIntroBlockView,
   text: TextBlockView,
   image: ImageBlockView,
   gallery: GalleryBlockView,
@@ -279,11 +442,12 @@ const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock }) => ReactNode | Pr
 
 export async function PageBlocks({ blocks }: { blocks: AnyBlock[] }) {
   const visible = (blocks || []).filter((b) => !b.hidden)
+  const ctx: PageContext = { hasConsultationForm: visible.some((b) => b.blockType === 'consultationForm') }
   const rendered = await Promise.all(
     visible.map(async (block, index) => {
       const View = BLOCK_VIEWS[block.blockType]
       if (!View) return null
-      return <div key={block.id || index}>{await View({ block })}</div>
+      return <div key={block.id || index}>{await View({ block, ctx })}</div>
     }),
   )
   return <>{rendered}</>

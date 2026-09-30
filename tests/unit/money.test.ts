@@ -28,4 +28,9 @@ describe('money helpers', () => {
   it('واحد تومان را با برچسب فارسی نمایش می‌دهد', () => {
     expect(formatToman(250_000, { persianDigits: false })).toContain('تومان')
   })
+
+  it('با ارقام فارسی از جداکننده هزارگان فارسی استفاده می‌کند', () => {
+    expect(formatToman(25_000_000)).toBe('۲٬۵۰۰٬۰۰۰ تومان')
+    expect(formatToman(25_000_000, { persianDigits: false })).toBe('2,500,000 تومان')
+  })
 })

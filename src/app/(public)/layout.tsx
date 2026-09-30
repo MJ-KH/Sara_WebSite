@@ -40,6 +40,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <AnnouncementBar text={settings.announcementBar?.enabled ? settings.announcementBar.text : null} href={settings.announcementBar?.href} />
         <SiteHeader
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
+          tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}
           logoUrl={logo?.url}
           menu={(settings.headerMenu || []).map((item) => ({
             label: item.label,

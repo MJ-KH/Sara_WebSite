@@ -1,41 +1,53 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { SwatchFan } from '@/components/brand/SwatchFan'
+import { SHADES } from '@/lib/brand/swatches'
+import { MobileMenu } from './MobileMenu'
 
 type MenuChild = { label: string; href: string }
 type MenuItem = { label: string; href: string; children?: MenuChild[] | null }
 
+/** نشان موقت برند تا وقتی لوگوی رسمی بارگذاری نشده: بادبزن کوچک سه‌تیپی، هم‌خانواده بادبزن صفحه اصلی. */
+function TipMark() {
+  return (
+    <span className="block w-10">
+      <SwatchFan id="brand-mark" colors={[SHADES.nude, SHADES.rose, SHADES.oxblood]} spread={50} />
+    </span>
+  )
+}
+
 export function SiteHeader({
   brandName,
+  tagline,
   logoUrl,
   menu,
 }: {
   brandName: string
+  tagline?: string | null
   logoUrl?: string | null
   menu: MenuItem[]
 }) {
   return (
-    <header className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 font-bold">
-          {logoUrl ? (
-            <Image src={logoUrl} alt={brandName} width={40} height={40} className="rounded-full" />
-          ) : (
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-accent-soft)] text-[var(--color-primary)]">
-              {brandName.charAt(0)}
-            </span>
-          )}
-          <span>{brandName}</span>
+    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface)_92%,transparent)] backdrop-blur-sm">
+      <div className="container-x relative flex h-16 items-center gap-4 md:h-20">
+        <Link href="/" className="flex items-center gap-3">
+          {logoUrl ? <Image src={logoUrl} alt={brandName} width={44} height={44} className="h-11 w-auto" /> : <TipMark />}
+          <span className="flex flex-col leading-tight">
+            <span className="text-[1.0625rem] font-extrabold">{brandName}</span>
+            {tagline ? <span className="hidden text-[0.75rem] text-[var(--color-text-muted)] sm:block">{tagline}</span> : null}
+          </span>
         </Link>
-        <nav className="hidden gap-6 text-sm md:flex" aria-label="منوی اصلی">
+
+        <nav className="ms-auto hidden items-center gap-7 text-[0.9375rem] md:flex" aria-label="منوی اصلی">
           {menu.map((item) => (
             <div key={item.href} className="group relative">
-              <Link href={item.href} className="hover:text-[var(--color-primary)]">
+              <Link href={item.href} className="nav-link">
                 {item.label}
               </Link>
               {item.children?.length ? (
-                <div className="absolute right-0 hidden min-w-40 flex-col gap-1 rounded-[var(--radius-base)] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-md group-hover:flex group-focus-within:flex">
+                <div className="absolute end-0 top-full hidden min-w-44 flex-col gap-1 rounded-[var(--radius-base)] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 group-hover:flex group-focus-within:flex">
                   {item.children.map((child) => (
-                    <Link key={child.href} href={child.href} className="rounded p-2 hover:bg-[var(--color-accent-soft)]">
+                    <Link key={child.href} href={child.href} className="rounded-[var(--radius-base)] p-2 hover:bg-[var(--color-bg-alt)]">
                       {child.label}
                     </Link>
                   ))}
@@ -43,10 +55,17 @@ export function SiteHeader({
               ) : null}
             </div>
           ))}
+          <Link href="/account" className="nav-link text-[var(--color-text-muted)]">
+            حساب من
+          </Link>
         </nav>
-        <Link href="/packages" className="btn btn-primary px-4 py-2 text-sm font-bold">
-          خرید پکیج
-        </Link>
+
+        <div className="ms-auto flex items-center gap-2 md:ms-0">
+          <Link href="/packages" className="btn btn-primary btn-sm">
+            خرید پکیج
+          </Link>
+          <MobileMenu menu={menu} />
+        </div>
       </div>
     </header>
   )

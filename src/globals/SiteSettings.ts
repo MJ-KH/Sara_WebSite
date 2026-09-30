@@ -106,9 +106,10 @@ export const SiteSettings: GlobalConfig = {
           defaultValue: 'gold-dark',
           label: 'رنگ اصلی تأکید',
           options: [
-            { label: 'طلایی روی تیره', value: 'gold-dark' },
-            { label: 'طلایی روی صورتی ملایم', value: 'gold-rose' },
-            { label: 'مسی گرم', value: 'copper' },
+            // مقدارها برای سازگاری با تنظیمات ذخیره‌شده ثابت مانده‌اند؛ فقط برچسب با ظاهر فعلی هماهنگ شده.
+            { label: 'قرمز لاکی تیره (پیش‌فرض)', value: 'gold-dark' },
+            { label: 'رز خاکی', value: 'gold-rose' },
+            { label: 'مسی', value: 'copper' },
           ],
         },
         {

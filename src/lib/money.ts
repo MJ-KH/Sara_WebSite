@@ -22,18 +22,21 @@ export function tomanToRial(toman: number): number {
   return toman * 10
 }
 
+/** با ارقام فارسی، جداکننده هزارگان هم فارسی (٬) می‌شود نه ویرگول لاتین. */
+function localizeNumber(formatted: string, persianDigits: boolean | undefined): string {
+  return persianDigits === false ? formatted : toPersianDigits(formatted).replace(/,/g, '٬')
+}
+
 export function formatToman(rial: number, options: { persianDigits?: boolean } = {}): string {
   const toman = rialToToman(rial)
   const formatted = new Intl.NumberFormat('en-US').format(toman)
-  const withUnit = `${formatted} تومان`
-  return options.persianDigits === false ? withUnit : toPersianDigits(withUnit)
+  return `${localizeNumber(formatted, options.persianDigits)} تومان`
 }
 
 export function formatRial(rial: number, options: { persianDigits?: boolean } = {}): string {
   assertIntegerRial(rial)
   const formatted = new Intl.NumberFormat('en-US').format(rial)
-  const withUnit = `${formatted} ریال`
-  return options.persianDigits === false ? withUnit : toPersianDigits(withUnit)
+  return `${localizeNumber(formatted, options.persianDigits)} ریال`
 }
 
 /** درصد تخفیف را روی مبلغ ریالی اعمال می‌کند و به عدد صحیح گرد می‌کند. */
