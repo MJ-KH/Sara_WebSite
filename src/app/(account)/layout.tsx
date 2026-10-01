@@ -40,8 +40,8 @@ export default async function AccountLayout({ children }: { children: React.Reac
         {user?.collection === 'students' ? (
           <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 md:flex-row">
             <aside className="flex shrink-0 flex-row gap-2 overflow-x-auto md:w-56 md:flex-col">
-              <Link href="/" className="mb-4 hidden text-sm text-[var(--color-text-muted)] md:block">
-                ← بازگشت به سایت
+              <Link href="/" className="whitespace-nowrap px-3 py-2 text-sm text-[var(--color-text-muted)] md:mb-4 md:px-0">
+                → بازگشت به سایت
               </Link>
               {NAV_ITEMS.map((item) => (
                 <Link
@@ -61,7 +61,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             <div className="min-w-0 flex-1">{children}</div>
           </div>
         ) : (
-          <AccountLoginGate />
+          <AccountLoginGate brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'} />
         )}
       </body>
     </html>

@@ -8,6 +8,8 @@ export function OtpLoginForm({ onSuccess }: { onSuccess: () => void }) {
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  // فقط در حالت پیامک آزمایشی (محیط توسعه) سرور نشانی صندوق آزمایشی را برمی‌گرداند
+  const [testInbox, setTestInbox] = useState<string | null>(null)
 
   async function requestCode(event: React.FormEvent) {
     event.preventDefault()
@@ -21,6 +23,7 @@ export function OtpLoginForm({ onSuccess }: { onSuccess: () => void }) {
       })
       const body = await response.json()
       if (!response.ok || !body.ok) throw new Error(body.message || 'خطا در ارسال کد')
+      setTestInbox(typeof body.testInbox === 'string' ? body.testInbox : null)
       setStep('code')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'خطای ناشناخته')
@@ -51,21 +54,29 @@ export function OtpLoginForm({ onSuccess }: { onSuccess: () => void }) {
 
   if (step === 'mobile') {
     return (
-      <form onSubmit={requestCode} className="flex flex-col gap-3">
-        <h2 className="text-lg font-bold">ورود با موبایل</h2>
-        <label className="flex flex-col gap-1 text-sm">
-          شماره موبایل
+      <form onSubmit={requestCode} className="flex flex-col gap-4">
+        <div>
+          <label htmlFor="otp-mobile" className="field-label">
+            شماره موبایل
+          </label>
           <input
+            id="otp-mobile"
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
             required
             inputMode="tel"
+            autoComplete="tel"
+            dir="ltr"
             placeholder="09xxxxxxxxx"
-            className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2"
+            className="field text-center"
           />
-        </label>
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <button type="submit" disabled={loading} className="btn btn-primary p-3 font-bold disabled:opacity-60">
+        </div>
+        {error ? (
+          <p role="alert" className="text-sm text-red-600">
+            {error}
+          </p>
+        ) : null}
+        <button type="submit" disabled={loading} className="btn btn-primary btn-block disabled:opacity-60">
           {loading ? 'در حال ارسال...' : 'دریافت کد ورود'}
         </button>
       </form>
@@ -73,21 +84,40 @@ export function OtpLoginForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <form onSubmit={verifyCode} className="flex flex-col gap-3">
-      <h2 className="text-lg font-bold">کد ارسال‌شده را وارد کنید</h2>
-      <p className="text-sm text-[var(--color-text-muted)]">کد به شماره {mobile} پیامک شد.</p>
-      <label className="flex flex-col gap-1 text-sm">
-        کد تأیید
+    <form onSubmit={verifyCode} className="flex flex-col gap-4">
+      <p className="text-[0.9375rem] text-[var(--color-text-muted)]">
+        کد ورود به شماره <span dir="ltr">{mobile}</span> پیامک شد.
+      </p>
+      {testInbox ? (
+        <div className="rounded-[var(--radius-base)] border border-dashed border-[var(--color-border-strong)] bg-[var(--color-accent-soft)] p-3 text-[0.875rem] leading-7">
+          <strong>حالت آزمایشی:</strong> پیامک واقعی فرستاده نمی‌شود. کد را از{' '}
+          <a href={testInbox} target="_blank" rel="noreferrer" className="font-bold text-[var(--color-primary)] underline">
+            صندوق پیامک آزمایشی
+          </a>{' '}
+          ببینید.
+        </div>
+      ) : null}
+      <div>
+        <label htmlFor="otp-code" className="field-label">
+          کد تأیید
+        </label>
         <input
+          id="otp-code"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           required
           inputMode="numeric"
-          className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2 tracking-widest"
+          autoComplete="one-time-code"
+          dir="ltr"
+          className="field text-center tracking-[0.4em]"
         />
-      </label>
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <button type="submit" disabled={loading} className="btn btn-primary p-3 font-bold disabled:opacity-60">
+      </div>
+      {error ? (
+        <p role="alert" className="text-sm text-red-600">
+          {error}
+        </p>
+      ) : null}
+      <button type="submit" disabled={loading} className="btn btn-primary btn-block disabled:opacity-60">
         {loading ? 'در حال بررسی...' : 'تأیید و ورود'}
       </button>
       <button type="button" onClick={() => setStep('mobile')} className="text-sm text-[var(--color-text-muted)] underline">

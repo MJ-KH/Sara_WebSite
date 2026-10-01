@@ -4,7 +4,7 @@ import { requestOtp } from '@/lib/auth/otp'
 import { getPayloadClient } from '@/lib/get-payload'
 import { normalizeIranMobile } from '@/lib/phone'
 import { isRateLimited } from '@/lib/rate-limit'
-import { getSmsProvider } from '@/lib/sms'
+import { getSmsProvider, isSmsTestMode } from '@/lib/sms'
 
 const bodySchema = z.object({ mobile: z.string().min(5) })
 
@@ -45,5 +45,8 @@ export async function POST(req: NextRequest) {
   const debugCode =
     process.env.NODE_ENV !== 'production' && process.env.ALLOW_OTP_DEBUG_RESPONSE === 'true' ? result.code : undefined
 
-  return NextResponse.json({ ok: true, ttlSeconds: result.ttlSeconds, debugCode })
+  // در حالت پیامک آزمایشی فقط نشانی صندوق آزمایشی (نه خود کد) برگردانده می‌شود تا تست‌کننده کد را آنجا ببیند
+  const testInbox = isSmsTestMode() ? '/dev/sms' : undefined
+
+  return NextResponse.json({ ok: true, ttlSeconds: result.ttlSeconds, debugCode, testInbox })
 }

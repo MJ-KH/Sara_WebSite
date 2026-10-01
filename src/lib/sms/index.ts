@@ -42,3 +42,8 @@ export function getSmsProvider(): SmsProvider {
 export function resetSmsProviderCache(): void {
   cached = null
 }
+
+/** پیامک آزمایشی در محیط توسعه: پیام واقعی نمی‌رود و در صندوق /dev/sms دیده می‌شود. */
+export function isSmsTestMode(): boolean {
+  return process.env.NODE_ENV !== 'production' && (process.env.SMS_PROVIDER || 'mock').toLowerCase() === 'mock'
+}
