@@ -1,6 +1,8 @@
 import type { Payload } from 'payload'
 import { getPaymentGateway } from '@/lib/payments'
 import { extractId } from '@/lib/relation'
+import { SPOTPLAYER_JOB_TYPE } from '@/lib/spotplayer/constants'
+import { issueSpotPlayerLicense } from '@/lib/spotplayer/issue-license'
 import type { Order } from '@/payload-types'
 
 export type CompletePaymentResult = { ok: true; alreadyProcessed: boolean } | { ok: false; error: string }
@@ -66,6 +68,8 @@ export async function completeOrderPayment(
   const transactionID = await payload.db.beginTransaction()
   if (!transactionID) throw new Error('failed to begin database transaction')
 
+  let spotplayerEntitlementId: number | null = null
+
   try {
     await payload.update({
       collection: 'payment-attempts',
@@ -87,7 +91,7 @@ export async function completeOrderPayment(
     })
 
     if (order.subjectType === 'package') {
-      await grantPackageEntitlement(payload, order, transactionID)
+      spotplayerEntitlementId = await grantPackageEntitlement(payload, order, transactionID)
     } else if (order.subjectType === 'workshop_session') {
       await confirmWorkshopEnrollment(payload, order, transactionID)
     }
@@ -117,20 +121,32 @@ export async function completeOrderPayment(
     throw error
   }
 
+  // لایسنس اسپات‌پلیر را همین حالا هم امتحان می‌کنیم تا هنرجو بلافاصله کدش را ببیند. پرداخت
+  // قبلاً ثبت شده؛ اگر این تلاش شکست بخورد، job صف (که در همان تراکنش ساخته شد) دوباره تلاش می‌کند.
+  if (spotplayerEntitlementId !== null) {
+    await issueSpotPlayerLicense(payload, spotplayerEntitlementId).catch((error) =>
+      console.error('[spotplayer] immediate issue failed; worker will retry', error),
+    )
+  }
+
   return { ok: true, alreadyProcessed: false }
 }
 
-async function grantPackageEntitlement(payload: Payload, order: Order, transactionID: string | number) {
+/** دسترسی را می‌سازد؛ اگر دوره روی اسپات‌پلیر است، شناسه دسترسی را برای صدور لایسنس برمی‌گرداند. */
+async function grantPackageEntitlement(payload: Payload, order: Order, transactionID: string | number): Promise<number | null> {
   const packageId = extractId(order.subjectPackage)
   const studentId = extractId(order.student)
-  if (packageId === undefined || studentId === undefined) return
+  if (packageId === undefined || studentId === undefined) return null
+
+  const pkg = await payload.findByID({ collection: 'packages', id: packageId, depth: 0, req: { transactionID }, overrideAccess: true })
+  const usesSpotPlayer = Boolean(pkg.spotplayerCourseId?.trim())
 
   const accessDurationDays = order.accessDurationDaysSnapshot ?? null
   const expiresAt = accessDurationDays
     ? new Date(Date.now() + accessDurationDays * 24 * 60 * 60 * 1000).toISOString()
     : null
 
-  await payload.create({
+  const entitlement = await payload.create({
     collection: 'entitlements',
     data: {
       student: Number(studentId),
@@ -138,10 +154,28 @@ async function grantPackageEntitlement(payload: Payload, order: Order, transacti
       sourceOrder: order.id,
       grantedAt: new Date().toISOString(),
       expiresAt,
+      ...(usesSpotPlayer ? { spotplayer: { status: 'pending' as const } } : {}),
     },
     req: { transactionID },
     overrideAccess: true,
   })
+
+  if (usesSpotPlayer) {
+    await payload.create({
+      collection: 'jobs',
+      data: {
+        type: SPOTPLAYER_JOB_TYPE,
+        uniqueKey: `spotplayer:${entitlement.id}`,
+        payload: { entitlementId: entitlement.id },
+        // کمی بعد، تا اگر تلاش فوری بعد از commit موفق شد، worker کاری نداشته باشد
+        scheduledFor: new Date(Date.now() + 60_000).toISOString(),
+        status: 'pending',
+        attempts: 0,
+      },
+      req: { transactionID },
+      overrideAccess: true,
+    })
+  }
 
   await payload.create({
     collection: 'jobs',
@@ -151,11 +185,13 @@ async function grantPackageEntitlement(payload: Payload, order: Order, transacti
       payload: { orderId: order.id, studentId: Number(studentId), packageId: Number(packageId) },
       scheduledFor: new Date().toISOString(),
       status: 'pending',
-            attempts: 0,
+      attempts: 0,
     },
     req: { transactionID },
     overrideAccess: true,
   })
+
+  return usesSpotPlayer ? entitlement.id : null
 }
 
 async function confirmWorkshopEnrollment(payload: Payload, order: Order, transactionID: string | number) {
@@ -196,7 +232,7 @@ async function confirmWorkshopEnrollment(payload: Payload, order: Order, transac
       payload: { orderId: order.id, studentId: Number(studentId), sessionId: Number(sessionId) },
       scheduledFor: new Date().toISOString(),
       status: 'pending',
-            attempts: 0,
+      attempts: 0,
     },
     req: { transactionID },
     overrideAccess: true,

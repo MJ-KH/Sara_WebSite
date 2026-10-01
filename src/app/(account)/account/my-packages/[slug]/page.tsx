@@ -13,6 +13,8 @@ export default async function MyPackageEntryPage({ params }: { params: Promise<{
   const packages = await payload.find({ collection: 'packages', where: { slug: { equals: slug } }, limit: 1, overrideAccess: true })
   const pkg = packages.docs[0]
   if (!pkg) notFound()
+  // دوره‌های اسپات‌پلیر در نرم‌افزار اسپات تماشا می‌شوند؛ کد لایسنس در «دوره‌های من» است
+  if (pkg.spotplayerCourseId) redirect('/account/my-packages')
 
   const entitlement = await payload.find({
     collection: 'entitlements',

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { LessonPlayer } from '@/components/lessons/LessonPlayer'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { toPersianDigits } from '@/lib/digits'
@@ -17,6 +17,8 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const packages = await payload.find({ collection: 'packages', where: { slug: { equals: slug } }, limit: 1, overrideAccess: true })
   const pkg = packages.docs[0]
   if (!pkg) notFound()
+  // دوره‌های اسپات‌پلیر در نرم‌افزار اسپات تماشا می‌شوند؛ کد لایسنس در «دوره‌های من» است
+  if (pkg.spotplayerCourseId) redirect('/account/my-packages')
 
   const entitlement = await payload.find({
     collection: 'entitlements',

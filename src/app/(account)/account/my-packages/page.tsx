@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { SpotPlayerLicense } from '@/components/account/SpotPlayerLicense'
 import { SwatchFan } from '@/components/brand/SwatchFan'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { paletteForPackage } from '@/lib/brand/swatches'
@@ -27,9 +28,10 @@ export default async function MyPackagesPage() {
     overrideAccess: true,
   })
 
-  const packages = entitlements.docs
-    .map((entitlement) => (typeof entitlement.package === 'object' ? entitlement.package : null))
-    .filter((pkg): pkg is NonNullable<typeof pkg> => Boolean(pkg))
+  const items = entitlements.docs.flatMap((entitlement) =>
+    typeof entitlement.package === 'object' && entitlement.package ? [{ entitlement, pkg: entitlement.package }] : [],
+  )
+  const packages = items.map((item) => item.pkg)
 
   // پیشرفت هر دوره: درس‌های تکمیل‌شده از کل درس‌های منتشرشده
   const lessons = packages.length
@@ -59,7 +61,7 @@ export default async function MyPackagesPage() {
   return (
     <div>
       <h2 className="title-1 mb-6">دوره‌های من</h2>
-      {packages.length === 0 ? (
+      {items.length === 0 ? (
         <div className="card-soft p-8 text-center">
           <p className="text-[var(--color-text-muted)]">هنوز دوره‌ای نخریده‌اید.</p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
@@ -72,8 +74,9 @@ export default async function MyPackagesPage() {
           </div>
         </div>
       ) : (
-        <ul className="grid gap-5 sm:grid-cols-2">
-          {packages.map((pkg) => {
+        <ul className="grid gap-5 xl:grid-cols-2">
+          {items.map(({ entitlement, pkg }) => {
+            const usesSpotPlayer = Boolean(pkg.spotplayerCourseId)
             const title = splitSampleMarker(pkg.title)
             const cover = typeof pkg.coverImage === 'object' && pkg.coverImage?.url ? pkg.coverImage : null
             const packageLessons = lessons.docs.filter((l) => extractIdString(l.package) === String(pkg.id))
@@ -93,27 +96,33 @@ export default async function MyPackagesPage() {
                 )}
                 <div className="flex flex-1 flex-col gap-3 px-3 pb-3 pt-4">
                   <h3 className="title-2">{title.text}</h3>
-                  <div>
-                    <div className="flex justify-between text-[0.8125rem] text-[var(--color-text-muted)]">
-                      <span>
-                        {toPersianDigits(done)} از {toPersianDigits(total)} درس
-                      </span>
-                      <span>{toPersianDigits(percent)}٪</span>
-                    </div>
-                    <div
-                      className="mt-1.5 h-2 overflow-hidden rounded-full bg-[var(--color-bg-alt)]"
-                      role="progressbar"
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={percent}
-                      aria-label="پیشرفت دوره"
-                    >
-                      <div className="h-full rounded-full bg-[var(--color-primary)]" style={{ width: `${percent}%` }} />
-                    </div>
-                  </div>
-                  <Link href={`/account/my-packages/${pkg.slug}`} className="btn btn-primary mt-auto self-start">
-                    {done === 0 ? 'شروع دوره' : done === total ? 'مرور دوره' : 'ادامه یادگیری'}
-                  </Link>
+                  {usesSpotPlayer ? (
+                    <SpotPlayerLicense license={entitlement.spotplayer ?? {}} />
+                  ) : (
+                    <>
+                      <div>
+                        <div className="flex justify-between text-[0.8125rem] text-[var(--color-text-muted)]">
+                          <span>
+                            {toPersianDigits(done)} از {toPersianDigits(total)} درس
+                          </span>
+                          <span>{toPersianDigits(percent)}٪</span>
+                        </div>
+                        <div
+                          className="mt-1.5 h-2 overflow-hidden rounded-full bg-[var(--color-bg-alt)]"
+                          role="progressbar"
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={percent}
+                          aria-label="پیشرفت دوره"
+                        >
+                          <div className="h-full rounded-full bg-[var(--color-primary)]" style={{ width: `${percent}%` }} />
+                        </div>
+                      </div>
+                      <Link href={`/account/my-packages/${pkg.slug}`} className="btn btn-primary mt-auto self-start">
+                        {done === 0 ? 'شروع دوره' : done === total ? 'مرور دوره' : 'ادامه یادگیری'}
+                      </Link>
+                    </>
+                  )}
                 </div>
               </li>
             )

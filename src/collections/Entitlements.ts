@@ -1,6 +1,7 @@
 import type { Access, CollectionConfig } from 'payload'
 import { isAdminCollection, isOwnerOrBusinessAdmin } from '@/access/roles'
 import { describeActor, recordAuditLog } from '@/lib/audit/log'
+import { SPOTPLAYER_JOB_TYPE } from '@/lib/spotplayer/constants'
 
 type ReqUser = { collection?: string; id?: string | number } | null | undefined
 
@@ -36,6 +37,34 @@ export const Entitlements: CollectionConfig = {
     { name: 'grantedAt', type: 'date', required: true },
     { name: 'expiresAt', type: 'date', label: 'انقضا (خالی = مادام‌العمر)' },
     { name: 'revokedAt', type: 'date' },
+    {
+      name: 'spotplayer',
+      type: 'group',
+      label: 'لایسنس اسپات‌پلیر',
+      admin: {
+        description:
+          'برای دوره‌هایی که شناسه اسپات‌پلیر دارند خودکار پر می‌شود. اگر صدور ناموفق بود، وضعیت را روی «در انتظار صدور» بگذارید و ذخیره کنید تا دوباره تلاش شود. اسپات‌پلیر API لغو لایسنس ندارد؛ برای بازگشت وجه، لایسنس را در پنل اسپات‌پلیر غیرفعال کنید.',
+      },
+      fields: [
+        {
+          name: 'status',
+          type: 'select',
+          label: 'وضعیت',
+          options: [
+            { label: 'در انتظار صدور', value: 'pending' },
+            { label: 'در حال صدور', value: 'issuing' },
+            { label: 'صادر شد', value: 'issued' },
+            { label: 'ناموفق', value: 'failed' },
+          ],
+        },
+        { name: 'licenseKey', type: 'text', label: 'کلید لایسنس', admin: { readOnly: true } },
+        { name: 'licenseId', type: 'text', label: 'شناسه لایسنس در اسپات‌پلیر', admin: { readOnly: true } },
+        { name: 'downloadUrl', type: 'text', label: 'صفحه دانلود', admin: { readOnly: true } },
+        { name: 'issuedAt', type: 'date', label: 'زمان صدور', admin: { readOnly: true } },
+        { name: 'isTest', type: 'checkbox', label: 'لایسنس آزمایشی', admin: { readOnly: true } },
+        { name: 'lastError', type: 'text', label: 'آخرین خطا', admin: { readOnly: true } },
+      ],
+    },
     {
       name: 'history',
       type: 'array',
@@ -75,7 +104,25 @@ export const Entitlements: CollectionConfig = {
             actorLabel: describeActor(req.user as never),
             afterJson: { student: doc.student, package: doc.package, expiresAt: doc.expiresAt },
           })
-        } else if (previousDoc && (previousDoc.expiresAt !== doc.expiresAt || previousDoc.revokedAt !== doc.revokedAt)) {
+          return
+        }
+        // تلاش دوباره دستی مدیر: وضعیت لایسنس از «ناموفق» به «در انتظار صدور» برگشته است
+        if (previousDoc?.spotplayer?.status === 'failed' && doc.spotplayer?.status === 'pending') {
+          await req.payload.create({
+            collection: 'jobs',
+            data: {
+              type: SPOTPLAYER_JOB_TYPE,
+              uniqueKey: `spotplayer:${doc.id}:${Date.now()}`,
+              payload: { entitlementId: doc.id },
+              scheduledFor: new Date().toISOString(),
+              status: 'pending',
+              attempts: 0,
+            },
+            req,
+            overrideAccess: true,
+          })
+        }
+        if (previousDoc && (previousDoc.expiresAt !== doc.expiresAt || previousDoc.revokedAt !== doc.revokedAt)) {
           await recordAuditLog(req.payload, {
             action: 'entitlement_modified',
             entityType: 'entitlements',

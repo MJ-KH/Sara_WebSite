@@ -2,6 +2,8 @@ import type { Payload } from 'payload'
 import { formatJalaliDate } from '@/lib/jalali'
 import { formatToman } from '@/lib/money'
 import { getSmsProvider } from '@/lib/sms'
+import { SPOTPLAYER_JOB_TYPE } from '@/lib/spotplayer/constants'
+import { issueSpotPlayerLicense, markSpotPlayerLicenseFailed } from '@/lib/spotplayer/issue-license'
 import { renderTemplate } from './render-template'
 
 const MAX_ATTEMPTS = Number(process.env.WORKER_MAX_ATTEMPTS || 5)
@@ -87,7 +89,9 @@ export async function processOneJob(payload: Payload): Promise<boolean> {
   if (!job) return false
 
   try {
-    if (job.type === 'sms_campaign') {
+    if (job.type === SPOTPLAYER_JOB_TYPE) {
+      await processSpotPlayerJob(payload, job)
+    } else if (job.type === 'sms_campaign') {
       await processCampaignJob(payload, job)
     } else {
       await processTemplatedJob(payload, job)
@@ -95,6 +99,9 @@ export async function processOneJob(payload: Payload): Promise<boolean> {
     return true
   } catch (error) {
     const attempts = (job.attempts || 0) + 1
+    if (job.type === SPOTPLAYER_JOB_TYPE && attempts >= MAX_ATTEMPTS) {
+      await markSpotPlayerLicenseFailed(payload, (job.payload as { entitlementId: number }).entitlementId, error instanceof Error ? error.message : String(error))
+    }
     await payload.update({
       collection: 'jobs',
       id: job.id,
@@ -179,4 +186,16 @@ async function processCampaignJob(payload: Payload, job: any) {
     data: { status: result.ok ? 'sent' : 'failed', lastError: result.ok ? undefined : result.error },
     overrideAccess: true,
   })
+}
+
+/** صدور لایسنس اسپات‌پلیر؛ خطای قابل تلاش دوباره throw می‌شود تا مسیر تلاش مجدد بالا آن را زمان‌بندی کند. */
+async function processSpotPlayerJob(payload: Payload, job: any) {
+  const outcome = await issueSpotPlayerLicense(payload, job.payload?.entitlementId)
+  if (outcome.status === 'busy') throw new Error('spotplayer_license_in_progress')
+  if (outcome.status === 'error') {
+    if (outcome.retryable) throw new Error(outcome.error)
+    await payload.update({ collection: 'jobs', id: job.id, data: { status: 'failed', lastError: outcome.error }, overrideAccess: true })
+    return
+  }
+  await payload.update({ collection: 'jobs', id: job.id, data: { status: 'sent', lastError: null }, overrideAccess: true })
 }

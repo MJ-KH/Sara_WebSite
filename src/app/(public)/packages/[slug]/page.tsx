@@ -173,12 +173,15 @@ export default async function PackageDetailPage({ params }: Params) {
     { label: 'تعداد درس', value: lessons.length > 0 ? `${toPersianDigits(lessons.length)} درس در ${toPersianDigits(Math.max(chapters.length, 1))} فصل` : 'به‌زودی' },
     { label: 'مدت آموزش', value: totalSeconds > 0 ? formatDurationFa(totalSeconds) : 'به‌زودی مشخص می‌شود' },
     { label: 'مدت دسترسی', value: pkg.accessDurationDays ? `${toPersianDigits(pkg.accessDurationDays)} روز از زمان خرید` : 'مادام‌العمر' },
+    ...(pkg.spotplayerCourseId ? [{ label: 'محل تماشا', value: 'نرم‌افزار اسپات‌پلیر' }] : []),
     ...(freePreviewCount > 0 ? [{ label: 'نمونه رایگان', value: `${toPersianDigits(freePreviewCount)} درس بدون خرید` }] : []),
     ...(pkg.contentUpdatedAt ? [{ label: 'آخرین به‌روزرسانی', value: formatJalaliDate(new Date(pkg.contentUpdatedAt)) }] : []),
   ]
 
   const action = hasAccess
-    ? { kind: 'continue' as const, href: `/account/my-packages/${pkg.slug}`, label: 'ادامه آموزش' }
+    ? pkg.spotplayerCourseId
+      ? { kind: 'continue' as const, href: '/account/my-packages', label: 'مشاهده کد لایسنس' }
+      : { kind: 'continue' as const, href: `/account/my-packages/${pkg.slug}`, label: 'ادامه آموزش' }
     : pkg.status === 'stopped'
       ? { kind: 'stopped' as const, label: 'فروش این دوره متوقف شده است' }
       : { kind: 'buy' as const, href: `/checkout/${pkg.slug}`, label: 'خرید دوره' }

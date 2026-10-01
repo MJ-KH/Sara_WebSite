@@ -173,6 +173,18 @@ export const Packages: CollectionConfig = {
         description: 'توقف فروش، دسترسی خریداران قبلی را قطع نمی‌کند؛ فقط از فهرست عمومی خارج می‌شود.',
       },
     },
+    {
+      name: 'spotplayerCourseId',
+      type: 'text',
+      label: 'شناسه دوره در اسپات‌پلیر',
+      admin: {
+        position: 'sidebar',
+        description:
+          'از پنل اسپات‌پلیر، بخش دوره‌ها، دکمه «شناسه». با پر بودن این فیلد، بعد از هر خرید موفق لایسنس اسپات‌پلیر خودکار ساخته و در حساب هنرجو نمایش داده می‌شود.',
+      },
+      validate: (value: unknown) =>
+        !value || /^[a-f0-9]{24}$/i.test(String(value).trim()) || 'شناسه اسپات‌پلیر ۲۴ کاراکتر (عدد و حروف a تا f) است',
+    },
     { name: 'featured', type: 'checkbox', defaultValue: false, label: 'در صفحه اصلی نمایش داده شود' },
     { name: 'featuredOrder', type: 'number', label: 'ترتیب نمایش در صفحه اصلی' },
     {
