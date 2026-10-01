@@ -78,11 +78,11 @@ export function LessonPlayer({ lessonId, initialPositionSeconds }: { lessonId: s
   }
 
   if (error) {
-    return <div className="rounded-[var(--radius-base)] bg-red-50 p-6 text-center text-red-700">{error}</div>
+    return <div className="rounded-[var(--radius-media)] bg-red-50 p-6 text-center text-red-700">{error}</div>
   }
 
   if (!src) {
-    return <div className="flex aspect-video items-center justify-center rounded-[var(--radius-base)] bg-[var(--color-accent-soft)]">در حال بارگذاری ویدئو...</div>
+    return <div className="flex aspect-video items-center justify-center rounded-[var(--radius-media)] bg-[var(--color-accent-soft)] text-[var(--color-text-muted)]">در حال بارگذاری ویدئو...</div>
   }
 
   return (
@@ -90,7 +90,7 @@ export function LessonPlayer({ lessonId, initialPositionSeconds }: { lessonId: s
       ref={videoRef}
       controls
       controlsList="nodownload"
-      className="w-full rounded-[var(--radius-base)] bg-black"
+      className="aspect-video w-full rounded-[var(--radius-media)] bg-black"
       src={src}
       onLoadedMetadata={handleLoadedMetadata}
       onTimeUpdate={handleTimeUpdate}

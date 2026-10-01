@@ -1,4 +1,7 @@
+import Link from 'next/link'
+import { StatusPill } from '@/components/ui/StatusPill'
 import { requireStudent } from '@/lib/auth/get-request-user'
+import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 import { formatJalaliDate } from '@/lib/jalali'
 
@@ -18,23 +21,36 @@ export default async function MyWorkshopsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold">ثبت‌نام‌های ورکشاپ</h1>
+      <h2 className="title-1 mb-6">ورکشاپ‌های من</h2>
       {enrollments.docs.length === 0 ? (
-        <p className="text-[var(--color-text-muted)]">هنوز در ورکشاپی ثبت‌نام نکرده‌اید.</p>
+        <div className="card-soft p-8 text-center">
+          <p className="text-[var(--color-text-muted)]">هنوز در ورکشاپی ثبت‌نام نکرده‌اید.</p>
+          <Link href="/workshops" className="btn btn-primary mt-5">
+            ورکشاپ‌های پیش رو
+          </Link>
+        </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-3">
           {enrollments.docs.map((enrollment) => {
             const session = typeof enrollment.session === 'object' ? enrollment.session : null
             const workshop = session && typeof session.workshop === 'object' ? session.workshop : null
+            const location = splitSampleMarker(session?.location)
             return (
-              <div key={enrollment.id} className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-4">
-                <h2 className="font-bold">{workshop?.title || 'ورکشاپ'}</h2>
-                {session?.startAt ? <p className="text-sm text-[var(--color-text-muted)]">{formatJalaliDate(new Date(session.startAt))}</p> : null}
-                <p className="mt-1 text-sm">وضعیت: {enrollment.status === 'confirmed' ? 'قطعی' : 'لغوشده'}</p>
-              </div>
+              <li key={enrollment.id} className="card-soft flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  {session?.startAt ? (
+                    <span className="inline-block rounded-full bg-[var(--color-accent-soft)] px-3 py-1 text-[0.8125rem] font-semibold text-[var(--color-primary)]">
+                      {formatJalaliDate(new Date(session.startAt))}
+                    </span>
+                  ) : null}
+                  <p className="mt-2 font-bold">{splitSampleMarker(workshop?.title || 'ورکشاپ').text}</p>
+                  {location.text ? <p className="mt-1 text-[0.875rem] text-[var(--color-text-muted)]">{location.text}</p> : null}
+                </div>
+                {enrollment.status === 'confirmed' ? <StatusPill tone="success">قطعی</StatusPill> : <StatusPill tone="muted">لغوشده</StatusPill>}
+              </li>
             )
           })}
-        </div>
+        </ul>
       )}
     </div>
   )

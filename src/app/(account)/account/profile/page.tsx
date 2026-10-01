@@ -11,9 +11,10 @@ export default async function ProfilePage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold">پروفایل</h1>
+      <h2 className="title-1 mb-6">پروفایل</h2>
       <ProfileForm
         initial={{
+          mobile: doc.mobile,
           name: doc.name,
           email: doc.email,
           city: doc.city,

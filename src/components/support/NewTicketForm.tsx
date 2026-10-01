@@ -25,26 +25,27 @@ export function NewTicketForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-[var(--radius-base)] border border-[var(--color-border)] p-4">
-      <h2 className="font-bold">درخواست جدید</h2>
-      <input
-        value={subject}
-        onChange={(e) => setSubject(e.target.value)}
-        required
-        placeholder="موضوع"
-        className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2 text-sm"
-      />
-      <textarea
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        required
-        rows={4}
-        placeholder="توضیح درخواست"
-        className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-2 text-sm"
-      />
-      {status === 'error' ? <p className="text-sm text-red-600">ثبت درخواست ناموفق بود</p> : null}
-      <button type="submit" disabled={status === 'submitting'} className="btn btn-primary self-start px-4 py-2 text-sm font-bold">
-        ارسال
+    <form onSubmit={handleSubmit} className="card-soft flex flex-col gap-4 p-5 md:p-6">
+      <p className="text-[0.9375rem] text-[var(--color-text-muted)]">سؤال یا مشکلی درباره دوره‌ها دارید؟ بنویسید تا پاسخ بدهیم.</p>
+      <div>
+        <label htmlFor="ticket-subject" className="field-label">
+          موضوع
+        </label>
+        <input id="ticket-subject" value={subject} onChange={(e) => setSubject(e.target.value)} required className="field" />
+      </div>
+      <div>
+        <label htmlFor="ticket-body" className="field-label">
+          توضیح
+        </label>
+        <textarea id="ticket-body" value={body} onChange={(e) => setBody(e.target.value)} required rows={4} className="field" />
+      </div>
+      {status === 'error' ? (
+        <p role="alert" className="text-sm text-red-600">
+          ثبت درخواست ناموفق بود؛ دوباره تلاش کنید.
+        </p>
+      ) : null}
+      <button type="submit" disabled={status === 'submitting'} className="btn btn-primary self-start disabled:opacity-60">
+        {status === 'submitting' ? 'در حال ارسال...' : 'ارسال درخواست'}
       </button>
     </form>
   )

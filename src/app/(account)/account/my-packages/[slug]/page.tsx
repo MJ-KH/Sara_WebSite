@@ -22,6 +22,13 @@ export default async function MyPackageEntryPage({ params }: { params: Promise<{
   })
   if (entitlement.totalDocs === 0) notFound()
 
+  const chapters = await payload.find({
+    collection: 'chapters',
+    where: { package: { equals: pkg.id } },
+    sort: 'order',
+    limit: 100,
+    overrideAccess: true,
+  })
   const lessons = await payload.find({
     collection: 'lessons',
     where: { package: { equals: pkg.id }, status: { equals: 'published' } },
@@ -29,7 +36,9 @@ export default async function MyPackageEntryPage({ params }: { params: Promise<{
     limit: 500,
     overrideAccess: true,
   })
-  const firstLesson = lessons.docs[0]
+  // ترتیب درس «order» داخل هر فصل است؛ ترتیب واقعی دوره فصل به فصل است
+  const ordered = chapters.docs.flatMap((chapter) => lessons.docs.filter((l) => extractIdString(l.chapter) === String(chapter.id)))
+  const firstLesson = ordered[0]
   if (!firstLesson) notFound()
 
   const progress = await payload.find({
@@ -39,7 +48,7 @@ export default async function MyPackageEntryPage({ params }: { params: Promise<{
     overrideAccess: true,
   })
 
-  const incomplete = lessons.docs.find((lesson) => {
+  const incomplete = ordered.find((lesson) => {
     const p = progress.docs.find((pr) => extractIdString(pr.lesson) === String(lesson.id))
     return !p?.completed
   })

@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { LessonPlayer } from '@/components/lessons/LessonPlayer'
 import { requireStudent } from '@/lib/auth/get-request-user'
+import { toPersianDigits } from '@/lib/digits'
+import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 import { extractIdString } from '@/lib/relation'
 
@@ -49,43 +51,92 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   })
   const currentProgress = progress.docs.find((p) => extractIdString(p.lesson) === String(currentLesson.id))
 
+  // ترتیب پخش: فصل به فصل، و داخل هر فصل به ترتیب درس
+  const ordered = chapters.docs.flatMap((chapter) => lessons.docs.filter((l) => extractIdString(l.chapter) === String(chapter.id)))
+  const position = ordered.findIndex((l) => String(l.id) === lessonId)
+  const previous = position > 0 ? ordered[position - 1] : null
+  const next = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : null
+  const packageTitle = splitSampleMarker(pkg.title).text
+
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
+    <div className="flex flex-col gap-8 xl:flex-row">
       <div className="min-w-0 flex-1">
-        <h1 className="mb-4 text-lg font-bold">{currentLesson.title}</h1>
+        <nav aria-label="مسیر صفحه" className="text-[0.875rem] text-[var(--color-text-muted)]">
+          <Link href="/account/my-packages" className="hover:text-[var(--color-primary)]">
+            دوره‌های من
+          </Link>
+          <span className="mx-2" aria-hidden="true">
+            /
+          </span>
+          <span>{packageTitle}</span>
+        </nav>
+        <h2 className="title-1 mb-5 mt-2">{splitSampleMarker(currentLesson.title).text}</h2>
         <LessonPlayer lessonId={String(currentLesson.id)} initialPositionSeconds={(currentProgress?.positionSeconds as number) || 0} />
-        {currentLesson.summary ? <p className="mt-4 text-sm leading-loose text-[var(--color-text-muted)]">{currentLesson.summary}</p> : null}
+        {currentLesson.summary ? <p className="mt-5 leading-[2] text-[var(--color-text-muted)]">{currentLesson.summary}</p> : null}
+
+        <div className="mt-6 flex flex-wrap justify-between gap-3">
+          {previous ? (
+            <Link href={`/account/my-packages/${slug}/${previous.id}`} className="btn btn-ghost">
+              → درس قبل
+            </Link>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <Link href={`/account/my-packages/${slug}/${next.id}`} className="btn btn-primary">
+              درس بعد ←
+            </Link>
+          ) : null}
+        </div>
       </div>
-      <aside className="w-full shrink-0 lg:w-72">
-        <h2 className="mb-2 font-bold">{pkg.title}</h2>
-        <div className="flex flex-col gap-4">
-          {chapters.docs.map((chapter) => {
-            const chapterLessons = lessons.docs.filter((l) => extractIdString(l.chapter) === String(chapter.id))
-            return (
-              <div key={chapter.id}>
-                <h3 className="mb-1 text-sm font-bold text-[var(--color-text-muted)]">{chapter.title}</h3>
-                <ul className="flex flex-col gap-1">
-                  {chapterLessons.map((lesson) => {
-                    const p = progress.docs.find((pr) => extractIdString(pr.lesson) === String(lesson.id))
-                    const isActive = String(lesson.id) === lessonId
-                    return (
-                      <li key={lesson.id}>
-                        <Link
-                          href={`/account/my-packages/${slug}/${lesson.id}`}
-                          className={`flex items-center justify-between rounded-[var(--radius-base)] px-2 py-1.5 text-sm ${
-                            isActive ? 'bg-[var(--color-accent-soft)] font-bold' : 'hover:bg-[var(--color-accent-soft)]'
-                          }`}
-                        >
-                          <span>{lesson.title}</span>
-                          {p?.completed ? <span aria-label="تکمیل‌شده">✓</span> : null}
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            )
-          })}
+
+      <aside className="w-full shrink-0 xl:w-80">
+        <div className="card-soft p-5">
+          <h3 className="title-2">{packageTitle}</h3>
+          <p className="mt-1 text-[0.8125rem] text-[var(--color-text-muted)]">
+            {toPersianDigits(progress.docs.filter((p) => p.completed).length)} از {toPersianDigits(lessons.docs.length)} درس تکمیل شده
+          </p>
+          <div className="mt-4 flex flex-col gap-5">
+            {chapters.docs.map((chapter) => {
+              const chapterLessons = lessons.docs.filter((l) => extractIdString(l.chapter) === String(chapter.id))
+              if (chapterLessons.length === 0) return null
+              return (
+                <div key={chapter.id}>
+                  <h4 className="mb-2 text-[0.8125rem] font-bold text-[var(--color-text-muted)]">{splitSampleMarker(chapter.title).text}</h4>
+                  <ul className="flex flex-col gap-1">
+                    {chapterLessons.map((lesson) => {
+                      const done = progress.docs.find((pr) => extractIdString(pr.lesson) === String(lesson.id))?.completed
+                      const isActive = String(lesson.id) === lessonId
+                      return (
+                        <li key={lesson.id}>
+                          <Link
+                            href={`/account/my-packages/${slug}/${lesson.id}`}
+                            aria-current={isActive ? 'page' : undefined}
+                            className={`flex items-center gap-3 rounded-[var(--radius-base)] px-3 py-2.5 text-[0.9375rem] transition-colors ${
+                              isActive ? 'bg-[var(--color-accent-soft)] font-bold' : 'hover:bg-[var(--color-bg-alt)]'
+                            }`}
+                          >
+                            <span
+                              aria-hidden="true"
+                              className={`flex size-5 shrink-0 items-center justify-center rounded-full border text-[0.7rem] ${
+                                done
+                                  ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)]'
+                                  : 'border-[var(--color-border-strong)]'
+                              }`}
+                            >
+                              {done ? '✓' : null}
+                            </span>
+                            <span className="min-w-0 flex-1">{splitSampleMarker(lesson.title).text}</span>
+                            {done ? <span className="sr-only">تکمیل‌شده</span> : null}
+                          </Link>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </aside>
     </div>

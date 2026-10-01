@@ -1,15 +1,18 @@
+import Link from 'next/link'
+import { Money } from '@/components/ui/Money'
+import { StatusPill, type StatusTone } from '@/components/ui/StatusPill'
 import { requireStudent } from '@/lib/auth/get-request-user'
+import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 import { formatJalaliDate } from '@/lib/jalali'
-import { Money } from '@/components/ui/Money'
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'در انتظار پرداخت',
-  paid: 'پرداخت‌شده',
-  failed: 'ناموفق',
-  canceled: 'لغوشده',
-  refund_requested: 'درخواست بازگشت وجه',
-  refunded: 'بازگشت‌داده‌شده',
+const STATUS: Record<string, { label: string; tone: StatusTone }> = {
+  pending: { label: 'در انتظار پرداخت', tone: 'warning' },
+  paid: { label: 'پرداخت‌شده', tone: 'success' },
+  failed: { label: 'ناموفق', tone: 'danger' },
+  canceled: { label: 'لغوشده', tone: 'muted' },
+  refund_requested: { label: 'درخواست بازگشت وجه', tone: 'warning' },
+  refunded: { label: 'بازگشت داده شد', tone: 'muted' },
 }
 
 export default async function OrdersPage() {
@@ -27,34 +30,32 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold">سفارش‌ها</h1>
+      <h2 className="title-1 mb-6">سفارش‌ها</h2>
       {orders.docs.length === 0 ? (
-        <p className="text-[var(--color-text-muted)]">هنوز سفارشی ثبت نکرده‌اید.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--color-border)] text-right text-[var(--color-text-muted)]">
-                <th className="py-2">عنوان</th>
-                <th className="py-2">مبلغ</th>
-                <th className="py-2">وضعیت</th>
-                <th className="py-2">تاریخ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.docs.map((order) => (
-                <tr key={order.id} className="border-b border-[var(--color-border)]">
-                  <td className="py-2">{order.titleSnapshot}</td>
-                  <td className="py-2">
-                    <Money rial={order.totalRialSnapshot} />
-                  </td>
-                  <td className="py-2">{STATUS_LABELS[order.status] || order.status}</td>
-                  <td className="py-2">{formatJalaliDate(new Date(order.createdAt))}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="card-soft p-8 text-center">
+          <p className="text-[var(--color-text-muted)]">هنوز سفارشی ثبت نکرده‌اید.</p>
+          <Link href="/packages" className="btn btn-primary mt-5">
+            مشاهده دوره‌ها
+          </Link>
         </div>
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {orders.docs.map((order) => {
+            const status = STATUS[order.status] ?? { label: order.status, tone: 'muted' as const }
+            return (
+              <li key={order.id} className="card-soft flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="font-bold">{splitSampleMarker(order.titleSnapshot).text}</p>
+                  <p className="mt-1 text-[0.875rem] text-[var(--color-text-muted)]">{formatJalaliDate(new Date(order.createdAt))}</p>
+                </div>
+                <div className="flex items-center justify-between gap-4 sm:justify-end">
+                  <Money rial={order.totalRialSnapshot} className="font-extrabold" />
+                  <StatusPill tone={status.tone}>{status.label}</StatusPill>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </div>
   )
