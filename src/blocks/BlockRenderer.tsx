@@ -437,12 +437,21 @@ function ImageBlockView({ block }: { block: AnyBlock }) {
  * نمونه‌کارها: روی موبایل نوار افقی قابل کشیدن (مثل اینستاگرام که مخاطب از آن می‌آید)،
  * روی دسکتاپ شبکه چهارتایی.
  */
+const GALLERY_COLUMNS: Record<number, string> = {
+  1: 'md:max-w-[22rem] md:grid-cols-1',
+  2: 'md:max-w-[44rem] md:grid-cols-2',
+  3: 'md:max-w-[62rem] md:grid-cols-3',
+  4: 'md:grid-cols-4',
+}
+
 function GalleryBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   const items: AnyBlock[] = (block.items || []).filter((item: AnyBlock) => item.image?.url)
   if (items.length === 0) return null
+  // با کمتر از چهار عکس، ستون‌ها کمتر و ردیف وسط‌چین می‌شود تا نیمه ردیف خالی نماند
+  const desktopColumns = GALLERY_COLUMNS[Math.min(items.length, 4)]
   return (
     <Section heading={block.heading}>
-      <ul className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--gutter)] pb-3 md:mx-0 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0 md:pb-0">
+      <ul className={`-mx-[var(--gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--gutter)] pb-3 md:mx-auto md:grid md:gap-4 md:overflow-visible md:px-0 md:pb-0 ${desktopColumns}`}>
         {items.map((item, index) => (
           <li key={item.id || index} className="w-[70%] shrink-0 snap-start sm:w-[42%] md:w-auto">
             <figure>
@@ -461,14 +470,11 @@ function GalleryBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext })
         ))}
       </ul>
       {ctx.instagramServices ? (
-        <a
-          href={`https://instagram.com/${ctx.instagramServices}`}
-          target="_blank"
-          rel="noreferrer"
-          className="btn btn-ghost mt-8"
-        >
-          نمونه‌کارهای بیشتر در اینستاگرام
-        </a>
+        <div className="mt-8 text-center">
+          <a href={`https://instagram.com/${ctx.instagramServices}`} target="_blank" rel="noreferrer" className="btn btn-ghost">
+            نمونه‌کارهای بیشتر در اینستاگرام
+          </a>
+        </div>
       ) : null}
     </Section>
   )
