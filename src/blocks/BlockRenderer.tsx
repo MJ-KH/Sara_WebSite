@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
 import { Ornament } from '@/components/brand/Ornament'
+import { Sparkles } from '@/components/brand/Sparkles'
 import { SwatchFan } from '@/components/brand/SwatchFan'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
 import { FreeLessonCard } from '@/components/free-lessons/FreeLessonCard'
@@ -201,13 +202,18 @@ type ArchImage = { url?: string | null; alt?: string | null } | null
 function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
   const center = position === 1
   return (
-    <figure className="arch-shape arch-stitch relative aspect-[1/2] overflow-hidden bg-[var(--color-bg-alt)]">
+    <figure
+      className="arch-shape arch-stitch arch-gloss relative aspect-[1/2] overflow-hidden bg-[var(--color-bg-alt)]"
+      // برق لاک به ترتیب از قاب اول تا سوم رد می‌شود
+      style={{ '--gloss-delay': `${0.35 + position * 0.22}s` } as CSSProperties}
+    >
       {image?.url ? (
         <Image
           src={image.url}
           alt={image.alt || ''}
           fill
-          priority={center}
+          // هر سه قاب از لحظه اول دیده می‌شوند؛ با تأخیر بارگذاری، برق لاک روی قاب خالی رد می‌شد
+          priority
           sizes="(max-width: 768px) 32vw, 13rem"
           // صورت/ناخن زیر قوس طاق بیفتد، نه بریده شود
           className="object-cover object-[50%_25%]"
@@ -236,10 +242,13 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   return (
     <section className="hero-atelier overflow-hidden">
       {/* عرض محدود تا در دسکتاپ هم تیتر در همان صفحه اول دیده شود */}
-      <div className="container-x grid max-w-[44rem] grid-cols-3 gap-3 pt-8 md:gap-4 md:pt-12">
-        <Arch image={slots[0] ?? null} position={0} />
-        <Arch image={slots[1] ?? null} position={1} />
-        <Arch image={slots[2] ?? null} position={2} />
+      <div className="container-x pt-8 md:pt-12">
+        <div className="relative mx-auto grid max-w-[40rem] grid-cols-3 gap-3 md:gap-4">
+          <Arch image={slots[0] ?? null} position={0} />
+          <Arch image={slots[1] ?? null} position={1} />
+          <Arch image={slots[2] ?? null} position={2} />
+          <Sparkles />
+        </div>
       </div>
       <div className="container-narrow pb-14 pt-9 text-center md:pb-24 md:pt-14">
         {heading.isSample ? (
@@ -247,7 +256,7 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
             <SampleBadge />
           </div>
         ) : null}
-        <h1 className="display-1">{heading.text}</h1>
+        <h1 className="display-1 shine-text">{heading.text}</h1>
         <Ornament className="mt-5 md:mt-7" />
         {subheading.text ? <p className="lead mx-auto mt-5 max-w-[34rem]">{subheading.text}</p> : null}
         <div className="hero-actions mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:mt-10">
