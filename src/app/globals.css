@@ -33,29 +33,34 @@
 }
 
 :root {
-  /* ---------- پالت پایه: سفید و صورتی (هم‌خوان با هویت اینستاگرام سارا) ----------
-     زمینه سفید خالص، بخش‌های متناوب صورتی خیلی روشن، و یک صورتی تمشکی برای خرید و
-     تأکید. کنتراست‌ها بررسی شده: متن سفید روی #c2185b = 5.9، متن کم‌رنگ روی سفید = 5.7. */
-  --ink-900: #2b1d24;
-  --ink-800: #37262f;
-  --ink-700: #4d3943;
-  --ink-500: #76606b;
-  --ink-400: #8a7280;
-  --ink-300: #b39aa6;
+  /* ---------- پالت «آتلیه لوکس»: چینی سفید، رز لاکی عمیق، طلای شامپاینی ----------
+     زمینه سفید چینی گرم و فضای خالی زیاد؛ رز عمیق (رنگ لاک براق) فقط روی دکمه و جزئیات
+     کوچک؛ طلای شامپاینی فقط به‌صورت خط نازک (مثل انگشترهای طلای عکس‌های نمونه‌کار).
+     کنتراست: متن سفید روی #8e2a4a = 8.4، متن کم‌رنگ #6e5d64 روی زمینه = 6.0. */
+  --ink-900: #21151a;
+  --ink-800: #2e1f25;
+  --ink-700: #4a3940;
+  --ink-500: #6e5d64;
+  --ink-400: #8c7b82;
+  --ink-300: #b5a7ad;
 
-  --paper: #ffffff;
-  --paper-2: #fdf1f5;
-  --paper-3: #f9dde8;
+  --paper: #fbf8f7;
+  --paper-2: #f7eef0;
+  --paper-3: #f0dfe3;
   --porcelain: #ffffff;
 
-  --line: #f3dce5;
-  --line-strong: #e6bccb;
+  --line: #ebe1e2;
+  --line-strong: #d9c8cb;
 
-  --accent-700: #9c1149;
-  --accent-600: #c2185b;
-  --accent-500: #d63384;
-  --accent-200: #f6c1d4;
-  --accent-100: #fde8f0;
+  --accent-700: #6e1f39;
+  --accent-600: #8e2a4a;
+  --accent-500: #a8445f;
+  --accent-200: #e8c9d1;
+  --accent-100: #f6e7eb;
+
+  /* طلای شامپاینی: فقط برای خط و جزئیات تزئینی، نه متن (کنتراست کافی برای متن ندارد) */
+  --gold: #c4a47c;
+  --gold-soft: #e4d3bd;
 
   --nude-300: #f4b6cb;
   --blush-100: #fdf1f5;
@@ -105,14 +110,15 @@
 
   /* ---------- گردی ----------
      سه سطح مجزا، نه یک عدد برای همه‌چیز: فیلدها، کارت/رسانه، و دکمه‌های کپسولی. */
-  --radius-base: 0.75rem;
-  --radius-media: 1.5rem;
+  --radius-base: 0.5rem;
+  --radius-media: 0.75rem;
   --radius-pill: 999px;
+  /* دکمه‌ها تقریباً گوشه‌تیز؛ کپسول فقط برای برچسب‌های کوچک (وضعیت، تاریخ) */
+  --radius-btn: 0.25rem;
 
-  /* ---------- سایه نرم لایه‌ای (سبک مرجع Gloss Bar) ----------
-     سایه کمی صورتی است تا روی زمینه صورتی «کثیف» (خاکستری) دیده نشود. */
-  --shadow-soft: 0 30px 60px -34px rgba(156, 17, 73, 0.32), 0 10px 24px -16px rgba(43, 29, 36, 0.1);
-  --shadow-float: 0 20px 44px -22px rgba(156, 17, 73, 0.3), 0 4px 14px -6px rgba(43, 29, 36, 0.08);
+  /* ---------- سایه: بسیار کم؛ جداسازی اصلی با خط نازک و فضای خالی است ---------- */
+  --shadow-soft: 0 24px 48px -36px rgba(33, 21, 26, 0.22);
+  --shadow-float: 0 18px 40px -28px rgba(33, 21, 26, 0.28);
 
   /* ---------- حرکت ---------- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -258,17 +264,15 @@ html[data-font-scale='lg'] {
     padding-block: var(--section-y-sm);
   }
 
-  /* نوار تمام‌عرض کاغذی یا تیره — برای شکستن ریتم صفحه */
-  /* نوار صورتی با بافت خط‌های عمودی بسیار محو (الهام از بافت پس‌زمینه مرجع) */
+  /* نوار تمام‌عرض صورتی خیلی ملایم و ساده — کم‌استفاده، فقط برای شکستن ریتم صفحه */
   .band-alt {
-    background:
-      repeating-linear-gradient(90deg, rgba(194, 24, 91, 0.028) 0 1px, transparent 1px 9px),
-      var(--color-bg-alt);
+    background: var(--color-bg-alt);
   }
 
-  /* کارت نرم شناور: بدون خط دور، سایه لایه‌ای صورتی */
+  /* سطح سفید با خط مویی؛ سایه تقریباً محو */
   .card-soft {
     background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-media);
     box-shadow: var(--shadow-soft);
   }
@@ -279,21 +283,26 @@ html[data-font-scale='lg'] {
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    color: var(--color-primary);
+    color: var(--gold);
   }
 
   .ornament::before,
   .ornament::after {
     content: '';
-    inline-size: 3rem;
+    inline-size: 4rem;
     block-size: 1px;
     background: currentColor;
-    opacity: 0.45;
   }
 
+  /* نوار تیره آلویی (فوتر): توکن‌های رنگ داخل خودش عوض می‌شوند تا اجزای معمولی روی آن خوانا بمانند */
   .band-ink {
+    --color-text: #f4ecee;
+    --color-text-muted: #c2b3b8;
+    --color-border: rgba(196, 164, 124, 0.26);
+    --color-border-strong: rgba(196, 164, 124, 0.55);
+    --color-primary: var(--gold);
     background: var(--ink-900);
-    color: #f3ece3;
+    color: var(--color-text);
   }
 
   .band-ink .muted {
@@ -318,30 +327,33 @@ html[data-font-scale='lg'] {
     text-wrap: balance;
   }
 
+  /* تیتر بزرگ و نازک: تمایز تیتر از اندازه و فضای خالی می‌آید، نه از ضخامت */
   .display-1 {
     font-family: var(--font-display);
-    font-size: clamp(2.3rem, 6.5vw, 3.9rem);
-    font-weight: 800;
-    line-height: 1.45;
+    font-size: clamp(2.5rem, 7vw, 4.75rem);
+    font-weight: 250;
+    line-height: 1.35;
+    color: var(--ink-900);
   }
 
   .display-2 {
     font-family: var(--font-display);
-    font-size: clamp(1.85rem, 4.6vw, 3rem);
-    font-weight: 800;
-    line-height: 1.5;
+    font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--ink-900);
   }
 
   .title-1 {
     font-family: var(--font-display);
-    font-size: clamp(1.4rem, 2.8vw, 1.9rem);
-    font-weight: 700;
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+    font-weight: 400;
     line-height: 1.55;
   }
 
   .title-2 {
-    font-size: clamp(1.08rem, 1.5vw, 1.25rem);
-    font-weight: 700;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    font-weight: 600;
     line-height: 1.65;
   }
 
@@ -414,9 +426,9 @@ html[data-font-scale='lg'] {
     min-height: 3rem;
     padding-inline: 1.75rem;
     padding-block: 0.75rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-btn);
     border: 1px solid transparent;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.9375rem;
     letter-spacing: 0.005em;
     line-height: 1.5;
@@ -488,9 +500,21 @@ html[data-font-scale='lg'] {
   }
 
   .btn-ghost:hover {
-    background: var(--color-text);
     border-color: var(--color-text);
-    color: var(--cta-fg);
+  }
+
+  /* دکمه متنی: برای اقدام دوم کنار دکمه اصلی (به‌جای دو دکمه هم‌وزن) */
+  .btn-link {
+    min-height: auto;
+    padding-inline: 0.25rem;
+    border: 0;
+    border-bottom: 1px solid var(--gold);
+    border-radius: 0;
+    color: var(--color-text);
+  }
+
+  .btn-link:hover {
+    border-bottom-color: var(--color-text);
   }
 
   /* روی نوار تیره، دکمه اصلی کاغذی می‌شود */
@@ -1051,7 +1075,7 @@ html[data-font-scale='lg'] {
 
 @media (min-width: 1024px) {
   .card-grid {
-    gap: 1.75rem;
+    gap: 2.75rem 2.25rem;
   }
 }
 
@@ -1088,5 +1112,39 @@ html[data-font-scale='lg'] {
     min-height: 3rem;
     padding-inline: 1.35rem;
     font-size: 0.9375rem;
+  }
+}
+
+/* =============================================================================
+   سربرگ «آتلیه»: زمینه سفید چینی با نور صورتی خیلی محو پشت قاب‌ها
+   ========================================================================== */
+.hero-atelier {
+  background:
+    radial-gradient(60% 55% at 50% 30%, var(--accent-100) 0%, transparent 70%),
+    var(--color-bg);
+}
+
+/*
+ * قاب طاقی جواهرگونه: عکس در طاق، و دورش یک خط مویی طلایی با فاصله کم — مثل قاب آینه یا
+ * جعبه جواهر. تنها عنصر پررنگ تزئینی صفحه است؛ بقیه آرام می‌ماند.
+ */
+.arch-jewel {
+  position: relative;
+  padding: 0.45rem;
+}
+
+.arch-jewel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gold);
+  border-start-start-radius: 999px;
+  border-start-end-radius: 999px;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .arch-jewel {
+    padding: 0.7rem;
   }
 }

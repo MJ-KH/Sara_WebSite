@@ -33,14 +33,14 @@ export function SiteFooter({
   const hasSocial = pages.length > 0 || youtube || telegram
 
   return (
-    <footer className="band-alt border-t border-[var(--color-border)]">
+    <footer className="band-ink">
       <div className="container-x grid gap-10 py-14 sm:grid-cols-2 md:py-16 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
-          <p className="font-display text-[1.5rem] font-bold">{brandName}</p>
+          <p className="text-[1.6rem] font-light">{brandName}</p>
           {tagline ? <p className="mt-1 text-[var(--color-text-muted)]">{tagline}</p> : null}
           <div className="mt-5 flex flex-col gap-2">
             {mobile ? (
-              <a href={mobile.href} dir="ltr" className="self-start text-[1.125rem] font-bold text-[var(--color-primary)]">
+              <a href={mobile.href} dir="ltr" className="self-start text-[1.125rem] font-medium text-[var(--color-primary)]">
                 {mobile.text}
               </a>
             ) : null}
@@ -51,7 +51,7 @@ export function SiteFooter({
             ) : null}
           </div>
           {whatsapp ? (
-            <a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm mt-5 bg-[var(--color-surface)]">
+            <a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm mt-5">
               پیام در واتساپ
             </a>
           ) : null}
@@ -59,7 +59,7 @@ export function SiteFooter({
 
         {columns.map((col) => (
           <nav key={col.title} aria-label={col.title}>
-            <h3 className="mb-4 font-bold">{col.title}</h3>
+            <h3 className="mb-4 text-[0.875rem] font-medium text-[var(--color-primary)]">{col.title}</h3>
             <ul className="flex flex-col gap-3 text-[0.9375rem] text-[var(--color-text-muted)]">
               {col.links.map((link) => (
                 <li key={link.href}>
@@ -74,7 +74,7 @@ export function SiteFooter({
 
         {hasSocial ? (
           <nav aria-label="شبکه‌های اجتماعی">
-            <h3 className="mb-4 font-bold">شبکه‌های اجتماعی</h3>
+            <h3 className="mb-4 text-[0.875rem] font-medium text-[var(--color-primary)]">شبکه‌های اجتماعی</h3>
             <ul className="flex flex-col gap-3 text-[0.9375rem] text-[var(--color-text-muted)]">
               {pages.map((page) => (
                 <li key={page.handle}>

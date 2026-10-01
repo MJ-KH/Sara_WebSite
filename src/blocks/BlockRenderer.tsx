@@ -12,9 +12,8 @@ import { Money } from '@/components/ui/Money'
 import { SampleBadge } from '@/components/ui/SampleBadge'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
-import { HERO_PALETTE, SHADES } from '@/lib/brand/swatches'
+import { HERO_PALETTE } from '@/lib/brand/swatches'
 import { phoneForDisplay, splitSampleMarker, whatsappLink } from '@/lib/display'
-import { toPersianDigits } from '@/lib/digits'
 import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { getPackageStats } from '@/lib/packages/stats'
@@ -202,7 +201,7 @@ function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
   const center = position === 1
   return (
     <div className={center ? 'w-[40%] md:w-[38%]' : 'w-[28%] md:w-[29%]'}>
-      <div className="rounded-t-full bg-[var(--color-surface)] p-1.5 shadow-[var(--shadow-soft)] md:p-3">
+      <div className="arch-jewel">
         <div
           className={`relative overflow-hidden rounded-t-full ${
             center
@@ -244,23 +243,23 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
       ? [archImages[0] ?? null, archImages[1] ?? archImages[0] ?? null, archImages[2] ?? null]
       : [null, block.image?.url ? block.image : null, null]
   return (
-    <section className="band-alt overflow-hidden">
+    <section className="hero-atelier overflow-hidden">
       {/* عرض محدود تا در دسکتاپ هم تیتر در همان صفحه اول دیده شود */}
-      <div className="container-x flex max-w-[62rem] items-end justify-center gap-2 pt-6 sm:gap-4 md:gap-8 md:pt-10">
+      <div className="container-x flex max-w-[62rem] items-end justify-center gap-2.5 pt-8 sm:gap-5 md:gap-10 md:pt-14">
         <Arch image={slots[0] ?? null} position={0} />
         <Arch image={slots[1] ?? null} position={1} />
         <Arch image={slots[2] ?? null} position={2} />
       </div>
-      <div className="container-narrow pb-12 pt-7 text-center md:pb-20 md:pt-10">
+      <div className="container-narrow pb-14 pt-9 text-center md:pb-24 md:pt-14">
         {heading.isSample ? (
           <div className="mb-4 flex justify-center">
             <SampleBadge />
           </div>
         ) : null}
         <h1 className="display-1">{heading.text}</h1>
-        {subheading.text ? <p className="lead mx-auto mt-3 max-w-[34rem]">{subheading.text}</p> : null}
-        <Ornament className="mt-5 md:mt-6" />
-        <div className="hero-actions mt-6 flex flex-wrap justify-center gap-3 md:mt-8">
+        <Ornament className="mt-5 md:mt-7" />
+        {subheading.text ? <p className="lead mx-auto mt-5 max-w-[34rem]">{subheading.text}</p> : null}
+        <div className="hero-actions mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:mt-10">
           {block.ctaLabel && block.ctaHref ? (
             /^https?:\/\//.test(block.ctaHref) ? (
               <a href={block.ctaHref} target="_blank" rel="noreferrer" className="btn btn-primary btn-lg">
@@ -274,11 +273,11 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
           ) : null}
           {/* دکمه دوم: اگر ورکشاپ پیش رو هست ثبت‌نام آن، وگرنه مشاوره (فقط اگر همین صفحه فرم مشاوره دارد) */}
           {ctx.hasWorkshopList && ctx.hasUpcomingWorkshop ? (
-            <Link href="/workshops" className="btn btn-ghost btn-lg bg-[var(--color-surface)]">
+            <Link href="/workshops" className="btn btn-link">
               ثبت‌نام ورکشاپ
             </Link>
           ) : ctx.hasConsultationForm ? (
-            <Link href={`#${CONSULTATION_ANCHOR}`} className="btn btn-ghost btn-lg bg-[var(--color-surface)]">
+            <Link href={`#${CONSULTATION_ANCHOR}`} className="btn btn-link">
               مشاوره انتخاب دوره
             </Link>
           ) : null}
@@ -288,46 +287,41 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   )
 }
 
-/** رنگ تیپ‌های هر مسیر از روشن به عمیق می‌رود: همان ترتیب مبتدی ← باتجربه که مدیر چیده است. */
-const PATH_SWATCHES = [
-  [SHADES.milk, SHADES.blush, SHADES.petal],
-  [SHADES.petal, SHADES.rose, SHADES.raspberry],
-  [SHADES.rose, SHADES.raspberry, SHADES.berry],
-]
-
 function StartGuideBlockView({ block }: { block: AnyBlock }) {
   const paths: AnyBlock[] = block.paths || []
   if (paths.length === 0) return null
   const intro = splitSampleMarker(block.intro)
   return (
-    <Section heading={block.heading || 'از کجا شروع کنم؟'} tone="alt">
-      {intro.text ? <p className="lead -mt-4 mb-10 max-w-[36rem]">{intro.text}</p> : null}
-      <div className={`grid grid-cols-1 gap-5 ${paths.length > 1 ? 'md:grid-cols-2' : ''} ${paths.length > 2 ? 'lg:grid-cols-3' : ''}`}>
+    <Section heading={block.heading || 'از کجا شروع کنم؟'}>
+      {intro.text ? <p className="lead mx-auto -mt-4 mb-12 max-w-[36rem] text-center">{intro.text}</p> : null}
+      {/* مسیرها کنار هم با خط مویی طلایی بینشان؛ بدون کارت، تا فقط متن و انتخاب دیده شود */}
+      <div className={`grid grid-cols-1 gap-12 ${paths.length > 1 ? 'md:grid-cols-2 md:gap-0' : ''} ${paths.length > 2 ? 'lg:grid-cols-3' : ''}`}>
         {paths.map((path, index) => {
           const audience = splitSampleMarker(path.audience)
           const description = splitSampleMarker(path.description)
           const packages: AnyBlock[] = (path.recommendedPackages || []).filter((p: AnyBlock) => typeof p === 'object' && p?.status !== 'draft')
           return (
-            <div key={path.id || index} className="card-soft flex flex-col p-6 md:p-8">
+            <div
+              key={path.id || index}
+              className={`flex flex-col text-center md:px-10 lg:px-14 ${index > 0 ? 'border-t border-[var(--gold-soft)] pt-12 md:border-s md:border-t-0 md:pt-0' : ''}`}
+            >
               {audience.isSample || description.isSample ? (
-                <div className="mb-3">
+                <div className="mb-3 flex justify-center">
                   <SampleBadge />
                 </div>
               ) : null}
-              <div className="mb-5 flex items-start gap-3">
-                <span className="mt-1 block w-10 shrink-0">
-                  <SwatchFan id={`path-${index}`} colors={PATH_SWATCHES[index % PATH_SWATCHES.length] as string[]} spread={50} />
-                </span>
-                <h3 className="title-1 min-w-0 flex-1">{audience.text}</h3>
-              </div>
-              <p className="text-[var(--color-text-muted)]">{description.text}</p>
+              <h3 className="title-1">{audience.text}</h3>
+              <p className="mx-auto mt-3 max-w-[30rem] leading-[2] text-[var(--color-text-muted)]">{description.text}</p>
 
               {packages.length > 0 ? (
-                <ul className="mt-6 border-t border-[var(--color-border)]">
+                <ul className="mx-auto mt-7 flex w-full max-w-[24rem] flex-col gap-3">
                   {packages.map((pkg) => (
-                    <li key={pkg.id} className="border-b border-[var(--color-border)]">
-                      <Link href={`/packages/${pkg.slug}`} className="flex min-h-14 items-center justify-between gap-4 py-3 hover:text-[var(--color-primary)]">
-                        <span className="font-bold">{splitSampleMarker(pkg.title).text}</span>
+                    <li key={pkg.id}>
+                      <Link
+                        href={`/packages/${pkg.slug}`}
+                        className="flex items-baseline justify-between gap-4 border-b border-[var(--gold-soft)] pb-3 transition-colors hover:border-[var(--color-text)]"
+                      >
+                        <span className="font-medium">{splitSampleMarker(pkg.title).text}</span>
                         <Money rial={pkg.priceRial} className="shrink-0 text-[0.9375rem] text-[var(--color-text-muted)]" />
                       </Link>
                     </li>
@@ -336,7 +330,7 @@ function StartGuideBlockView({ block }: { block: AnyBlock }) {
               ) : null}
 
               {path.linkLabel && path.linkHref ? (
-                <Link href={path.linkHref} className="btn btn-ghost mt-6 self-start">
+                <Link href={path.linkHref} className="btn btn-link mx-auto mt-6">
                   {path.linkLabel}
                 </Link>
               ) : null}
@@ -365,9 +359,7 @@ function AboutIntroBlockView({ block }: { block: AnyBlock }) {
       <div className={twoColumns ? 'container-x grid items-center gap-10 md:grid-cols-[1fr_1.1fr] md:gap-14 lg:gap-20' : 'container-narrow'}>
         <div className={`text-center ${twoColumns ? 'md:text-start' : ''}`}>
           {photo ? (
-            <div
-              className={`mx-auto mb-8 w-[62%] max-w-[16rem] rounded-t-full bg-[var(--color-surface)] p-2 shadow-[var(--shadow-soft)] ${twoColumns ? 'md:mx-0' : ''}`}
-            >
+            <div className={`arch-jewel mx-auto mb-10 w-[62%] max-w-[17rem] ${twoColumns ? 'md:mx-0' : ''}`}>
               <div className="relative aspect-[4/5] overflow-hidden rounded-t-full">
                 <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="16rem" className="object-cover" />
               </div>
@@ -382,29 +374,22 @@ function AboutIntroBlockView({ block }: { block: AnyBlock }) {
           <p className={`lead mx-auto mt-5 max-w-[38rem] whitespace-pre-line ${twoColumns ? 'md:mx-0' : ''}`}>{body.text}</p>
           <Ornament className={`mt-7 ${twoColumns ? 'md:justify-start' : ''}`} />
           {block.linkLabel && block.linkHref ? (
-            <Link href={block.linkHref} className="btn btn-ghost mt-8">
+            <Link href={block.linkHref} className="btn btn-link mt-8">
               {block.linkLabel}
             </Link>
           ) : null}
         </div>
 
         {twoColumns ? (
-          <ol className="card-soft divide-y divide-[var(--color-border)] px-5 py-2 md:px-8 md:py-4">
+          // اصول روش آموزش ترتیب ندارند؛ پس بدون شماره، فقط با خط مویی طلایی از هم جدا می‌شوند
+          <ul className="border-t border-[var(--gold-soft)]">
             {points.map((point, index) => (
-              <li key={point.id || index} className="flex items-start gap-4 py-5">
-                <span
-                  aria-hidden="true"
-                  className="font-display flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-soft)] text-[1.1rem] font-bold text-[var(--color-primary)]"
-                >
-                  {toPersianDigits(index + 1)}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="title-2">{splitSampleMarker(point.title).text}</h3>
-                  <p className="mt-1.5 text-[0.9375rem] leading-[1.9] text-[var(--color-text-muted)]">{splitSampleMarker(point.text).text}</p>
-                </div>
+              <li key={point.id || index} className="border-b border-[var(--gold-soft)] py-7">
+                <h3 className="text-[1.25rem] font-normal leading-[1.6]">{splitSampleMarker(point.title).text}</h3>
+                <p className="mt-2 text-[0.9375rem] leading-[1.95] text-[var(--color-text-muted)]">{splitSampleMarker(point.text).text}</p>
               </li>
             ))}
-          </ol>
+          </ul>
         ) : null}
       </div>
     </section>
