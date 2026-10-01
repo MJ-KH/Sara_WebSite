@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/vazirmatn';
-@import '@fontsource-variable/noto-naskh-arabic';
 
 /* =============================================================================
    سیستم طراحی «آتلیه» — سارا نقی‌زاده
@@ -26,9 +25,8 @@
 
 @theme {
   --font-sans: 'IRANSansX', 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
-  /* تیترها: نسخ — معادل فارسیِ ظرافت سریف‌های مجله‌ای (مثل Playfair در مرجع Gloss Bar).
-     متن بدنه ایران‌سنس است چون برای خواندن طولانی روی موبایل خواناتر است. */
-  --font-display: 'Noto Naskh Arabic Variable', 'IRANSansX', 'Vazirmatn Variable', serif;
+  /* تیترها هم ایران‌سنس‌اند تا کل سایت یک خانواده فونت داشته باشد؛ تمایز تیتر از وزن و اندازه می‌آید */
+  --font-display: 'IRANSansX', 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
   /* فقط برای لهجه‌های لاتین (شماره بخش‌ها، ایتالیک تزئینی). فونت لاتین نصب‌شده‌ای
      در پروژه نداریم؛ این پشته روی سیستم‌های مختلف به یک سریف کلاسیک می‌رسد. */
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Didot, 'Bodoni MT', Georgia, serif;
@@ -323,22 +321,22 @@ html[data-font-scale='lg'] {
   .display-1 {
     font-family: var(--font-display);
     font-size: clamp(2.3rem, 6.5vw, 3.9rem);
-    font-weight: 700;
-    line-height: 1.55;
+    font-weight: 800;
+    line-height: 1.45;
   }
 
   .display-2 {
     font-family: var(--font-display);
     font-size: clamp(1.85rem, 4.6vw, 3rem);
-    font-weight: 700;
-    line-height: 1.6;
+    font-weight: 800;
+    line-height: 1.5;
   }
 
   .title-1 {
     font-family: var(--font-display);
     font-size: clamp(1.4rem, 2.8vw, 1.9rem);
     font-weight: 700;
-    line-height: 1.65;
+    line-height: 1.55;
   }
 
   .title-2 {

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Ornament } from '@/components/brand/Ornament'
 
-/** سربرگ یکسان صفحه‌های داخلی: نوار صورتی، تیتر نسخ وسط‌چین، جداکننده تزئینی؛ children مثلاً نوار فیلتر. */
+/** سربرگ یکسان صفحه‌های داخلی: نوار صورتی، تیتر درشت وسط‌چین، جداکننده تزئینی؛ children مثلاً نوار فیلتر. */
 export function PageIntro({ title, lead, children }: { title: string; lead?: string; children?: ReactNode }) {
   return (
     <section className="band-alt">

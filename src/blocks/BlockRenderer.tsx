@@ -232,7 +232,7 @@ function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
 
 /**
  * بالای صفحه به سبک مرجع Gloss Bar: سه قاب طاقی کنار هم (وسطی بزرگ‌تر) و زیرش عنوان
- * وسط‌چین با تیتر نسخ و جداکننده تزئینی.
+ * وسط‌چین با تیتر درشت و جداکننده تزئینی.
  */
 function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   const heading = splitSampleMarker(block.heading)
