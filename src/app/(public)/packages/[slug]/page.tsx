@@ -13,7 +13,7 @@ import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { paletteForPackage } from '@/lib/brand/swatches'
 import { toPersianDigits } from '@/lib/digits'
-import { formatDurationFa, splitSampleMarker } from '@/lib/display'
+import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { formatJalaliDate } from '@/lib/jalali'
@@ -158,7 +158,6 @@ export default async function PackageDetailPage({ params }: Params) {
 
   const title = splitSampleMarker(pkg.title)
   const subtitle = splitSampleMarker(pkg.subtitle)
-  const totalSeconds = lessons.reduce((sum, l) => sum + (l.durationSeconds || 0), 0)
   const coverImage = typeof pkg.coverImage === 'object' ? pkg.coverImage : null
   const hasDiscount = Boolean(pkg.compareAtPriceRial && pkg.compareAtPriceRial > pkg.priceRial)
   const freePreviewCount = lessons.filter((l) => l.isFreePreview).length
@@ -171,7 +170,6 @@ export default async function PackageDetailPage({ params }: Params) {
 
   const facts: { label: string; value: string }[] = [
     { label: 'تعداد درس', value: lessons.length > 0 ? `${toPersianDigits(lessons.length)} درس در ${toPersianDigits(Math.max(chapters.length, 1))} فصل` : 'به‌زودی' },
-    { label: 'مدت آموزش', value: totalSeconds > 0 ? formatDurationFa(totalSeconds) : 'به‌زودی مشخص می‌شود' },
     { label: 'مدت دسترسی', value: pkg.accessDurationDays ? `${toPersianDigits(pkg.accessDurationDays)} روز از زمان خرید` : 'مادام‌العمر' },
     ...(pkg.spotplayerCourseId ? [{ label: 'محل تماشا', value: 'نرم‌افزار اسپات‌پلیر' }] : []),
     ...(freePreviewCount > 0 ? [{ label: 'نمونه رایگان', value: `${toPersianDigits(freePreviewCount)} درس بدون خرید` }] : []),
@@ -293,7 +291,6 @@ export default async function PackageDetailPage({ params }: Params) {
             <Block id="curriculum" title="سرفصل‌ها">
               <p className="-mt-2 mb-6 text-[var(--color-text-muted)]">
                 {toPersianDigits(chapters.length)} فصل، {toPersianDigits(lessons.length)} درس
-                {totalSeconds > 0 ? `، ${formatDurationFa(totalSeconds)}` : ''}
               </p>
               <ol className="flex flex-col gap-8">
                 {chapters.map((chapter, chapterIndex) => {
@@ -313,9 +310,6 @@ export default async function PackageDetailPage({ params }: Params) {
                                 {toPersianDigits(lessonIndex + 1)}
                               </span>
                               <span className="min-w-0 flex-1">{lessonTitle}</span>
-                              {lesson.durationSeconds ? (
-                                <span className="shrink-0 text-[0.8125rem] text-[var(--color-text-muted)]">{formatDurationFa(lesson.durationSeconds)}</span>
-                              ) : null}
                               {lesson.isFreePreview ? (
                                 <Link
                                   href={`/packages/${pkg.slug}/preview/${lesson.id}`}

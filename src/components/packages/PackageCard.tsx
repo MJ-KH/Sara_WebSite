@@ -5,7 +5,7 @@ import { Money } from '@/components/ui/Money'
 import { SampleBadge } from '@/components/ui/SampleBadge'
 import { paletteForPackage } from '@/lib/brand/swatches'
 import { toPersianDigits } from '@/lib/digits'
-import { formatDurationFa, splitSampleMarker } from '@/lib/display'
+import { splitSampleMarker } from '@/lib/display'
 
 const LEVEL_LABELS: Record<string, string> = {
   beginner: 'مبتدی',
@@ -24,7 +24,7 @@ export type PackageCardData = {
   coverImage?: { url?: string | null; alt?: string | null } | null
 }
 
-export type PackageStats = { lessonCount: number; totalSeconds: number }
+export type PackageStats = { lessonCount: number }
 
 export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: PackageStats }) {
   const hasDiscount = Boolean(pkg.compareAtPriceRial && pkg.compareAtPriceRial > pkg.priceRial)
@@ -64,10 +64,7 @@ export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: Pack
         {subtitle.text ? <p className="text-[0.9375rem] leading-[1.9] text-[var(--color-text-muted)]">{subtitle.text}</p> : null}
 
         {stats && stats.lessonCount > 0 ? (
-          <p className="text-[0.875rem] text-[var(--color-text-muted)]">
-            {toPersianDigits(stats.lessonCount)} درس
-            {stats.totalSeconds > 0 ? `، ${formatDurationFa(stats.totalSeconds)} آموزش` : null}
-          </p>
+          <p className="text-[0.875rem] text-[var(--color-text-muted)]">{toPersianDigits(stats.lessonCount)} درس</p>
         ) : null}
 
         <div className="mt-auto flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-[var(--color-border)] pt-4">

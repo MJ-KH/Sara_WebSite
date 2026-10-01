@@ -35,13 +35,3 @@ export function splitSampleMarker(text: string | null | undefined): { text: stri
     : { text: value, isSample: false }
 }
 
-/** مدت آموزش به فارسی روان، مثلاً «۴ ساعت و ۲۰ دقیقه» یا «۴۵ دقیقه». */
-export function formatDurationFa(totalSeconds: number): string {
-  const minutes = Math.round(totalSeconds / 60)
-  if (minutes < 60) return `${toPersianDigits(Math.max(minutes, 1))} دقیقه`
-  const hours = Math.floor(minutes / 60)
-  const rest = minutes % 60
-  return rest === 0
-    ? `${toPersianDigits(hours)} ساعت`
-    : `${toPersianDigits(hours)} ساعت و ${toPersianDigits(rest)} دقیقه`
-}
