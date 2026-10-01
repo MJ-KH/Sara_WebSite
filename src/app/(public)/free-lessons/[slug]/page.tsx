@@ -2,10 +2,19 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Ornament } from '@/components/brand/Ornament'
+import { SampleBadge } from '@/components/ui/SampleBadge'
 import { getRequestUser } from '@/lib/auth/get-request-user'
+import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
 
 type Params = { params: Promise<{ slug: string }> }
+
+const CONTENT_TYPE_LABELS: Record<string, string> = {
+  article: 'مقاله',
+  video: 'ویدئو',
+  file: 'فایل دانلودی',
+}
 
 async function getItem(slug: string) {
   const payload = await getPayloadClient()
@@ -21,7 +30,7 @@ async function getItem(slug: string) {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params
   const item = await getItem(slug)
-  return { title: item?.title }
+  return { title: item ? splitSampleMarker(item.title).text : undefined }
 }
 
 export default async function FreeLessonDetailPage({ params }: Params) {
@@ -33,49 +42,79 @@ export default async function FreeLessonDetailPage({ params }: Params) {
   const canDownload = !item.requiresLoginForDownload || user?.collection === 'students'
   const downloadFile = typeof item.downloadFile === 'object' ? item.downloadFile : null
   const relatedPackage = typeof item.relatedPackage === 'object' ? item.relatedPackage : null
+  const category = typeof item.category === 'object' ? item.category : null
+  const title = splitSampleMarker(item.title)
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-2xl font-bold">{item.title}</h1>
-      {item.body ? (
-        <div className="prose prose-neutral mt-6 max-w-none leading-loose">
-          <RichText data={item.body} />
+    <article>
+      <header className="band-alt">
+        <div className="container-narrow py-12 text-center md:py-16">
+          <nav aria-label="مسیر صفحه" className="text-[0.875rem] text-[var(--color-text-muted)]">
+            <Link href="/free-lessons" className="hover:text-[var(--color-primary)]">
+              آموزش رایگان
+            </Link>
+            {category?.title ? (
+              <>
+                <span className="mx-2" aria-hidden="true">
+                  /
+                </span>
+                <Link href={`/free-lessons?category=${category.id}`} className="hover:text-[var(--color-primary)]">
+                  {category.title}
+                </Link>
+              </>
+            ) : null}
+          </nav>
+          <div className="mt-4 flex items-center justify-center gap-2 text-[0.8125rem] font-semibold text-[var(--color-primary)]">
+            <span>{CONTENT_TYPE_LABELS[item.contentType] ?? ''}</span>
+            {title.isSample ? <SampleBadge /> : null}
+          </div>
+          <h1 className="display-2 mt-2">{title.text}</h1>
+          <Ornament className="mt-6" />
         </div>
-      ) : null}
+      </header>
 
-      {item.contentType === 'video' && item.videoUrl ? (
-        <div className="mt-6">
-          <a href={item.videoUrl} target="_blank" rel="noreferrer" className="text-[var(--color-primary)] underline">
+      <div className="container-narrow section">
+        {item.body ? (
+          <div className="rich-text">
+            <RichText data={item.body} />
+          </div>
+        ) : null}
+
+        {item.contentType === 'video' && item.videoUrl ? (
+          <a href={item.videoUrl} target="_blank" rel="noreferrer" className="btn btn-primary mt-8">
             مشاهده ویدئو
           </a>
-        </div>
-      ) : null}
+        ) : null}
 
-      {downloadFile?.url ? (
-        <div className="mt-6 rounded-[var(--radius-base)] border border-[var(--color-border)] p-4">
-          {canDownload ? (
-            <a href={downloadFile.url} className="btn btn-primary inline-block px-4 py-2 text-sm font-bold">
-              دانلود فایل
-            </a>
-          ) : (
+        {downloadFile?.url ? (
+          <div className="card-soft mt-10 p-6">
+            {canDownload ? (
+              <a href={downloadFile.url} className="btn btn-primary">
+                دانلود فایل
+              </a>
+            ) : (
+              <div>
+                <p className="text-[var(--color-text-muted)]">برای دانلود این فایل ابتدا باید وارد حساب کاربری شوید.</p>
+                <Link href="/account" className="btn btn-ghost mt-4">
+                  ورود / ثبت‌نام
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : null}
+
+        {relatedPackage ? (
+          <aside className="card-soft mt-12 flex flex-col items-start gap-3 p-6 md:flex-row md:items-center md:justify-between md:p-8">
             <div>
-              <p className="text-sm text-[var(--color-text-muted)]">برای دانلود این فایل ابتدا باید وارد حساب کاربری شوید.</p>
-              <Link href="/account/profile" className="mt-2 inline-block text-sm text-[var(--color-primary)] underline">
-                ورود / ثبت‌نام
-              </Link>
+              <p className="text-[0.9375rem] text-[var(--color-text-muted)]">می‌خواهید این موضوع را کامل و عملی یاد بگیرید؟</p>
+              <p className="title-2 mt-1">دوره «{splitSampleMarker(relatedPackage.title).text}»</p>
             </div>
-          )}
-        </div>
-      ) : null}
-
-      {relatedPackage ? (
-        <div className="mt-10 rounded-[var(--radius-base)] bg-[var(--color-accent-soft)] p-4">
-          <p className="text-sm">علاقه‌مند به یادگیری بیشتر؟</p>
-          <Link href={`/packages/${relatedPackage.slug}`} className="mt-1 inline-block font-bold text-[var(--color-primary)]">
-            مشاهده دوره «{relatedPackage.title}»
-          </Link>
-        </div>
-      ) : null}
+            <Link href={`/packages/${relatedPackage.slug}`} className="btn btn-primary shrink-0">
+              مشاهده دوره
+            </Link>
+          </aside>
+        ) : null}
+      </div>
     </article>
   )
 }

@@ -20,6 +20,7 @@
     "migrate:status": "payload migrate:status",
     "seed": "tsx scripts/seed.ts",
     "apply:structure": "tsx scripts/apply-site-structure.ts",
+    "apply:jozve": "tsx scripts/apply-jozve-content.ts",
     "create-first-admin": "tsx scripts/create-first-admin.ts",
     "worker": "tsx src/worker/index.ts",
     "test:unit": "vitest run",

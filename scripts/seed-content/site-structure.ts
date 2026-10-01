@@ -76,8 +76,8 @@ export const FREE_LESSON_CATEGORIES = [
   { slug: 'nail-art', title: 'طراحی ناخن' },
 ]
 
-/** متن ساده → ساختار ریچ‌تکست Lexical (پاراگراف‌ها و فهرست نقطه‌ای) */
-export function lexical(nodes: ({ p: string } | { ul: string[] })[]) {
+/** متن ساده → ساختار ریچ‌تکست Lexical (پاراگراف، تیتر h2/h3 و فهرست نقطه‌ای) */
+export function lexical(nodes: ({ p: string } | { h2: string } | { h3: string } | { ul: string[] })[]) {
   const text = (value: string) => ({ type: 'text', text: value, format: 0, style: '', mode: 'normal', detail: 0, version: 1 })
   const base = { format: '', indent: 0, version: 1, direction: 'rtl' as const }
   return {
@@ -87,14 +87,16 @@ export function lexical(nodes: ({ p: string } | { ul: string[] })[]) {
       children: nodes.map((node) =>
         'p' in node
           ? { ...base, type: 'paragraph', textFormat: 0, textStyle: '', children: [text(node.p)] }
-          : {
-              ...base,
-              type: 'list',
-              listType: 'bullet',
-              start: 1,
-              tag: 'ul',
-              children: node.ul.map((item, index) => ({ ...base, type: 'listitem', value: index + 1, children: [text(item)] })),
-            },
+          : 'h2' in node || 'h3' in node
+            ? { ...base, type: 'heading', tag: 'h2' in node ? 'h2' : 'h3', children: [text('h2' in node ? node.h2 : node.h3)] }
+            : {
+                ...base,
+                type: 'list',
+                listType: 'bullet',
+                start: 1,
+                tag: 'ul',
+                children: node.ul.map((item, index) => ({ ...base, type: 'listitem', value: index + 1, children: [text(item)] })),
+              },
       ),
     },
   }
