@@ -3,6 +3,7 @@ import * as migration_20260930_135138_add_start_guide_about_blocks from './20260
 import * as migration_20260930_155604_hero_arch_images from './20260930_155604_hero_arch_images';
 import * as migration_20260930_161600_structure_contact_course_fields from './20260930_161600_structure_contact_course_fields';
 import * as migration_20261001_133425_spotplayer_license from './20261001_133425_spotplayer_license';
+import * as migration_20261001_141724_brand_logo_on_dark from './20261001_141724_brand_logo_on_dark';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261001_133425_spotplayer_license.up,
     down: migration_20261001_133425_spotplayer_license.down,
-    name: '20261001_133425_spotplayer_license'
+    name: '20261001_133425_spotplayer_license',
+  },
+  {
+    up: migration_20261001_141724_brand_logo_on_dark.up,
+    down: migration_20261001_141724_brand_logo_on_dark.down,
+    name: '20261001_141724_brand_logo_on_dark'
   },
 ];
