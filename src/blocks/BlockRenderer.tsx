@@ -201,13 +201,13 @@ type ArchImage = { url?: string | null; alt?: string | null } | null
 function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
   const center = position === 1
   return (
-    <div className={center ? 'w-[36%] md:w-[36%]' : 'w-[26%] md:w-[27%]'}>
-      <div className="rounded-t-full bg-[var(--color-surface)] p-1.5 shadow-[var(--shadow-soft)] md:p-2.5">
+    <div className={center ? 'w-[40%] md:w-[38%]' : 'w-[28%] md:w-[29%]'}>
+      <div className="rounded-t-full bg-[var(--color-surface)] p-1.5 shadow-[var(--shadow-soft)] md:p-3">
         <div
           className={`relative overflow-hidden rounded-t-full ${
             center
-              ? 'aspect-[4/5] bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-bg-alt)] md:aspect-[5/7]'
-              : 'aspect-[5/6] bg-gradient-to-b from-[var(--color-bg-alt)] to-[var(--color-accent-soft)] md:aspect-[3/4]'
+              ? 'aspect-[3/4] bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-bg-alt)] md:aspect-[5/7]'
+              : 'aspect-[4/5] bg-gradient-to-b from-[var(--color-bg-alt)] to-[var(--color-accent-soft)] md:aspect-[3/4]'
           }`}
         >
           {image?.url ? (
@@ -216,8 +216,9 @@ function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
               alt={image.alt || ''}
               fill
               priority={center}
-              sizes={center ? '(max-width: 768px) 36vw, 26rem' : '(max-width: 768px) 26vw, 20rem'}
-              className="object-cover"
+              sizes={center ? '(max-width: 768px) 40vw, 24rem' : '(max-width: 768px) 28vw, 18rem'}
+              // بالای عکس (صورت) در قاب طاقی دیده شود، نه وسط آن
+              className="object-cover object-[50%_20%]"
             />
           ) : center ? (
             <div className="absolute inset-x-[6%] bottom-[-6%]">
@@ -245,7 +246,7 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   return (
     <section className="band-alt overflow-hidden">
       {/* عرض محدود تا در دسکتاپ هم تیتر در همان صفحه اول دیده شود */}
-      <div className="container-x flex max-w-[42rem] items-end justify-center gap-2.5 pt-6 sm:gap-4 md:gap-6 md:pt-10">
+      <div className="container-x flex max-w-[62rem] items-end justify-center gap-2 pt-6 sm:gap-4 md:gap-8 md:pt-10">
         <Arch image={slots[0] ?? null} position={0} />
         <Arch image={slots[1] ?? null} position={1} />
         <Arch image={slots[2] ?? null} position={2} />
