@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { phoneForDisplay } from '@/lib/display'
 
@@ -7,6 +8,7 @@ type InstagramPage = { handle?: string | null; label: string }
 export function SiteFooter({
   brandName,
   tagline,
+  logo,
   phone,
   landline,
   whatsapp,
@@ -18,6 +20,8 @@ export function SiteFooter({
 }: {
   brandName: string
   tagline?: string | null
+  /** نسخه روشن لوگوی کامل برای زمینه تیره فوتر */
+  logo?: { url: string; width: number; height: number } | null
   phone?: string | null
   landline?: string | null
   whatsapp?: string | null
@@ -36,8 +40,14 @@ export function SiteFooter({
     <footer className="band-ink">
       <div className="container-x grid gap-10 py-14 sm:grid-cols-2 md:py-16 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
-          <p className="text-[1.6rem] font-light">{brandName}</p>
-          {tagline ? <p className="mt-1 text-[var(--color-text-muted)]">{tagline}</p> : null}
+          {logo ? (
+            <Image src={logo.url} alt={brandName} width={logo.width} height={logo.height} className="h-auto w-56 md:w-64" />
+          ) : (
+            <>
+              <p className="text-[1.6rem] font-light">{brandName}</p>
+              {tagline ? <p className="mt-1 text-[var(--color-text-muted)]">{tagline}</p> : null}
+            </>
+          )}
           <div className="mt-5 flex flex-col gap-2">
             {mobile ? (
               <a href={mobile.href} dir="ltr" className="self-start text-[1.125rem] font-medium text-[var(--color-primary)]">

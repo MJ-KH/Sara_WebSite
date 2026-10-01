@@ -19,13 +19,13 @@ function TipMark() {
 export function SiteHeader({
   brandName,
   tagline,
-  logoUrl,
+  logo,
   menu,
   isStudentLoggedIn,
 }: {
   brandName: string
   tagline?: string | null
-  logoUrl?: string | null
+  logo?: { url: string; width: number; height: number } | null
   menu: MenuItem[]
   isStudentLoggedIn: boolean
 }) {
@@ -34,7 +34,13 @@ export function SiteHeader({
     <header className="sticky top-0 z-40 px-3 pt-3 md:px-6 md:pt-4">
       <div className="relative mx-auto flex h-16 max-w-[var(--container-wide)] items-center gap-4 rounded-[var(--radius-media)] border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface)_90%,transparent)] px-4 shadow-[var(--shadow-soft)] backdrop-blur-md md:h-20 md:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-3">
-          {logoUrl ? <Image src={logoUrl} alt={brandName} width={44} height={44} className="h-11 w-auto" /> : <TipMark />}
+          {/* نام سایت کنارش نوشته شده، پس تصویر لوگو برای صفحه‌خوان تزئینی است */}
+          {/* در موبایل جای مونوگرام کنار نام و دو دکمه نیست؛ از عرض تبلت نمایش داده می‌شود */}
+          {logo ? (
+            <Image src={logo.url} alt="" width={logo.width} height={logo.height} priority className="hidden h-9 w-auto sm:block md:h-11" />
+          ) : (
+            <TipMark />
+          )}
           <span className="flex flex-col leading-tight">
             <span className="text-[1.0625rem] font-semibold">{brandName}</span>
             {tagline ? <span className="hidden text-[0.75rem] text-[var(--color-text-muted)] sm:block">{tagline}</span> : null}
