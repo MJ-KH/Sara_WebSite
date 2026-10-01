@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import type React from 'react'
 import { AnnouncementBar } from '@/components/site/AnnouncementBar'
+import { FontPreload } from '@/components/site/FontPreload'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
 import { SocialRail } from '@/components/site/SocialRail'
@@ -42,6 +43,9 @@ export default async function PublicLayout({ children }: { children: React.React
       data-font-scale={theme.fontScale || 'md'}
       data-button-style={theme.buttonStyle || 'solid'}
     >
+      <head>
+        <FontPreload />
+      </head>
       <body className="min-h-screen">
         <AnnouncementBar text={settings.announcementBar?.enabled ? settings.announcementBar.text : null} href={settings.announcementBar?.href} />
         <SiteHeader

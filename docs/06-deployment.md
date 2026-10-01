@@ -15,22 +15,26 @@
    سرویس S3/CDN تنظیم شوند (این مقادیر در `next.config.ts` هنگام build خوانده می‌شوند تا
    next/image اجازه نمایش تصاویر را بدهد) — اگر بعداً تغییرشان دهید باید image را دوباره
    build کنید.
-3. اگر از S3 ابری واقعی استفاده می‌کنید، سرویس `minio`/`minio-init` را از
+3. **فونت ایران‌سنس:** فایل `IRANSansXVFaNum.woff2` (از بسته خریداری‌شده IRANSansX، پوشه
+   `Farsi numerals/Variable_Fanum`) را در `public/fonts/` روی سرور کپی کنید، **پیش از build**.
+   این فایل عمداً در git نیست، چون مخزن عمومی است و لایسنس فونت‌ایران اجازه پخش فایل فونت را
+   نمی‌دهد. بدون آن، سایت با فونت وزیرمتن نمایش داده می‌شود.
+4. اگر از S3 ابری واقعی استفاده می‌کنید، سرویس `minio`/`minio-init` را از
    `docker-compose.yml` حذف کنید و مستقیم به آن سرویس وصل شوید.
-4. اجرا:
+5. اجرا:
    ```bash
    docker compose up -d --build
    docker compose exec app npx payload migrate
    docker compose exec app npm run create-first-admin
    ```
-5. reverse proxy را برای `NEXT_PUBLIC_SERVER_URL` روی پورت ۳۰۰۰ کانتینر `app` تنظیم کنید و
+6. reverse proxy را برای `NEXT_PUBLIC_SERVER_URL` روی پورت ۳۰۰۰ کانتینر `app` تنظیم کنید و
    HTTPS را فعال کنید (نمونه Caddyfile):
    ```
    your-domain.com {
      reverse_proxy localhost:3000
    }
    ```
-6. مطمئن شوید سرویس `worker` هم اجرا مانده (health خاصی برای worker تعریف نشده؛ لاگ آن را
+7. مطمئن شوید سرویس `worker` هم اجرا مانده (health خاصی برای worker تعریف نشده؛ لاگ آن را
    با `docker compose logs -f worker` رصد کنید).
 
 ## نکات امنیتی استقرار

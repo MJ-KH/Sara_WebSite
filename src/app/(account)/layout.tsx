@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import type React from 'react'
 import { AccountLoginGate } from '@/components/auth/AccountLoginGate'
+import { FontPreload } from '@/components/site/FontPreload'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import '../globals.css'
@@ -32,6 +33,9 @@ export default async function AccountLayout({ children }: { children: React.Reac
       data-font-scale={theme.fontScale || 'md'}
       data-button-style={theme.buttonStyle || 'solid'}
     >
+      <head>
+        <FontPreload />
+      </head>
       <body className="min-h-screen">
         {user?.collection === 'students' ? (
           <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 md:flex-row">

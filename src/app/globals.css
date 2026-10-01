@@ -10,11 +10,25 @@
    همه‌چیز با توکن ساخته می‌شود تا انتخاب‌های پنل (رنگ/گردی/اندازه فونت/سبک دکمه) کار کند.
    ========================================================================== */
 
+/*
+ * ایران‌سنس X (نسخه متغیر با اعداد فارسی، لایسنس خریداری‌شده از فونت‌ایران).
+ * فایل در public/fonts است ولی در git نیست (مخزن عمومی است و فونت پولی نباید پخش شود)؛
+ * روی سرور جدا کپی می‌شود. اگر فایل نباشد، پشته فونت به وزیرمتن برمی‌گردد.
+ */
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('/fonts/IRANSansXVFaNum.woff2') format('woff2-variations'),
+    url('/fonts/IRANSansXVFaNum.woff2') format('woff2');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IRANSansX', 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
   /* تیترها: نسخ — معادل فارسیِ ظرافت سریف‌های مجله‌ای (مثل Playfair در مرجع Gloss Bar).
-     متن بدنه همچنان وزیرمتن است چون برای خواندن طولانی روی موبایل خواناتر است. */
-  --font-display: 'Noto Naskh Arabic Variable', 'Vazirmatn Variable', serif;
+     متن بدنه ایران‌سنس است چون برای خواندن طولانی روی موبایل خواناتر است. */
+  --font-display: 'Noto Naskh Arabic Variable', 'IRANSansX', 'Vazirmatn Variable', serif;
   /* فقط برای لهجه‌های لاتین (شماره بخش‌ها، ایتالیک تزئینی). فونت لاتین نصب‌شده‌ای
      در پروژه نداریم؛ این پشته روی سیستم‌های مختلف به یک سریف کلاسیک می‌رسد. */
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Didot, 'Bodoni MT', Georgia, serif;

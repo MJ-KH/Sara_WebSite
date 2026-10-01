@@ -22,3 +22,6 @@ test-results/
 src/payload-types.ts
 src/app/(payload)/admin/importMap.js
 media/
+
+# فونت پولی ایران‌سنس (لایسنس فونت‌ایران): در مخزن عمومی نباید باشد؛ روی سرور جدا کپی می‌شود
+/public/fonts/
