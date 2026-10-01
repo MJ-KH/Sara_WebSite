@@ -1125,26 +1125,20 @@ html[data-font-scale='lg'] {
 }
 
 /*
- * قاب طاقی جواهرگونه: عکس در طاق، و دورش یک خط مویی طلایی با فاصله کم — مثل قاب آینه یا
- * جعبه جواهر. تنها عنصر پررنگ تزئینی صفحه است؛ بقیه آرام می‌ماند.
+ * قاب طاقی (سبک مرجع Gloss Bar): نیم‌دایره کامل بالا و گردی واقعی ۲۴px پایین. شعاع بزرگ مثل
+ * 9999px همه گوشه‌ها را با هم کوچک می‌کند و گردی پایین از بین می‌رود؛ برای همین شعاع بیضوی
+ * داده می‌شود: افقی ۵۰٪ و عمودی به اندازه نصف عرض (--arch-ry = نصف عرض ÷ ارتفاع).
  */
-.arch-jewel {
-  position: relative;
-  padding: 0.45rem;
+.arch-shape {
+  border-radius: 50% 50% 1.5rem 1.5rem / var(--arch-ry, 25%) var(--arch-ry, 25%) 1.5rem 1.5rem;
 }
 
-.arch-jewel::before {
+/* خط دوخت نقطه‌چین روشن داخل لبه قاب، روی خود عکس */
+.arch-stitch::after {
   content: '';
   position: absolute;
-  inset: 0;
-  border: 1px solid var(--gold);
-  border-start-start-radius: 999px;
-  border-start-end-radius: 999px;
+  inset: 0.4rem;
+  border: 1px dashed rgba(255, 255, 255, 0.7);
+  border-radius: inherit;
   pointer-events: none;
-}
-
-@media (min-width: 768px) {
-  .arch-jewel {
-    padding: 0.7rem;
-  }
 }

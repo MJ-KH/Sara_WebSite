@@ -194,39 +194,30 @@ async function TestimonialsBlockView({ block }: { block: AnyBlock }) {
 type ArchImage = { url?: string | null; alt?: string | null } | null
 
 /**
- * یک قاب طاقی با حاشیه سفید و سایه نرم. بدون عکس، فقط قاب وسط بادبزن تیپ رنگ دارد و
- * قاب‌های کناری شیب ملایم صورتی می‌مانند تا بادبزن در صفحه تکراری نشود.
+ * قاب طاقی به سبک مرجع Gloss Bar: سه قاب هم‌اندازه، بلند و باریک (حدود ۱ به ۲)، بالا کاملاً
+ * گرد و گوشه‌های پایین کمی گرد، بدون حاشیه سفید و سایه. عکس کل قاب را پر می‌کند.
+ * بدون عکس، فقط قاب وسط بادبزن تیپ رنگ دارد.
  */
 function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
   const center = position === 1
   return (
-    <div className={center ? 'w-[40%] md:w-[38%]' : 'w-[28%] md:w-[29%]'}>
-      <div className="arch-jewel">
-        <div
-          className={`relative overflow-hidden rounded-t-full ${
-            center
-              ? 'aspect-[3/4] bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-bg-alt)] md:aspect-[5/7]'
-              : 'aspect-[4/5] bg-gradient-to-b from-[var(--color-bg-alt)] to-[var(--color-accent-soft)] md:aspect-[3/4]'
-          }`}
-        >
-          {image?.url ? (
-            <Image
-              src={image.url}
-              alt={image.alt || ''}
-              fill
-              priority={center}
-              sizes={center ? '(max-width: 768px) 40vw, 24rem' : '(max-width: 768px) 28vw, 18rem'}
-              // بالای عکس (صورت) در قاب طاقی دیده شود، نه وسط آن
-              className="object-cover object-[50%_20%]"
-            />
-          ) : center ? (
-            <div className="absolute inset-x-[6%] bottom-[-6%]">
-              <SwatchFan id="hero-arch" colors={HERO_PALETTE} spread={80} animate />
-            </div>
-          ) : null}
+    <figure className="arch-shape arch-stitch relative aspect-[1/2] overflow-hidden bg-[var(--color-bg-alt)]">
+      {image?.url ? (
+        <Image
+          src={image.url}
+          alt={image.alt || ''}
+          fill
+          priority={center}
+          sizes="(max-width: 768px) 32vw, 13rem"
+          // صورت/ناخن زیر قوس طاق بیفتد، نه بریده شود
+          className="object-cover object-[50%_25%]"
+        />
+      ) : center ? (
+        <div className="absolute inset-x-[4%] bottom-[-4%]">
+          <SwatchFan id="hero-arch" colors={HERO_PALETTE} spread={80} animate />
         </div>
-      </div>
-    </div>
+      ) : null}
+    </figure>
   )
 }
 
@@ -245,7 +236,7 @@ function HeroBlockView({ block, ctx }: { block: AnyBlock; ctx: PageContext }) {
   return (
     <section className="hero-atelier overflow-hidden">
       {/* عرض محدود تا در دسکتاپ هم تیتر در همان صفحه اول دیده شود */}
-      <div className="container-x flex max-w-[62rem] items-end justify-center gap-2.5 pt-8 sm:gap-5 md:gap-10 md:pt-14">
+      <div className="container-x grid max-w-[44rem] grid-cols-3 gap-3 pt-8 md:gap-4 md:pt-12">
         <Arch image={slots[0] ?? null} position={0} />
         <Arch image={slots[1] ?? null} position={1} />
         <Arch image={slots[2] ?? null} position={2} />
@@ -359,8 +350,9 @@ function AboutIntroBlockView({ block }: { block: AnyBlock }) {
       <div className={twoColumns ? 'container-x grid items-center gap-10 md:grid-cols-[1fr_1.1fr] md:gap-14 lg:gap-20' : 'container-narrow'}>
         <div className={`text-center ${twoColumns ? 'md:text-start' : ''}`}>
           {photo ? (
-            <div className={`arch-jewel mx-auto mb-10 w-[62%] max-w-[17rem] ${twoColumns ? 'md:mx-0' : ''}`}>
-              <div className="relative aspect-[4/5] overflow-hidden rounded-t-full">
+            <div className={`mx-auto mb-10 w-[56%] max-w-[15rem] ${twoColumns ? 'md:mx-0' : ''}`}>
+              {/* همان قاب طاقی سربرگ؛ نسبت ۲ به ۳ پس شعاع عمودی = نصف عرض ÷ ارتفاع = ۳۳٪ */}
+              <div className="arch-shape arch-stitch relative aspect-[2/3] overflow-hidden [--arch-ry:33.333%]">
                 <Image src={photo.url} alt={photo.alt || heading.text} fill sizes="16rem" className="object-cover" />
               </div>
             </div>
