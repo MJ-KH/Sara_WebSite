@@ -312,6 +312,14 @@ html[data-font-scale='lg'] {
     background: currentColor;
   }
 
+  /* قاب طاقی کوچک وسط جداکننده؛ همان فرم قاب عکس‌ها (بالا گرد، پایین کم‌گرد) */
+  .ornament-arch {
+    inline-size: 0.75rem;
+    block-size: 1.125rem;
+    border: 1.25px solid currentColor;
+    border-radius: 0.375rem 0.375rem 0.125rem 0.125rem;
+  }
+
   /* نوار تیره آلویی (فوتر): توکن‌های رنگ داخل خودش عوض می‌شوند تا اجزای معمولی روی آن خوانا بمانند */
   .band-ink {
     --color-text: #f4ecee;

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
-import { ErrorScreen, NailTipIcon } from '@/components/site/ErrorScreen'
+import { ErrorScreen } from '@/components/site/ErrorScreen'
 
 export default function PublicError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -12,7 +12,7 @@ export default function PublicError({ error, reset }: { error: Error & { digest?
 
   return (
     <ErrorScreen
-      mark={<NailTipIcon />}
+      mark={<strong className="text-[3rem] font-[250] leading-none text-[var(--color-primary)]">!</strong>}
       title="مشکلی پیش آمد"
       lead="بخشی از سایت در حال حاضر درست کار نمی‌کند. چند لحظه دیگر دوباره تلاش کنید."
       primary={
