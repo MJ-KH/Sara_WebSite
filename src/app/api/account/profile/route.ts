@@ -5,13 +5,20 @@ import { getPayloadClient } from '@/lib/get-payload'
 import { normalizePersianText } from '@/lib/persian-text'
 
 const bodySchema = z.object({
-  name: z.string().transform(normalizePersianText).pipe(z.string().min(1)).optional(),
+  firstName: z.string().transform(normalizePersianText).pipe(z.string().min(1).max(60)).optional(),
+  lastName: z.string().transform(normalizePersianText).pipe(z.string().min(1).max(60)).optional(),
   email: z.string().email().optional().or(z.literal('')),
   city: z.string().transform(normalizePersianText).optional(),
   skillLevel: z.enum(['beginner', 'experienced', 'professional']).optional(),
   interests: z.array(z.enum(['powder_gel', 'extensions', 'nail_art', 'troubleshooting', 'manicure_prep'])).optional(),
   marketingConsent: z.boolean().optional(),
-  birthdayJalali: z.object({ day: z.number(), month: z.number(), year: z.number().optional() }).optional(),
+  birthdayJalali: z
+    .object({
+      day: z.number().int().min(1).max(31),
+      month: z.number().int().min(1).max(12),
+      year: z.number().int().min(1300).max(1500).optional(),
+    })
+    .optional(),
 })
 
 export async function PATCH(req: NextRequest) {

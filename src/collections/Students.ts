@@ -42,6 +42,19 @@ export const Students: CollectionConfig = {
     group: 'هنرجویان',
     description: 'بانک هنرجویان و علاقه‌مندان. ساخت پرونده فقط از طریق ورود با موبایل انجام می‌شود.',
   },
+  hooks: {
+    beforeChange: [
+      // «نام کامل» همیشه از نام و نام خانوادگی ساخته می‌شود تا جاهای قدیمی (لایسنس، پیامک) درست بمانند
+      ({ data, originalDoc }) => {
+        if (!data || (data.firstName === undefined && data.lastName === undefined)) return data
+        const first = (data.firstName ?? originalDoc?.firstName ?? '').trim()
+        const last = (data.lastName ?? originalDoc?.lastName ?? '').trim()
+        const full = [first, last].filter(Boolean).join(' ')
+        if (full) data.name = full
+        return data
+      },
+    ],
+  },
   access: {
     read: readOwnOrAdminStaff,
     update: updateOwnOrBusinessAdmin,
@@ -78,7 +91,19 @@ export const Students: CollectionConfig = {
         ],
       },
     },
-    { name: 'name', type: 'text', label: 'نام' },
+    {
+      type: 'row',
+      fields: [
+        { name: 'firstName', type: 'text', label: 'نام' },
+        { name: 'lastName', type: 'text', label: 'نام خانوادگی' },
+      ],
+    },
+    {
+      name: 'name',
+      type: 'text',
+      label: 'نام کامل',
+      admin: { description: 'از نام و نام خانوادگی ساخته می‌شود؛ در لایسنس اسپات‌پلیر و پیامک‌ها استفاده می‌شود.' },
+    },
     { name: 'email', type: 'email', label: 'ایمیل (اختیاری)' },
     {
       name: 'birthdayJalali',

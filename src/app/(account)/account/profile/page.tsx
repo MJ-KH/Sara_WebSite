@@ -1,6 +1,7 @@
 import { ProfileForm } from '@/components/account/ProfileForm'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
+import { gregorianToJalali } from '@/lib/jalali'
 
 export default async function ProfilePage() {
   const student = await requireStudent()
@@ -11,11 +12,14 @@ export default async function ProfilePage() {
 
   return (
     <div>
-      <h2 className="title-1 mb-6">پروفایل</h2>
+      <h2 className="title-1">اطلاعات من</h2>
+      <p className="mb-5 mt-1 text-[0.875rem] text-[var(--color-text-muted)]">این اطلاعات فقط برای ارتباط بهتر با شما استفاده می‌شود.</p>
       <ProfileForm
+        currentJalaliYear={gregorianToJalali(new Date()).jy}
         initial={{
           mobile: doc.mobile,
-          name: doc.name,
+          firstName: doc.firstName,
+          lastName: doc.lastName,
           email: doc.email,
           city: doc.city,
           skillLevel: doc.skillLevel,
