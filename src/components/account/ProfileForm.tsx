@@ -3,6 +3,7 @@
 import type React from 'react'
 import { useState } from 'react'
 import { toPersianDigits } from '@/lib/digits'
+import { CityCombobox } from './CityCombobox'
 
 export type ProfileFormData = {
   mobile: string
@@ -140,13 +141,7 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
             <label htmlFor="profile-city" className={labelClass}>
               شهر
             </label>
-            <input
-              id="profile-city"
-              value={form.city}
-              onChange={(e) => update({ city: e.target.value })}
-              placeholder="مثلاً تهران"
-              className={inputClass}
-            />
+            <CityCombobox id="profile-city" value={form.city} onChange={(city) => update({ city })} className={inputClass} />
           </div>
           <div className="mb-4">
             <label htmlFor="profile-email" className={labelClass}>
