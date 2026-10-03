@@ -35,7 +35,11 @@ export function SiteHeader({
       <div className="relative mx-auto flex h-16 max-w-[var(--container-wide)] items-center gap-3 rounded-[var(--radius-media)] sm:gap-4 border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface)_90%,transparent)] px-4 shadow-[var(--shadow-soft)] backdrop-blur-md md:h-20 md:px-8">
         {/* راست‌چین: منوی همبرگری اول (سمت راست)، بعد لوگو؛ دکمه ورود در انتهای چپ */}
         <MobileMenu menu={menu} />
-        <Link href="/" className="flex shrink-0 items-center gap-3">
+        {/* زیر دسکتاپ لوگو وسط سربرگ می‌نشیند (منو راست، دکمه ورود چپ)؛ در دسکتاپ کنار منو */}
+        <Link
+          href="/"
+          className="absolute left-1/2 flex shrink-0 -translate-x-1/2 items-center gap-3 lg:static lg:translate-x-0"
+        >
           {/* نام سایت کنارش نوشته شده، پس تصویر لوگو برای صفحه‌خوان تزئینی است */}
           {logo ? (
             <Image src={logo.url} alt="" width={logo.width} height={logo.height} priority className="h-8 w-auto sm:h-9 md:h-11" />
@@ -72,7 +76,15 @@ export function SiteHeader({
 
         <div className="ms-auto flex items-center">
           <Link href="/account" className="btn btn-primary btn-sm whitespace-nowrap">
-            {isStudentLoggedIn ? 'حساب من' : 'ورود / ثبت‌نام'}
+            {isStudentLoggedIn ? (
+              'حساب من'
+            ) : (
+              <>
+                ورود
+                {/* در گوشی‌های خیلی باریک فقط «ورود» تا با لوگوی وسط تداخل نکند */}
+                <span className="max-[359px]:hidden">&nbsp;/ ثبت‌نام</span>
+              </>
+            )}
           </Link>
         </div>
       </div>
