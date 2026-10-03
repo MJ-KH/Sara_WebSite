@@ -7,7 +7,12 @@ import { getSiteSettings } from '@/lib/get-site-settings'
 import { buildSeoMetadata } from '@/lib/seo/metadata'
 
 export function generateMetadata(): Promise<Metadata> {
-  return buildSeoMetadata({ title: 'تماس با ما', path: '/contact' })
+  return buildSeoMetadata({
+    title: 'آدرس و تماس سالن سارا نقی‌زاده در سعادت‌آباد',
+    description:
+      'آدرس، تلفن، واتساپ و مسیریابی سالن و آکادمی سارا نقی‌زاده در سعادت‌آباد تهران؛ رزرو وقت خدمات ناخن و زیبایی و مشاوره انتخاب دوره.',
+    path: '/contact',
+  })
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {

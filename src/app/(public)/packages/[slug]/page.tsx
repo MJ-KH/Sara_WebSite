@@ -19,6 +19,7 @@ import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { formatJalaliDate } from '@/lib/jalali'
 import { getPackageStats } from '@/lib/packages/stats'
+import { buildBreadcrumb, entityIds } from '@/lib/seo/entities'
 import { buildSeoMetadata, siteUrl } from '@/lib/seo/metadata'
 import { extractIdString } from '@/lib/relation'
 
@@ -228,8 +229,10 @@ export default async function PackageDetailPage({ params }: Params) {
           url: pageUrl,
           inLanguage: 'fa',
           ...(coverUrl ? { image: coverUrl } : {}),
-          provider: { '@type': 'Organization', name: settings.brand?.nameFa || 'سارا نقی‌زاده', url },
-          hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online' },
+          provider: { '@id': entityIds(url).academy },
+          // مدرس دوره: سارا (همان موجودیت Person گراف سایت)
+          instructor: { '@id': entityIds(url).person },
+          hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', instructor: { '@id': entityIds(url).person } },
           offers: {
             '@type': 'Offer',
             // مبلغ در دیتابیس ریال است و همان با واحد IRR گزارش می‌شود
@@ -240,6 +243,7 @@ export default async function PackageDetailPage({ params }: Params) {
           },
         }}
       />
+      <JsonLd data={buildBreadcrumb([['دوره‌ها', '/packages'], [title.text, `/packages/${pkg.slug}`]])} />
       {realFaqs.length > 0 ? (
         <JsonLd
           data={{

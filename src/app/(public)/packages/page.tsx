@@ -7,7 +7,12 @@ import { buildSeoMetadata } from '@/lib/seo/metadata'
 import { normalizePersianText } from '@/lib/persian-text'
 
 export function generateMetadata(): Promise<Metadata> {
-  return buildSeoMetadata({ title: 'دوره‌های آموزشی', path: '/packages' })
+  return buildSeoMetadata({
+    title: 'دوره آموزش کاشت ناخن آنلاین؛ پودر و ژل',
+    description:
+      'دوره‌های آنلاین آموزش ناخن سارا نقی‌زاده: کاشت ناخن با پودر از پایه تا ترمیم و دوره آپدیت ژل و پلی‌ژل؛ تماشا با اسپات‌پلیر و همه جلسه‌ها از لحظه خرید باز.',
+    path: '/packages',
+  })
 }
 
 type SearchParams = Promise<{ level?: string; topic?: string; sort?: string; q?: string }>

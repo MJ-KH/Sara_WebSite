@@ -3,8 +3,10 @@ import type { Metadata } from 'next'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export function generateMetadata(): Promise<Metadata> {
-  return buildSeoMetadata({ title: 'حریم خصوصی', path: '/privacy' })
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  // تا متن از پنل تکمیل نشده، صفحه خالی در گوگل نیاید
+  return buildSeoMetadata({ title: 'حریم خصوصی', path: '/privacy', noIndex: !settings.legal?.privacyText })
 }
 
 export default async function PrivacyPage() {

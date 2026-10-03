@@ -8,6 +8,8 @@ import { SocialRail } from '@/components/site/SocialRail'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { whatsappLink } from '@/lib/display'
 import { getSiteSettings } from '@/lib/get-site-settings'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { buildSiteGraph } from '@/lib/seo/entities'
 import { siteUrl } from '@/lib/seo/metadata'
 import '../globals.css'
 
@@ -25,6 +27,11 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${settings.brand?.nameFa || 'سارا نقی‌زاده'}`,
     },
     description: settings.seoDefaults?.metaDescription || undefined,
+    // کد تأیید مالکیت سایت در Google Search Console و Bing Webmaster (از پنل، بخش سئوی پیش‌فرض)
+    verification: {
+      google: settings.seoDefaults?.googleSiteVerification || undefined,
+      other: settings.seoDefaults?.bingSiteVerification ? { 'msvalidate.01': settings.seoDefaults.bingSiteVerification } : undefined,
+    },
     icons: typeof settings.brand?.favicon === 'object' && settings.brand?.favicon?.url ? [settings.brand.favicon.url] : undefined,
   }
 }
@@ -63,6 +70,8 @@ export default async function PublicLayout({ children }: { children: React.React
             children: item.children?.map((c) => ({ label: c.label, href: c.href })),
           }))}
         />
+        {/* سارا، آکادمی، سالن و وب‌سایت برای گوگل و موتورهای هوش مصنوعی؛ روی همه صفحه‌ها */}
+        <JsonLd data={buildSiteGraph(settings)} />
         <main>{children}</main>
         <SocialRail
           academy={settings.instagram?.academyHandle}

@@ -7,7 +7,8 @@ import { getPayloadClient } from '@/lib/get-payload'
 import { buildSeoMetadata } from '@/lib/seo/metadata'
 
 export function generateMetadata(): Promise<Metadata> {
-  return buildSeoMetadata({ title: 'ورکشاپ‌ها', path: '/workshops' })
+  // بخش ورکشاپ فعلاً پنهان است؛ تا ورکشاپ واقعی ثبت نشده، در گوگل هم نمایش داده نمی‌شود
+  return buildSeoMetadata({ title: 'ورکشاپ‌ها', path: '/workshops', noIndex: true })
 }
 
 export default async function WorkshopsPage() {

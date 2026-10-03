@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { buildSeoMetadata } from '@/lib/seo/metadata'
 
 /** متادیتای صفحه‌های صفحه‌ساز؛ canonical پیش‌فرض همان مسیر صفحه است مگر مدیر در پنل عوضش کرده باشد. */
-export function buildPageMetadata(page: any, path: string): Promise<Metadata> {
+export function buildPageMetadata(page: any, path: string, options: { absoluteTitle?: boolean } = {}): Promise<Metadata> {
   const seo = page?.seo || {}
   return buildSeoMetadata({
     title: seo.metaTitle || page?.title,
@@ -10,5 +10,6 @@ export function buildPageMetadata(page: any, path: string): Promise<Metadata> {
     path: seo.canonicalPath || path,
     image: typeof seo.ogImage === 'object' ? seo.ogImage?.url : null,
     noIndex: Boolean(seo.noIndex),
+    absoluteTitle: options.absoluteTitle,
   })
 }

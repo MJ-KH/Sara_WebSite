@@ -29,12 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ url: `${baseUrl}/free-lessons/${item.slug}`, lastModified: item.updatedAt })
   }
 
-  const workshops = await payload.find({ collection: 'workshops', where: { status: { equals: 'published' } }, limit: 200 })
-  for (const workshop of workshops.docs) {
-    entries.push({ url: `${baseUrl}/workshops/${workshop.slug}`, lastModified: workshop.updatedAt })
-  }
-
-  entries.push({ url: `${baseUrl}/packages` }, { url: `${baseUrl}/free-lessons` }, { url: `${baseUrl}/workshops` }, { url: `${baseUrl}/contact` })
+  // بخش ورکشاپ فعلاً پنهان و noindex است؛ با فعال شدن دوباره، این‌جا هم برگردد
+  entries.push({ url: `${baseUrl}/packages` }, { url: `${baseUrl}/free-lessons` }, { url: `${baseUrl}/contact` })
 
   return entries
 }

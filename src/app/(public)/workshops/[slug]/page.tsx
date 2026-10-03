@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params
   const data = await getData(slug)
   if (!data) return {}
-  return buildSeoMetadata({ title: data.workshop.title, path: `/workshops/${data.workshop.slug}` })
+  return buildSeoMetadata({ title: data.workshop.title, path: `/workshops/${data.workshop.slug}`, noIndex: true })
 }
 
 export default async function WorkshopDetailPage({ params }: Params) {

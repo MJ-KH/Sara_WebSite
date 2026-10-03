@@ -9,6 +9,8 @@ import { SampleBadge } from '@/components/ui/SampleBadge'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
+import { buildBreadcrumb, entityIds } from '@/lib/seo/entities'
+import { excerpt, lexicalToText } from '@/lib/seo/excerpt'
 import { buildSeoMetadata, siteUrl } from '@/lib/seo/metadata'
 
 type Params = { params: Promise<{ slug: string }> }
@@ -36,6 +38,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!item) return {}
   return buildSeoMetadata({
     title: splitSampleMarker(item.title).text,
+    // توضیح متا: ابتدای متن مقاله
+    description: excerpt(lexicalToText(item.body)),
     path: `/free-lessons/${item.slug}`,
     image: typeof item.coverImage === 'object' ? item.coverImage?.url : null,
   })
@@ -63,14 +67,17 @@ export default async function FreeLessonDetailPage({ params }: Params) {
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: title.text,
+          description: excerpt(lexicalToText(item.body), 300),
           url: `${url}/free-lessons/${item.slug}`,
           inLanguage: 'fa',
           datePublished: item.createdAt,
           dateModified: item.updatedAt,
           ...(cover ? { image: cover } : {}),
-          author: { '@type': 'Person', name: 'سارا نقی‌زاده' },
+          author: { '@id': entityIds(url).person },
+          publisher: { '@id': entityIds(url).academy },
         }}
       />
+      <JsonLd data={buildBreadcrumb([['آموزش رایگان', '/free-lessons'], [title.text, `/free-lessons/${item.slug}`]])} />
       <header className="band-alt">
         <div className="container-narrow py-12 text-center md:py-16">
           <nav aria-label="مسیر صفحه" className="text-[0.875rem] text-[var(--color-text-muted)]">

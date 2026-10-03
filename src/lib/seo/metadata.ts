@@ -14,6 +14,8 @@ export type SeoInput = {
   /** تصویر پیش‌نمایش لینک (تلگرام، واتساپ…)؛ نباشد، تصویر پیش‌فرض تنظیمات سایت */
   image?: string | null
   noIndex?: boolean
+  /** عنوان کامل بدون پسوند «| سارا نقی‌زاده» (برای صفحه اول که نام برند خودش در عنوان است) */
+  absoluteTitle?: boolean
 }
 
 /**
@@ -21,13 +23,13 @@ export type SeoInput = {
  * openGraph در Next با والد ادغام نمی‌شود و جایگزینش می‌شود؛ برای همین نام سایت و زبان
  * هر بار همین‌جا کامل ساخته می‌شود.
  */
-export async function buildSeoMetadata({ title, description, path, image, noIndex }: SeoInput): Promise<Metadata> {
+export async function buildSeoMetadata({ title, description, path, image, noIndex, absoluteTitle }: SeoInput): Promise<Metadata> {
   const settings = await getSiteSettings()
   const siteName = settings.brand?.nameFa || 'سارا نقی‌زاده'
   const defaultImage = typeof settings.seoDefaults?.ogImage === 'object' ? settings.seoDefaults?.ogImage?.url : null
   const ogImage = image || defaultImage
   return {
-    ...(title ? { title } : {}),
+    ...(title ? { title: absoluteTitle ? { absolute: title } : title } : {}),
     ...(description ? { description } : {}),
     alternates: { canonical: path },
     robots: noIndex ? { index: false, follow: false } : undefined,

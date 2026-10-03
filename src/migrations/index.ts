@@ -10,6 +10,7 @@ import * as migration_20261003_074756_spotplayer_device from './20261003_074756_
 import * as migration_20261003_111422_students_first_last_name from './20261003_111422_students_first_last_name';
 import * as migration_20261003_112841_students_province from './20261003_112841_students_province';
 import * as migration_20261003_113222_consultation_province from './20261003_113222_consultation_province';
+import * as migration_20261003_154036_site_settings_seo_local from './20261003_154036_site_settings_seo_local';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20261003_113222_consultation_province.up,
     down: migration_20261003_113222_consultation_province.down,
-    name: '20261003_113222_consultation_province'
+    name: '20261003_113222_consultation_province',
+  },
+  {
+    up: migration_20261003_154036_site_settings_seo_local.up,
+    down: migration_20261003_154036_site_settings_seo_local.down,
+    name: '20261003_154036_site_settings_seo_local'
   },
 ];

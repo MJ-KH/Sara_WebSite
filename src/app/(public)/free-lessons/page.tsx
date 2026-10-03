@@ -7,7 +7,12 @@ import { buildSeoMetadata } from '@/lib/seo/metadata'
 import { normalizePersianText } from '@/lib/persian-text'
 
 export function generateMetadata(): Promise<Metadata> {
-  return buildSeoMetadata({ title: 'آموزش رایگان', path: '/free-lessons' })
+  return buildSeoMetadata({
+    title: 'آموزش رایگان ناخن؛ نکته‌های کاشت، ژل و مانیکور',
+    description:
+      'مقاله‌های رایگان آموزش ناخن از سارا نقی‌زاده: فرق پودر و ژل، انواع ژل، پرایمر، رفع لیفت، سلامت ناخن و نکته‌هایی که هر ناخن‌کار باید بداند.',
+    path: '/free-lessons',
+  })
 }
 
 type SearchParams = Promise<{ category?: string; q?: string }>

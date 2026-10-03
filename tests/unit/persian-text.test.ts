@@ -27,3 +27,13 @@ describe('normalizePersianMultiline', () => {
     expect(normalizePersianMultiline('سلام  \r\n\r\n\r\n\r\nيك سوال')).toBe('سلام\n\nیک سوال')
   })
 })
+
+describe('excerpt / lexicalToText', () => {
+  it('متن Lexical را ساده می‌کند و سر کلمه می‌بُرد', async () => {
+    const { excerpt, lexicalToText } = await import('@/lib/seo/excerpt')
+    const data = { root: { type: 'root', children: [{ type: 'paragraph', children: [{ text: 'پودر و ژل' }] }, { type: 'paragraph', children: [{ text: 'دو سیستم' }] }] } }
+    expect(lexicalToText(data)).toBe('پودر و ژل دو سیستم')
+    expect(excerpt('یک دو سه چهار پنج', 10)).toBe('یک دو سه…')
+    expect(excerpt('کوتاه', 10)).toBe('کوتاه')
+  })
+})

@@ -3,8 +3,10 @@ import type { Metadata } from 'next'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export function generateMetadata(): Promise<Metadata> {
-  return buildSeoMetadata({ title: 'شرایط خرید', path: '/terms' })
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  // تا متن از پنل تکمیل نشده، صفحه خالی در گوگل نیاید
+  return buildSeoMetadata({ title: 'شرایط خرید', path: '/terms', noIndex: !settings.legal?.purchaseTermsText })
 }
 
 export default async function TermsPage() {
