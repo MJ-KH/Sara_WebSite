@@ -23,6 +23,7 @@
     "apply:jozve": "tsx scripts/apply-jozve-content.ts",
     "apply:courses": "tsx scripts/apply-real-courses.ts",
     "apply:about": "tsx scripts/apply-about-content.ts",
+    "apply:faq": "tsx scripts/apply-home-faq.ts",
     "create-first-admin": "tsx scripts/create-first-admin.ts",
     "worker": "tsx src/worker/index.ts",
     "test:unit": "vitest run",
