@@ -8,9 +8,9 @@ import { buildSeoMetadata } from '@/lib/seo/metadata'
 
 export function generateMetadata(): Promise<Metadata> {
   return buildSeoMetadata({
-    title: 'آدرس و تماس سالن سارا نقی‌زاده در سعادت‌آباد',
+    title: 'آدرس سالن ناخن سارا نقی‌زاده در سعادت‌آباد تهران',
     description:
-      'آدرس، تلفن، واتساپ و مسیریابی سالن و آکادمی سارا نقی‌زاده در سعادت‌آباد تهران؛ رزرو وقت خدمات ناخن و زیبایی و مشاوره انتخاب دوره.',
+      'آدرس، تلفن، واتساپ و مسیریابی سالن ناخن و زیبایی سارا نقی‌زاده در سعادت‌آباد تهران؛ رزرو وقت کاشت و ترمیم ناخن و مشاوره دوره آموزش کاشت ناخن.',
     path: '/contact',
   })
 }
@@ -39,7 +39,7 @@ export default async function ContactPage() {
 
   return (
     <>
-      <PageIntro title="تماس با ما" lead="برای مشاوره انتخاب دوره، ثبت‌نام ورکشاپ یا رزرو خدمات سالن با ما در ارتباط باشید." />
+      <PageIntro title="تماس با ما" lead="برای مشاوره انتخاب دوره آموزش ناخن یا رزرو وقت در سالن ناخن و زیبایی ما در سعادت‌آباد تهران، با ما در ارتباط باشید." />
 
       <section className="section">
         <div className="container-x grid gap-6 md:grid-cols-2 md:gap-8">

@@ -37,16 +37,16 @@ export async function GET() {
   const real = <T extends { title: string }>(docs: T[]) => docs.filter((d) => !splitSampleMarker(d.title).isSample)
 
   const lines = [
-    `# ${name} — آکادمی و سالن تخصصی ناخن`,
+    `# ${name} — آکادمی آموزش کاشت ناخن و سالن ناخن سعادت‌آباد تهران`,
     '',
     `> ${name} ناخن‌آرتیست و مدرس تخصصی ناخن${years ? ` با ${toPersianDigits(years)} سال سابقه` : ''} است. آکادمی ${name} دوره‌های آنلاین آموزش کاشت ناخن (پودر و ژل) برگزار می‌کند و سالن ${name} در سعادت‌آباد تهران خدمات ناخن و زیبایی ارائه می‌دهد.`,
     '',
-    '## دوره‌های آنلاین آموزش ناخن',
+    '## دوره‌های آنلاین آموزش کاشت ناخن، پلی‌ژل و لمینت',
     '',
     ...real(packages.docs).map((p) => `- [${splitSampleMarker(p.title).text}](${base}/packages/${p.slug}): ${splitSampleMarker(p.subtitle).text || ''}`.trim()),
     '- دوره‌ها روی نرم‌افزار اسپات‌پلیر تماشا می‌شوند؛ هر خرید یک لایسنس برای یک دستگاه (اندروید، ویندوز یا نسخه وب برای آیفون) و همه جلسه‌ها از لحظه خرید باز است.',
     '',
-    '## سالن (خدمات حضوری)',
+    '## سالن ناخن و زیبایی در سعادت‌آباد تهران (خدمات حضوری)',
     '',
     `- خدمات: ${SALON_SERVICES.join('، ')} (تخصص اصلی: ناخن)`,
     contact?.address ? `- آدرس: ${contact.address}` : null,

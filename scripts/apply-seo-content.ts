@@ -8,34 +8,47 @@
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
 
-const HOME_TITLE = 'آموزش کاشت ناخن و دوره آنلاین ناخن | آکادمی سارا نقی‌زاده'
+const HOME_TITLE = 'آموزش کاشت ناخن و سالن ناخن سعادت‌آباد تهران | سارا نقی‌زاده'
 const HOME_DESCRIPTION =
-  'آموزش کاشت ناخن پودر و ژل با سارا نقی‌زاده و ۱۵ سال سابقه؛ دوره‌های آنلاین روی اسپات‌پلیر، آموزش رایگان و خدمات تخصصی ناخن و زیبایی در سالن سعادت‌آباد تهران.'
+  'آکادمی و سالن ناخن سارا نقی‌زاده در سعادت‌آباد تهران با ۱۵ سال سابقه: دوره آنلاین آموزش کاشت ناخن، آموزش پلی‌ژل و لمینت، و کاشت و ترمیم ناخن در سالن.'
 
 const PAGE_SEO: Record<string, { metaTitle: string; metaDescription: string }> = {
   home: { metaTitle: HOME_TITLE, metaDescription: HOME_DESCRIPTION },
   services: {
-    metaTitle: 'سالن ناخن و زیبایی در سعادت‌آباد تهران',
+    metaTitle: 'کاشت ناخن و سالن زیبایی در سعادت‌آباد تهران',
     metaDescription:
-      'کاشت و ترمیم ناخن، لمینت، لاک ژل، پدیکور، مژه و رنگ و لایت مو در سالن سارا نقی‌زاده، سعادت‌آباد تهران؛ رزرو وقت و استعلام قیمت از واتساپ.',
+      'سالن ناخن سارا نقی‌زاده در سعادت‌آباد تهران: کاشت و ترمیم ناخن، لمینت ناخن، لاک ژل، پدیکور، مژه و رنگ و لایت مو؛ رزرو وقت و استعلام قیمت از واتساپ.',
   },
   results: {
-    metaTitle: 'نتایج و نمونه‌کار هنرجوهای آکادمی ناخن',
-    metaDescription: 'نمونه‌کار و نتیجه کار هنرجوهای آکادمی سارا نقی‌زاده بعد از دوره‌های آموزش کاشت ناخن با پودر و ژل.',
+    metaTitle: 'نمونه‌کار هنرجوهای دوره آموزش کاشت ناخن',
+    metaDescription:
+      'نمونه‌کار و نتیجه کار هنرجوهای آکادمی ناخن سارا نقی‌زاده در تهران بعد از دوره آموزش کاشت ناخن با پودر و پلی‌ژل.',
+  },
+  about: {
+    metaTitle: 'سارا نقی‌زاده؛ مدرس کاشت ناخن با ۱۵ سال سابقه',
+    metaDescription:
+      'سارا نقی‌زاده، ناخن‌آرتیست و مدرس کاشت ناخن در تهران با ۱۵ سال سابقه؛ مدیر سالن ناخن سعادت‌آباد و آکادمی آموزش کاشت ناخن، پلی‌ژل و لمینت.',
   },
 }
 
 const PACKAGE_SEO: Record<string, { metaTitle: string; metaDescription: string }> = {
   'kasht-poodr': {
-    metaTitle: 'دوره آموزش کاشت ناخن با پودر؛ از پایه تا ترمیم',
+    metaTitle: 'دوره آموزش کاشت ناخن با پودر؛ آنلاین، از پایه تا ترمیم',
     metaDescription:
-      'دوره آنلاین آموزش کاشت ناخن با پودر از سارا نقی‌زاده: مانیکور روسی، نصب تیپ، کاشت با فرمر و قالب، ترمیم و دیزاین آکواریومی؛ تماشا با اسپات‌پلیر.',
+      'دوره آنلاین آموزش کاشت ناخن با پودر از سارا نقی‌زاده: مانیکور روسی، نصب تیپ، کاشت با فرمر و قالب، ترمیم ناخن و دیزاین آکواریومی؛ مناسب شروع از پایه.',
   },
   'update-gel': {
-    metaTitle: 'دوره آموزش پلی‌ژل و آپدیت ژل ناخن',
+    metaTitle: 'آموزش پلی‌ژل و لمینت ناخن؛ دوره آنلاین آپدیت ژل',
     metaDescription:
-      'دوره آنلاین آپدیت ژل سارا نقی‌زاده: پلی‌ژل با قلم، قالب و فرمر، ترمیم پلی‌ژل، لاک ژل روی ناخن طبیعی و لمینت؛ تماشا با اسپات‌پلیر.',
+      'دوره آنلاین آموزش پلی‌ژل با قلم، قالب و فرمر، ترمیم پلی‌ژل، لاک ژل روی ناخن طبیعی و آموزش لمینت ناخن با سارا نقی‌زاده؛ تماشا با اسپات‌پلیر.',
   },
+}
+
+/** متن زیر تیتر بزرگ (سربرگ) صفحه‌ها، با کلمه‌های اصلی جست‌وجو؛ طبیعی و بدون تکرار */
+const HERO_SUBHEADINGS: Record<string, string> = {
+  home: 'آموزش کاشت ناخن از پایه تا حرفه‌ای، و خدمات تخصصی ناخن در سعادت‌آباد تهران',
+  services: 'کاشت و ترمیم ناخن، لمینت، لاک ژل و خدمات زیبایی در سالن سعادت‌آباد تهران؛ برای رزرو وقت و استعلام قیمت پیام بدهید.',
+  results: 'نمونه‌کار هنرجوهای دوره آموزش کاشت ناخن آکادمی سارا نقی‌زاده، پیش و پس از آموزش.',
 }
 
 /** پرتره سارا (هم برای معرفی سارا به گوگل، هم عکس پیش‌فرض اشتراک‌گذاری لینک) */
@@ -77,7 +90,9 @@ async function main() {
   for (const [slug, seo] of Object.entries(PAGE_SEO)) {
     const page = (await payload.find({ collection: 'pages', where: { slug: { equals: slug } }, depth: 0, limit: 1, overrideAccess: true })).docs[0]
     if (!page) { console.log('page missing', slug); continue }
-    await payload.update({ collection: 'pages', id: page.id, draft: false, overrideAccess: true, data: { seo: { ...page.seo, ...seo } } })
+    const subheading = HERO_SUBHEADINGS[slug]
+    const layout = subheading ? (page.layout || []).map((b) => (b.blockType === 'hero' ? { ...b, subheading } : b)) : page.layout
+    await payload.update({ collection: 'pages', id: page.id, draft: false, overrideAccess: true, data: { seo: { ...page.seo, ...seo }, layout } })
     console.log('page seo', slug)
   }
 

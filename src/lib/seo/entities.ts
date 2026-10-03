@@ -69,7 +69,7 @@ export function buildSiteGraph(settings: SiteSetting) {
     url: `${base}/about`,
     image: absolute(portrait, base),
     worksFor: [{ '@id': ids.academy }, { '@id': ids.salon }],
-    knowsAbout: ['کاشت ناخن', 'کاشت پودر', 'پلی‌ژل', 'ژل ناخن', 'ترمیم ناخن', 'رفع لیفت ناخن', 'مانیکور روسی', 'طراحی ناخن', 'آموزش ناخن'],
+    knowsAbout: ['کاشت ناخن', 'کاشت پودر', 'پلی‌ژل', 'ژل ناخن', 'لاک ژل', 'لمینت ناخن', 'ترمیم ناخن', 'رفع لیفت ناخن', 'مانیکور روسی', 'طراحی ناخن', 'آموزش کاشت ناخن'],
     sameAs: [instagram(settings.instagram?.servicesHandle), instagram(settings.instagram?.academyHandle), youtube].filter(Boolean),
   }
 
@@ -78,7 +78,8 @@ export function buildSiteGraph(settings: SiteSetting) {
     '@id': ids.academy,
     name: `آکادمی ${brandName}`,
     alternateName: [`آکادمی تخصصی ناخن ${brandName}`, brand?.nameEn ? `${brand.nameEn} Nail Academy` : null].filter(Boolean),
-    description: 'آکادمی تخصصی ناخن سارا نقی‌زاده: دوره‌های آنلاین کاشت پودر و ژل، آموزش رایگان و مشاوره انتخاب دوره.',
+    description: 'آکادمی آموزش کاشت ناخن سارا نقی‌زاده در تهران: دوره آنلاین آموزش کاشت ناخن با پودر، آموزش پلی‌ژل، لاک ژل و لمینت ناخن، آموزش رایگان و مشاوره انتخاب دوره.',
+    keywords: 'آموزش کاشت ناخن، دوره کاشت ناخن، آموزش ناخن آنلاین، آموزش پلی ژل، آموزش لمینت ناخن، آکادمی ناخن تهران',
     url: base,
     logo: absolute(logo, base),
     founder: { '@id': ids.person },
@@ -91,7 +92,8 @@ export function buildSiteGraph(settings: SiteSetting) {
     '@id': ids.salon,
     name: `سالن ${brandName}`,
     alternateName: [`سالن ناخن ${brandName}`, `مرکز ناخن ${brandName}`, `سالن زیبایی ${brandName}`],
-    description: `سالن زیبایی ${brandName} در سعادت‌آباد تهران با تخصص ناخن: ${SALON_SERVICES.join('، ')}.`,
+    description: `سالن ناخن و زیبایی ${brandName} در سعادت‌آباد تهران: ${SALON_SERVICES.join('، ')}.`,
+    keywords: 'ناخن سعادت آباد، کاشت ناخن سعادت آباد، سالن ناخن سعادت آباد، سالن زیبایی سعادت آباد، کاشت ناخن تهران، ناخن تهران',
     url: `${base}/services`,
     image: absolute(portrait, base),
     logo: absolute(logo, base),
@@ -109,7 +111,10 @@ export function buildSiteGraph(settings: SiteSetting) {
       : {}),
     ...(maps.length ? { hasMap: maps } : {}),
     ...(hours ? { openingHoursSpecification: hours } : {}),
-    areaServed: { '@type': 'City', name: 'تهران' },
+    areaServed: [
+      { '@type': 'Place', name: 'سعادت‌آباد، تهران' },
+      { '@type': 'City', name: 'تهران' },
+    ],
     founder: { '@id': ids.person },
     hasOfferCatalog: {
       '@type': 'OfferCatalog',

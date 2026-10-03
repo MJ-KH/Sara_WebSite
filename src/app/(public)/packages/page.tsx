@@ -8,9 +8,9 @@ import { normalizePersianText } from '@/lib/persian-text'
 
 export function generateMetadata(): Promise<Metadata> {
   return buildSeoMetadata({
-    title: 'دوره آموزش کاشت ناخن آنلاین؛ پودر و ژل',
+    title: 'دوره آموزش کاشت ناخن آنلاین؛ پودر، پلی‌ژل و لمینت',
     description:
-      'دوره‌های آنلاین آموزش ناخن سارا نقی‌زاده: کاشت ناخن با پودر از پایه تا ترمیم و دوره آپدیت ژل و پلی‌ژل؛ تماشا با اسپات‌پلیر و همه جلسه‌ها از لحظه خرید باز.',
+      'دوره‌های آنلاین آموزش کاشت ناخن آکادمی سارا نقی‌زاده در تهران: آموزش کاشت پودر از پایه تا ترمیم، آموزش پلی‌ژل، لاک ژل و لمینت ناخن؛ تماشا با اسپات‌پلیر.',
     path: '/packages',
   })
 }
@@ -51,7 +51,10 @@ export default async function PackagesPage({ searchParams }: { searchParams: Sea
 
   return (
     <>
-      <PageIntro title="دوره‌های آموزشی" lead="دوره‌های ویدئویی سارا نقی‌زاده؛ با یک بار خرید، هر وقت و هر جا تماشا کنید.">
+      <PageIntro
+        title="دوره‌های آموزش کاشت ناخن"
+        lead="دوره‌های آنلاین آموزش کاشت ناخن، پلی‌ژل و لمینت با سارا نقی‌زاده؛ با یک بار خرید، هر وقت و هر جا تماشا کنید."
+      >
         <form className="filter-bar" method="get" role="search">
           <input name="q" type="search" defaultValue={q} placeholder="جست‌وجو در عنوان..." aria-label="جست‌وجو" className="field" />
           <select name="level" defaultValue={level || ''} aria-label="سطح" className="field">

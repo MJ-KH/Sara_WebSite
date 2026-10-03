@@ -8,7 +8,7 @@ import { normalizePersianText } from '@/lib/persian-text'
 
 export function generateMetadata(): Promise<Metadata> {
   return buildSeoMetadata({
-    title: 'آموزش رایگان ناخن؛ نکته‌های کاشت، ژل و مانیکور',
+    title: 'آموزش رایگان ناخن؛ نکته‌های کاشت ناخن، ژل و پلی‌ژل',
     description:
       'مقاله‌های رایگان آموزش ناخن از سارا نقی‌زاده: فرق پودر و ژل، انواع ژل، پرایمر، رفع لیفت، سلامت ناخن و نکته‌هایی که هر ناخن‌کار باید بداند.',
     path: '/free-lessons',
@@ -33,7 +33,7 @@ export default async function FreeLessonsPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PageIntro title="آموزش رایگان" lead="نکته‌ها و آموزش‌های کوتاه ناخن، رایگان و بدون ثبت‌نام.">
+      <PageIntro title="آموزش رایگان" lead="نکته‌ها و آموزش‌های کوتاه کاشت ناخن، ژل و مانیکور؛ رایگان و بدون ثبت‌نام.">
         <form className="filter-bar" method="get" role="search">
           <input name="q" type="search" defaultValue={q} placeholder="جست‌وجو..." aria-label="جست‌وجو" className="field" />
           <select name="category" defaultValue={category || ''} aria-label="دسته" className="field">
