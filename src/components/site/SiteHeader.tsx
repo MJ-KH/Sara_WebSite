@@ -32,23 +32,26 @@ export function SiteHeader({
   return (
     // سربرگ شناور (مثل مرجع Gloss Bar): کارت گرد با سایه نرم که روی صفحه می‌ماند
     <header className="sticky top-0 z-40 px-3 pt-3 md:px-6 md:pt-4">
-      <div className="relative mx-auto flex h-16 max-w-[var(--container-wide)] items-center gap-4 rounded-[var(--radius-media)] border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface)_90%,transparent)] px-4 shadow-[var(--shadow-soft)] backdrop-blur-md md:h-20 md:px-8">
+      <div className="relative mx-auto flex h-16 max-w-[var(--container-wide)] items-center gap-3 rounded-[var(--radius-media)] sm:gap-4 border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-surface)_90%,transparent)] px-4 shadow-[var(--shadow-soft)] backdrop-blur-md md:h-20 md:px-8">
+        {/* راست‌چین: منوی همبرگری اول (سمت راست)، بعد لوگو؛ دکمه ورود در انتهای چپ */}
+        <MobileMenu menu={menu} />
         <Link href="/" className="flex shrink-0 items-center gap-3">
           {/* نام سایت کنارش نوشته شده، پس تصویر لوگو برای صفحه‌خوان تزئینی است */}
-          {/* در موبایل جای مونوگرام کنار نام و دو دکمه نیست؛ از عرض تبلت نمایش داده می‌شود */}
           {logo ? (
-            <Image src={logo.url} alt="" width={logo.width} height={logo.height} priority className="hidden h-9 w-auto sm:block md:h-11" />
+            <Image src={logo.url} alt="" width={logo.width} height={logo.height} priority className="h-8 w-auto sm:h-9 md:h-11" />
           ) : (
             <TipMark />
           )}
-          <span className="flex flex-col leading-tight">
+          {/* در موبایل فقط لوگو می‌ماند تا کنار منو و دکمه ورود جا شود؛ نام از عرض تبلت دیده می‌شود */}
+          <span className={logo ? 'hidden flex-col leading-tight sm:flex' : 'flex flex-col leading-tight'}>
             <span className="text-[1.0625rem] font-semibold">{brandName}</span>
             {tagline ? <span className="hidden text-[0.75rem] text-[var(--color-text-muted)] sm:block">{tagline}</span> : null}
           </span>
         </Link>
 
         {/* ۷ آیتم منو در عرض تبلت جا نمی‌شود؛ زیر ۱۰۲۴ پیکسل منوی کشویی استفاده می‌شود */}
-        <nav className="ms-auto hidden items-center gap-6 text-[0.9375rem] lg:flex" aria-label="منوی اصلی">
+        {/* منو درست بعد از لوگو و از راست شروع می‌شود */}
+        <nav className="ms-6 hidden items-center gap-6 text-[0.9375rem] lg:flex xl:ms-10" aria-label="منوی اصلی">
           {menu.map((item) => (
             <div key={item.href} className="group relative">
               <Link href={item.href} className="nav-link whitespace-nowrap">
@@ -67,11 +70,10 @@ export function SiteHeader({
           ))}
         </nav>
 
-        <div className="ms-auto flex items-center gap-2 lg:ms-0">
+        <div className="ms-auto flex items-center">
           <Link href="/account" className="btn btn-primary btn-sm whitespace-nowrap">
             {isStudentLoggedIn ? 'حساب من' : 'ورود / ثبت‌نام'}
           </Link>
-          <MobileMenu menu={menu} />
         </div>
       </div>
     </header>
