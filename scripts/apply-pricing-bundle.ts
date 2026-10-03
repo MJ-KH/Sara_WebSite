@@ -1,7 +1,7 @@
 /**
  * قیمت دوره‌های آنلاین و پکیج دو دوره (۱۲ مهر ۱۴۰۵، به تأیید کارفرما):
  * - هر دوره: قیمت اصلی ۳٬۰۰۰٬۰۰۰ تومان، با ۵۰٪ تخفیف ۱٬۵۰۰٬۰۰۰ تومان
- * - پکیج هر دو دوره (مبحث پودر + آپدیت ژل): ۲٬۴۹۰٬۰۰۰ تومان؛ قیمت خط‌خورده = جمع دو دوره (۳٬۰۰۰٬۰۰۰)
+ * - پکیج هر دو دوره (مبحث پودر + آپدیت ژل): قیمت اصلی ۶٬۰۰۰٬۰۰۰ تومان، با تخفیف ۲٬۴۹۰٬۰۰۰ تومان
  *   خریدار پکیج یک لایسنس اسپات‌پلیر با هر دو دوره می‌گیرد (هر خرید = یک لایسنس).
  * مبلغ‌ها در دیتابیس ریال‌اند. تکرارپذیر است.
  *
@@ -52,7 +52,7 @@ async function main() {
     level: 'beginner' as const,
     includedPackages: courses.map((c) => c.id),
     priceRial: BUNDLE_PRICE,
-    compareAtPriceRial: courses.length * COURSE_PRICE,
+    compareAtPriceRial: courses.length * COURSE_COMPARE_AT,
     status: 'published' as const,
     featured: true,
     featuredOrder: 3,
@@ -74,7 +74,7 @@ async function main() {
     seo: {
       metaTitle: 'پکیج آموزش کاشت ناخن پودر و پلی‌ژل؛ دو دوره آنلاین',
       metaDescription:
-        'پکیج دو دوره آنلاین آموزش کاشت ناخن سارا نقی‌زاده: مبحث پودر و آپدیت ژل (پلی‌ژل، لاک ژل و لمینت) با یک لایسنس اسپات‌پلیر؛ ۲٬۴۹۰٬۰۰۰ تومان برای هر دو دوره.',
+        'پکیج دو دوره آنلاین آموزش کاشت ناخن سارا نقی‌زاده: مبحث پودر و آپدیت ژل (پلی‌ژل، لاک ژل و لمینت) با یک لایسنس اسپات‌پلیر؛ ۲٬۴۹۰٬۰۰۰ تومان به‌جای ۶٬۰۰۰٬۰۰۰ تومان.',
     },
   }
   const existing = (await payload.find({ collection: 'packages', where: { slug: { equals: BUNDLE_SLUG } }, depth: 0, limit: 1, overrideAccess: true })).docs[0]
