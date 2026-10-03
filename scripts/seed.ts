@@ -67,7 +67,7 @@ async function main() {
               ],
             },
           ],
-          copyrightText: '© سارا نقی‌زاده — آموزش تخصصی ناخن',
+          copyrightText: '© سارا نقی‌زاده — آکادمی تخصصی ناخن',
         },
       },
     })
@@ -274,7 +274,7 @@ async function main() {
           },
           { blockType: 'consultationForm', heading: 'مشاوره رایگان انتخاب دوره' },
         ],
-        seo: { metaTitle: 'سارا نقی‌زاده — آموزش تخصصی ناخن' },
+        seo: { metaTitle: 'سارا نقی‌زاده — آکادمی تخصصی ناخن' },
       },
       overrideAccess: true,
     })

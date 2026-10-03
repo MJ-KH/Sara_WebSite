@@ -131,7 +131,7 @@ export const SiteSettings: GlobalConfig = {
             },
           ],
         },
-        { name: 'copyrightText', type: 'text', defaultValue: '© سارا نقی‌زاده — آموزش تخصصی ناخن' },
+        { name: 'copyrightText', type: 'text', defaultValue: '© سارا نقی‌زاده — آکادمی تخصصی ناخن' },
       ],
     },
     {

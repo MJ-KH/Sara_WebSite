@@ -54,7 +54,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <AnnouncementBar text={settings.announcementBar?.enabled ? settings.announcementBar.text : null} href={settings.announcementBar?.href} />
         <SiteHeader
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
-          tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}
+          tagline={settings.brand?.tagline || 'آکادمی تخصصی ناخن'}
           logo={logo?.url ? { url: logo.url, width: logo.width ?? 200, height: logo.height ?? 100 } : null}
           isStudentLoggedIn={user?.collection === 'students'}
           menu={(settings.headerMenu || []).map((item) => ({
@@ -67,7 +67,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <SocialRail academy={settings.instagram?.academyHandle} whatsapp={whatsapp} youtube={settings.socials?.youtubeUrl} />
         <SiteFooter
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
-          tagline={settings.brand?.tagline || 'آموزش تخصصی ناخن'}
+          tagline={settings.brand?.tagline || 'آکادمی تخصصی ناخن'}
           logo={logoOnDark?.url ? { url: logoOnDark.url, width: logoOnDark.width ?? 400, height: logoOnDark.height ?? 300 } : null}
           phone={contact.phone}
           landline={contact.landline}
