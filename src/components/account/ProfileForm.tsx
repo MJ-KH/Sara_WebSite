@@ -3,14 +3,14 @@
 import type React from 'react'
 import { useState } from 'react'
 import { toPersianDigits } from '@/lib/digits'
-import { CityCombobox } from './CityCombobox'
+import { PROVINCE_OPTIONS } from '@/lib/iran-provinces'
 
 export type ProfileFormData = {
   mobile: string
   firstName?: string | null
   lastName?: string | null
   email?: string | null
-  city?: string | null
+  province?: string | null
   skillLevel?: string | null
   marketingConsent?: boolean | null
   birthdayJalali?: { day?: number | null; month?: number | null; year?: number | null } | null
@@ -46,7 +46,7 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
     firstName: initial.firstName || '',
     lastName: initial.lastName || '',
     email: initial.email || '',
-    city: initial.city || '',
+    province: initial.province || '',
     skillLevel: initial.skillLevel || '',
     marketingConsent: Boolean(initial.marketingConsent),
     birthdayDay: initial.birthdayJalali?.day?.toString() || '',
@@ -75,7 +75,7 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
           firstName: form.firstName.trim() || undefined,
           lastName: form.lastName.trim() || undefined,
           email: form.email || undefined,
-          city: form.city || undefined,
+          province: form.province || undefined,
           skillLevel: form.skillLevel || undefined,
           marketingConsent: form.marketingConsent,
           birthdayJalali:
@@ -138,10 +138,17 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="profile-city" className={labelClass}>
-              شهر
+            <label htmlFor="profile-province" className={labelClass}>
+              استان
             </label>
-            <CityCombobox id="profile-city" value={form.city} onChange={(city) => update({ city })} className={inputClass} />
+            <select id="profile-province" value={form.province} onChange={(e) => update({ province: e.target.value })} className={inputClass}>
+              <option value="">انتخاب کنید</option>
+              {PROVINCE_OPTIONS.map((province) => (
+                <option key={province} value={province}>
+                  {province}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-4">
             <label htmlFor="profile-email" className={labelClass}>

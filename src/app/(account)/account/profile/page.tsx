@@ -21,7 +21,7 @@ export default async function ProfilePage() {
           firstName: doc.firstName,
           lastName: doc.lastName,
           email: doc.email,
-          city: doc.city,
+          province: doc.province,
           skillLevel: doc.skillLevel,
           marketingConsent: doc.marketingConsent,
           birthdayJalali: doc.birthdayJalali,

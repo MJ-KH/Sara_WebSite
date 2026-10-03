@@ -84,7 +84,7 @@ async function AccountSidebar({ studentId, logoOnDark }: { studentId: number; lo
       : []),
     { href: '/account/orders', label: 'سفارش‌ها', hint: 'خریدها و وضعیت پرداخت', icon: 'bag' },
     { href: '/account/support', label: 'پشتیبانی', hint: 'پیام به تیم سارا', icon: 'chat' },
-    { href: '/account/profile', label: 'اطلاعات من', hint: 'نام، شهر، تاریخ تولد', icon: 'user' },
+    { href: '/account/profile', label: 'اطلاعات من', hint: 'نام، استان، تاریخ تولد', icon: 'user' },
   ]
 
   return (

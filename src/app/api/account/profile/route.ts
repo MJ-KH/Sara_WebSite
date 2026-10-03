@@ -2,13 +2,14 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
+import { PROVINCE_OPTIONS } from '@/lib/iran-provinces'
 import { normalizePersianText } from '@/lib/persian-text'
 
 const bodySchema = z.object({
   firstName: z.string().transform(normalizePersianText).pipe(z.string().min(1).max(60)).optional(),
   lastName: z.string().transform(normalizePersianText).pipe(z.string().min(1).max(60)).optional(),
   email: z.string().email().optional().or(z.literal('')),
-  city: z.string().transform(normalizePersianText).optional(),
+  province: z.enum(PROVINCE_OPTIONS).optional(),
   skillLevel: z.enum(['beginner', 'experienced', 'professional']).optional(),
   interests: z.array(z.enum(['powder_gel', 'extensions', 'nail_art', 'troubleshooting', 'manicure_prep'])).optional(),
   marketingConsent: z.boolean().optional(),

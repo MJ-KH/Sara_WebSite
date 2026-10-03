@@ -2,6 +2,7 @@ import type { Access, CollectionConfig } from 'payload'
 import type { AdminRole } from '@/access/roles'
 import { isAdminCollection, isAnyAdminStaff, isOwnerOrBusinessAdmin } from '@/access/roles'
 import { studentJwtStrategy } from '@/lib/auth/student-strategy'
+import { PROVINCE_OPTIONS } from '@/lib/iran-provinces'
 import { toLocalIranMobile } from '@/lib/phone'
 
 type ReqUser = { collection?: string; role?: AdminRole; id?: string | number } | null | undefined
@@ -36,7 +37,7 @@ export const Students: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'mobile',
-    defaultColumns: ['mobile', 'name', 'city', 'status', 'lastLoginAt', 'createdAt'],
+    defaultColumns: ['mobile', 'name', 'province', 'status', 'lastLoginAt', 'createdAt'],
     // مدیر می‌تواند با 0912...، +98912...، نام یا ایمیل جست‌وجو کند
     listSearchableFields: ['mobile', 'mobileLocal', 'name', 'email'],
     group: 'هنرجویان',
@@ -121,7 +122,16 @@ export const Students: CollectionConfig = {
         { name: 'year', type: 'number', label: 'سال (اختیاری)' },
       ],
     },
-    { name: 'city', type: 'text', label: 'شهر' },
+    {
+      name: 'province',
+      type: 'text',
+      label: 'استان',
+      // متن ساده با اعتبارسنجی از فهرست ثابت (نه enum دیتابیس) تا افزودن گزینه بعدها مهاجرت نخواهد
+      validate: (value: unknown) =>
+        value == null || value === '' || (PROVINCE_OPTIONS as readonly string[]).includes(String(value)) || 'استان نامعتبر است',
+      admin: { description: 'هنرجو در «اطلاعات من» از فهرست استان‌ها انتخاب می‌کند.' },
+    },
+    { name: 'city', type: 'text', label: 'شهر (قدیمی)', admin: { description: 'دیگر از هنرجو پرسیده نمی‌شود؛ فقط برای داده‌های قبلی.' } },
     {
       name: 'skillLevel',
       type: 'select',
