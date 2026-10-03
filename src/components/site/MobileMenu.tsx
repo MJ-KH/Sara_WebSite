@@ -26,7 +26,7 @@ export function MobileMenu({ menu }: { menu: MenuItem[] }) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-text)]"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-text)] transition-colors hover:border-[var(--color-primary)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-primary)]"
       >
         <span className="sr-only">{open ? 'بستن منو' : 'باز کردن منو'}</span>
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -47,14 +47,14 @@ export function MobileMenu({ menu }: { menu: MenuItem[] }) {
         <ul className="flex flex-col px-5 py-3">
           {menu.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} className="flex min-h-12 items-center border-b border-[var(--color-border)] text-[1.0625rem] font-semibold">
+              <Link href={item.href} className="flex min-h-12 items-center border-b border-[var(--color-border)] text-[1.0625rem] font-semibold transition-colors hover:text-[var(--color-primary)]">
                 {item.label}
               </Link>
               {item.children?.length ? (
                 <ul className="pb-2 ps-4">
                   {item.children.map((child) => (
                     <li key={child.href}>
-                      <Link href={child.href} className="flex min-h-11 items-center text-[var(--color-text-muted)]">
+                      <Link href={child.href} className="flex min-h-11 items-center text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-primary)]">
                         {child.label}
                       </Link>
                     </li>

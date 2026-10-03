@@ -42,7 +42,7 @@ export function SessionActionButton({ sessionId, soldOut }: { sessionId: string;
     <div className="flex flex-col gap-2">
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       {soldOut ? (
-        <button type="button" onClick={handleWaitlist} disabled={loading} className="min-h-11 rounded-[var(--radius-btn)] border border-[var(--color-border)] px-5 text-sm font-bold">
+        <button type="button" onClick={handleWaitlist} disabled={loading} className="min-h-11 rounded-[var(--radius-btn)] border border-[var(--color-border)] px-5 text-sm font-bold transition-colors hover:border-[var(--color-primary)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-primary)] disabled:opacity-60">
           عضویت در فهرست انتظار
         </button>
       ) : (

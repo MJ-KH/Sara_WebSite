@@ -59,7 +59,7 @@ export function SocialRail({
           rel="noreferrer"
           aria-label={link.label}
           title={link.label}
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-surface)] text-[var(--color-primary)] shadow-[var(--shadow-float)] transition-transform hover:-translate-y-0.5"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-surface)] text-[var(--color-primary)] shadow-[var(--shadow-float)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-primary)] hover:text-white"
         >
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" focusable="false">
             {link.icon}

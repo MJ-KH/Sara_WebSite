@@ -187,7 +187,7 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
                   className={`h-11 flex-1 rounded-full border text-[0.875rem] transition-colors ${
                     on
                       ? 'border-[var(--ink-900)] bg-[var(--ink-900)] text-[#f4ecee]'
-                      : 'border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-border-strong)]'
+                      : 'border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-primary)]'
                   }`}
                 >
                   {level.label}
@@ -240,7 +240,7 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
             aria-labelledby="consent-label"
             onClick={() => update({ marketingConsent: !form.marketingConsent })}
             className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-              form.marketingConsent ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border-strong)]'
+              form.marketingConsent ? 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-strong)]' : 'bg-[var(--color-border-strong)] hover:bg-[var(--gold)]'
             }`}
           >
             {/* راست‌چین: حالت روشن، دایره به سمت چپ (انتها) می‌رود */}

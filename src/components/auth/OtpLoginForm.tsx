@@ -120,7 +120,7 @@ export function OtpLoginForm({ onSuccess }: { onSuccess: () => void }) {
       <button type="submit" disabled={loading} className="btn btn-primary btn-block disabled:opacity-60">
         {loading ? 'در حال بررسی...' : 'تأیید و ورود'}
       </button>
-      <button type="button" onClick={() => setStep('mobile')} className="text-sm text-[var(--color-text-muted)] underline">
+      <button type="button" onClick={() => setStep('mobile')} className="text-sm text-[var(--color-text-muted)] underline transition-colors hover:text-[var(--color-primary)]">
         اصلاح شماره موبایل
       </button>
     </form>

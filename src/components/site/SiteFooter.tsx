@@ -50,7 +50,7 @@ export function SiteFooter({
           )}
           <div className="mt-5 flex flex-col gap-2">
             {mobile ? (
-              <a href={mobile.href} dir="ltr" className="self-start text-[1.125rem] font-medium text-[var(--color-primary)]">
+              <a href={mobile.href} dir="ltr" className="self-start text-[1.125rem] font-medium text-[var(--color-primary)] transition-opacity hover:opacity-80">
                 {mobile.text}
               </a>
             ) : null}

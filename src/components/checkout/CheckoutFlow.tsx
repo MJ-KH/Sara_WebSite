@@ -89,7 +89,7 @@ export function CheckoutFlow({
                 className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[var(--radius-base)] border px-4 transition-colors ${
                   device === option.value
                     ? 'border-[var(--color-primary)] bg-[var(--color-accent-soft)]'
-                    : 'border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
+                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-alt)]'
                 }`}
               >
                 <input

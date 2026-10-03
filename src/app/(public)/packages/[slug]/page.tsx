@@ -442,7 +442,7 @@ export default async function PackageDetailPage({ params }: Params) {
                               {lesson.isFreePreview ? (
                                 <Link
                                   href={`/packages/${pkg.slug}/preview/${lesson.id}`}
-                                  className="shrink-0 rounded-full bg-[var(--color-accent-soft)] px-3 py-1 text-[0.8125rem] font-bold text-[var(--color-primary)]"
+                                  className="shrink-0 rounded-full bg-[var(--color-accent-soft)] px-3 py-1 text-[0.8125rem] font-bold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)] hover:text-white"
                                 >
                                   تماشای رایگان
                                 </Link>

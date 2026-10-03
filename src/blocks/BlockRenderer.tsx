@@ -561,7 +561,7 @@ function ConsultationFormBlockView({ block, ctx }: { block: AnyBlock; ctx: PageC
                 <div>
                   <dt className="text-[0.875rem] text-[var(--color-text-muted)]">تلفن</dt>
                   <dd className="mt-1">
-                    <a href={tel.href} dir="ltr" className="text-[1.125rem] font-bold text-[var(--color-primary)]">
+                    <a href={tel.href} dir="ltr" className="text-[1.125rem] font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--color-primary-strong)] hover:underline">
                       {tel.text}
                     </a>
                   </dd>

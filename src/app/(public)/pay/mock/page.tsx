@@ -30,7 +30,7 @@ export default async function MockPaymentPage({ searchParams }: { searchParams: 
         <a href={successUrl} className="btn btn-primary p-3 font-bold">
           پرداخت موفق (آزمایشی)
         </a>
-        <a href={failUrl} className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-3 font-bold">
+        <a href={failUrl} className="rounded-[var(--radius-base)] border border-[var(--color-border)] p-3 font-bold transition-colors hover:border-[var(--color-primary)] hover:bg-[var(--color-accent-soft)]">
           پرداخت ناموفق (آزمایشی)
         </a>
       </div>

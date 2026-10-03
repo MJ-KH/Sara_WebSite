@@ -169,6 +169,25 @@ html[data-font-scale='lg'] {
 }
 
 @layer base {
+  /* هر چیز کلیک‌خور: نشانگر دست؛ غیرفعال: نشانگر ممنوع */
+  button:not(:disabled),
+  [role='button'],
+  [role='switch'],
+  [role='option'],
+  summary,
+  select:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled),
+  label:has(> input[type='radio']),
+  label:has(> input[type='checkbox']) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+
   html {
     /* فقط روی html ست می‌شود؛ ست‌کردن هم‌زمان روی body مقیاس را دوبار اعمال می‌کرد. */
     font-size: calc(1rem * var(--font-scale));
@@ -527,7 +546,9 @@ html[data-font-scale='lg'] {
   }
 
   .btn-ghost:hover {
-    border-color: var(--color-text);
+    background: var(--color-accent-soft);
+    color: var(--color-primary-strong);
+    border-color: var(--color-primary);
   }
 
   /* دکمه متنی: برای اقدام دوم کنار دکمه اصلی (به‌جای دو دکمه هم‌وزن) */
@@ -541,7 +562,8 @@ html[data-font-scale='lg'] {
   }
 
   .btn-link:hover {
-    border-bottom-color: var(--color-text);
+    color: var(--color-primary-strong);
+    border-bottom-color: var(--color-primary);
   }
 
   /* روی نوار تیره، دکمه اصلی کاغذی می‌شود */

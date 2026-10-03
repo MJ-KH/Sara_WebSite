@@ -37,6 +37,8 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
                 font: 'inherit',
                 cursor: 'pointer',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#6f1f39')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#8e2a4a')}
             >
               تلاش دوباره
             </button>

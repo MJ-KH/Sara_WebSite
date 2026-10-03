@@ -48,14 +48,14 @@ export default async function ContactPage() {
             <dl className="mt-5 flex flex-col gap-5">
               {mobile ? (
                 <Row label="موبایل">
-                  <a href={mobile.href} dir="ltr" className="text-[1.25rem] font-bold text-[var(--color-primary)]">
+                  <a href={mobile.href} dir="ltr" className="text-[1.25rem] font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--color-primary-strong)] hover:underline">
                     {mobile.text}
                   </a>
                 </Row>
               ) : null}
               {landline ? (
                 <Row label="تلفن سالن">
-                  <a href={landline.href} dir="ltr" className="text-[1.125rem] font-bold">
+                  <a href={landline.href} dir="ltr" className="text-[1.125rem] font-bold transition-colors hover:text-[var(--color-primary)]">
                     {landline.text}
                   </a>
                 </Row>
