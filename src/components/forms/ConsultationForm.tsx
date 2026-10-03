@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { PROVINCE_OPTIONS } from '@/lib/iran-provinces'
 
 export function ConsultationForm({ heading, description }: { heading?: string; description?: string }) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
@@ -18,7 +19,7 @@ export function ConsultationForm({ heading, description }: { heading?: string; d
         body: JSON.stringify({
           name: form.get('name'),
           mobile: form.get('mobile'),
-          city: form.get('city'),
+          province: form.get('province'),
           skillLevel: form.get('skillLevel'),
           goal: form.get('goal'),
         }),
@@ -61,8 +62,15 @@ export function ConsultationForm({ heading, description }: { heading?: string; d
           <input name="mobile" required inputMode="tel" autoComplete="tel" dir="ltr" placeholder="۰۹۱۲ ..." className={`${field} text-end`} />
         </label>
         <label className={label}>
-          شهر
-          <input name="city" autoComplete="address-level2" className={field} />
+          استان
+          <select name="province" className={field} defaultValue="">
+            <option value="">انتخاب کنید</option>
+            {PROVINCE_OPTIONS.map((province) => (
+              <option key={province} value={province}>
+                {province}
+              </option>
+            ))}
+          </select>
         </label>
         <label className={label}>
           سطح

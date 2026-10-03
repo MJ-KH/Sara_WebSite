@@ -16,7 +16,7 @@ export const ConsultationRequests: CollectionConfig = {
   slug: 'consultation-requests',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'mobile', 'status', 'createdAt'],
+    defaultColumns: ['name', 'mobile', 'province', 'status', 'createdAt'],
     group: 'ارتباطات',
   },
   access: {
@@ -28,7 +28,8 @@ export const ConsultationRequests: CollectionConfig = {
   fields: [
     { name: 'name', type: 'text', required: true, label: 'نام' },
     { name: 'mobile', type: 'text', required: true, label: 'موبایل' },
-    { name: 'city', type: 'text', label: 'شهر' },
+    { name: 'province', type: 'text', label: 'استان' },
+    { name: 'city', type: 'text', label: 'شهر (قدیمی)', admin: { description: 'فرم دیگر شهر نمی‌پرسد؛ فقط برای درخواست‌های قبلی.' } },
     { name: 'skillLevel', type: 'text', label: 'سطح' },
     { name: 'goal', type: 'textarea', label: 'هدف آموزشی' },
     { name: 'linkedStudent', type: 'relationship', relationTo: 'students', label: 'حساب مرتبط (پس از تأیید هویت)' },

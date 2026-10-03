@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
+import { PROVINCE_OPTIONS } from '@/lib/iran-provinces'
 import { normalizePersianMultiline, normalizePersianText } from '@/lib/persian-text'
 import { normalizeIranMobile } from '@/lib/phone'
 import { isRateLimited } from '@/lib/rate-limit'
@@ -9,7 +10,8 @@ import { isRateLimited } from '@/lib/rate-limit'
 const bodySchema = z.object({
   name: z.string().transform(normalizePersianText).pipe(z.string().min(1)),
   mobile: z.string().min(5),
-  city: z.string().transform(normalizePersianText).optional(),
+  // فرم خالی بودن استان را با رشته خالی می‌فرستد
+  province: z.union([z.enum(PROVINCE_OPTIONS), z.literal('')]).optional(),
   skillLevel: z.string().optional(),
   goal: z.string().transform(normalizePersianMultiline).optional(),
 })
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
     data: {
       name: parsed.data.name,
       mobile,
-      city: parsed.data.city,
+      province: parsed.data.province || undefined,
       skillLevel: parsed.data.skillLevel,
       goal: parsed.data.goal,
       linkedStudent: user?.collection === 'students' ? user.id : undefined,
