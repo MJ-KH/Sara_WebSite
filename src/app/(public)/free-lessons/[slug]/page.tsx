@@ -1,5 +1,6 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Ornament } from '@/components/brand/Ornament'
@@ -52,7 +53,8 @@ export default async function FreeLessonDetailPage({ params }: Params) {
   const category = typeof item.category === 'object' ? item.category : null
   const title = splitSampleMarker(item.title)
   const url = siteUrl()
-  const cover = typeof item.coverImage === 'object' && item.coverImage?.url ? new URL(item.coverImage.url, url).toString() : undefined
+  const coverImage = typeof item.coverImage === 'object' ? item.coverImage : null
+  const cover = coverImage?.url ? new URL(coverImage.url, url).toString() : undefined
 
   return (
     <article>
@@ -96,6 +98,18 @@ export default async function FreeLessonDetailPage({ params }: Params) {
       </header>
 
       <div className="container-narrow section">
+        {coverImage?.url ? (
+          <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-[var(--radius-media)] bg-[var(--color-bg-alt)]">
+            <Image
+              src={coverImage.url}
+              alt={coverImage.alt || title.text}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 42rem"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
         {item.body ? (
           <div className="rich-text">
             <RichText data={item.body} />

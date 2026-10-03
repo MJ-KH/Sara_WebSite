@@ -1,5 +1,5 @@
 /**
- * ستون شناور کنار صفحه (فقط دسکتاپ): اینستاگرام آکادمی، واتساپ و یوتیوب.
+ * ستون شناور کنار صفحه (فقط دسکتاپ): اینستاگرام آکادمی، واتساپ، تلگرام و یوتیوب.
  * پیج‌های خدمات و سالن عمداً اینجا نیستند تا تمرکز سایت روی آموزش بماند؛ آن‌ها در فوتر
  * و صفحه خدمات آمده‌اند. آیکون‌ها طرح ساده عمومی‌اند، نه لوگوی رسمی برندها.
  */
@@ -17,6 +17,12 @@ const ICONS = {
       <path d="M9.2 8.8c.2 2.4 1.9 4.4 4.3 5.1" />
     </>
   ),
+  // هواپیمای کاغذی ساده (نماد عمومی پیام‌رسان، نه لوگوی رسمی تلگرام)
+  telegram: (
+    <>
+      <path d="M21 4L3 11.2l6.3 2.3L19 7l-7.6 8.1.3 4.9 3-3.6 4.4 3.4z" />
+    </>
+  ),
   youtube: (
     <>
       <rect x="2.8" y="5.5" width="18.4" height="13" rx="4" />
@@ -28,15 +34,18 @@ const ICONS = {
 export function SocialRail({
   academy,
   whatsapp,
+  telegram,
   youtube,
 }: {
   academy?: string | null
   whatsapp?: string | null
+  telegram?: string | null
   youtube?: string | null
 }) {
   const links = [
     academy ? { href: `https://instagram.com/${academy}`, label: `اینستاگرام آکادمی (@${academy})`, icon: ICONS.instagram } : null,
     whatsapp ? { href: whatsapp, label: 'پیام در واتساپ', icon: ICONS.whatsapp } : null,
+    telegram ? { href: `https://t.me/${telegram}`, label: `تلگرام (@${telegram})`, icon: ICONS.telegram } : null,
     youtube ? { href: youtube, label: 'کانال یوتیوب', icon: ICONS.youtube } : null,
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[]
   if (links.length === 0) return null

@@ -64,7 +64,12 @@ export default async function PublicLayout({ children }: { children: React.React
           }))}
         />
         <main>{children}</main>
-        <SocialRail academy={settings.instagram?.academyHandle} whatsapp={whatsapp} youtube={settings.socials?.youtubeUrl} />
+        <SocialRail
+          academy={settings.instagram?.academyHandle}
+          whatsapp={whatsapp}
+          telegram={settings.socials?.telegramHandle}
+          youtube={settings.socials?.youtubeUrl}
+        />
         <SiteFooter
           brandName={settings.brand?.nameFa || 'سارا نقی‌زاده'}
           tagline={settings.brand?.tagline || 'آکادمی تخصصی ناخن'}
