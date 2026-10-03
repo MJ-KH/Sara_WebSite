@@ -7,8 +7,8 @@ import { SwatchFan } from '@/components/brand/SwatchFan'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
 import { FreeLessonCard } from '@/components/free-lessons/FreeLessonCard'
 import { PackageCard } from '@/components/packages/PackageCard'
+import { PriceWithDiscount } from '@/components/packages/PriceWithDiscount'
 import { FaqAccordion } from '@/components/ui/FaqAccordion'
-import { Money } from '@/components/ui/Money'
 import { SampleBadge } from '@/components/ui/SampleBadge'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
@@ -305,15 +305,16 @@ function StartGuideBlockView({ block }: { block: AnyBlock }) {
               <p className="mx-auto mt-3 max-w-[30rem] leading-[2] text-[var(--color-text-muted)]">{description.text}</p>
 
               {packages.length > 0 ? (
-                <ul className="mx-auto mt-7 flex w-full max-w-[24rem] flex-col gap-3">
+                <ul className="mx-auto mt-7 flex w-full max-w-[24rem] flex-col gap-6">
                   {packages.map((pkg) => (
                     <li key={pkg.id}>
-                      <Link
-                        href={`/packages/${pkg.slug}`}
-                        className="flex items-baseline justify-between gap-4 border-b border-[var(--gold-soft)] pb-3 transition-colors hover:border-[var(--color-text)]"
-                      >
-                        <span className="font-medium">{splitSampleMarker(pkg.title).text}</span>
-                        <Money rial={pkg.priceRial} className="shrink-0 text-[0.9375rem] text-[var(--color-text-muted)]" />
+                      {/* کل ردیف لینک است؛ دکمه فقط ظاهر دکمه دارد تا لینک تودرتو ساخته نشود (مثل کارت دوره) */}
+                      <Link href={`/packages/${pkg.slug}`} className="group flex flex-col items-center gap-3 border-t border-[var(--gold-soft)] pt-5">
+                        <span className="text-[1.0625rem] font-medium">{splitSampleMarker(pkg.title).text}</span>
+                        <PriceWithDiscount priceRial={pkg.priceRial} compareAtPriceRial={pkg.compareAtPriceRial} />
+                        <span className="flex min-h-11 w-full items-center justify-center rounded-[var(--radius-btn)] bg-[var(--ink-900)] text-[0.9375rem] font-medium text-[#f4ecee] transition-colors group-hover:bg-[var(--color-primary)]">
+                          مشاهده دوره
+                        </span>
                       </Link>
                     </li>
                   ))}

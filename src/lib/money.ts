@@ -51,3 +51,12 @@ export function applyFixedDiscount(rial: number, discountRial: number): number {
   assertIntegerRial(discountRial, 'discountRial')
   return Math.max(0, rial - discountRial)
 }
+
+/**
+ * درصد تخفیف نسبت به قیمت قبل، رو به پایین گرد می‌شود تا هیچ‌وقت بیشتر از واقعیت اعلام نشود
+ * (۷۶٫۴٪ ← ۷۶٪). اگر قیمت قبل نباشد یا از قیمت فعلی بیشتر نباشد، صفر.
+ */
+export function discountPercent(priceRial: number, compareAtPriceRial?: number | null): number {
+  if (!compareAtPriceRial || compareAtPriceRial <= priceRial) return 0
+  return Math.floor(((compareAtPriceRial - priceRial) / compareAtPriceRial) * 100)
+}

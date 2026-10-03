@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFixedDiscount, applyPercentDiscount, formatToman, rialToToman, tomanToRial } from '@/lib/money'
+import { applyFixedDiscount, applyPercentDiscount, discountPercent, formatToman, rialToToman, tomanToRial } from '@/lib/money'
 
 describe('money helpers', () => {
   it('ریال را درست به تومان تبدیل می‌کند', () => {
@@ -32,5 +32,13 @@ describe('money helpers', () => {
   it('با ارقام فارسی از جداکننده هزارگان فارسی استفاده می‌کند', () => {
     expect(formatToman(25_000_000)).toBe('۲٬۵۰۰٬۰۰۰ تومان')
     expect(formatToman(25_000_000, { persianDigits: false })).toBe('2,500,000 تومان')
+  })
+})
+
+describe('discountPercent', () => {
+  it('درصد را رو به پایین گرد می‌کند و بدون قیمت قبل صفر است', () => {
+    expect(discountPercent(20_000_000, 85_000_000)).toBe(76)
+    expect(discountPercent(20_000_000, null)).toBe(0)
+    expect(discountPercent(20_000_000, 20_000_000)).toBe(0)
   })
 })

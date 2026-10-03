@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { SwatchFan } from '@/components/brand/SwatchFan'
-import { Money } from '@/components/ui/Money'
+import { PriceWithDiscount } from '@/components/packages/PriceWithDiscount'
 import { SampleBadge } from '@/components/ui/SampleBadge'
 import { paletteForPackage } from '@/lib/brand/swatches'
 import { toPersianDigits } from '@/lib/digits'
@@ -31,11 +31,6 @@ export type PackageStats = { lessonCount: number }
  * در موبایل افقی است (عکس کوچک کنار متن) تا هر دوره یک صفحه کامل را نگیرد و مقایسه آسان باشد.
  */
 export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: PackageStats }) {
-  const hasDiscount = Boolean(pkg.compareAtPriceRial && pkg.compareAtPriceRial > pkg.priceRial)
-  // رو به پایین گرد می‌شود تا تخفیف هیچ‌وقت بیشتر از واقعیت اعلام نشود (۷۶٫۴٪ ← ۷۶٪)
-  const discountPercent = hasDiscount
-    ? Math.floor(((pkg.compareAtPriceRial as number) - pkg.priceRial) / (pkg.compareAtPriceRial as number) * 100)
-    : 0
   const title = splitSampleMarker(pkg.title)
   const subtitle = splitSampleMarker(pkg.subtitle)
   const level = LEVEL_LABELS[pkg.level] ?? pkg.level
@@ -73,20 +68,8 @@ export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: Pack
 
         {/* فاصله حداقلی تا خط قیمت؛ در ردیف کارت‌ها خط قیمت‌ها هم‌تراز می‌مانند */}
         <div className="min-h-3 flex-1 sm:min-h-5" aria-hidden="true" />
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-[var(--gold-soft)] pt-3 sm:pt-4">
-          <Money rial={pkg.priceRial} className="text-[1.1rem] font-semibold text-[var(--color-text)]" />
-          {hasDiscount ? (
-            <>
-              <span className="text-[0.875rem] text-[var(--color-text-muted)] line-through decoration-[var(--gold)]">
-                <Money rial={pkg.compareAtPriceRial as number} />
-              </span>
-              {discountPercent > 0 ? (
-                <span className="rounded-full bg-[var(--color-accent-soft)] px-2.5 py-0.5 text-[0.75rem] font-semibold text-[var(--color-primary)]">
-                  {toPersianDigits(discountPercent)}٪ تخفیف
-                </span>
-              ) : null}
-            </>
-          ) : null}
+        <div className="border-t border-[var(--gold-soft)] pt-3 sm:pt-4">
+          <PriceWithDiscount priceRial={pkg.priceRial} compareAtPriceRial={pkg.compareAtPriceRial} />
         </div>
         {/* کل کارت لینک است؛ این فقط ظاهر دکمه دارد تا لینک تودرتو ساخته نشود */}
         <span className="mt-3 flex min-h-11 items-center justify-center rounded-[var(--radius-btn)] bg-[var(--ink-900)] text-[0.9375rem] font-medium text-[#f4ecee] transition-colors group-hover:bg-[var(--color-primary)] sm:mt-4 sm:min-h-12">
