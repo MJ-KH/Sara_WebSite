@@ -593,6 +593,33 @@ function CtaBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
+/** عددهای درشت و نازک کنار هم با خط مویی طلایی بینشان؛ زیر سربرگ، بدون کارت */
+function StatsStripBlockView({ block }: { block: AnyBlock }) {
+  const items: AnyBlock[] = (block.items || []).filter((item: AnyBlock) => item.value && item.label)
+  if (items.length === 0) return null
+  return (
+    <section className="section-sm">
+      <div className="container-x">
+        <dl className="mx-auto grid max-w-[52rem] border-y border-[var(--gold-soft)]" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+          {items.map((item, index) => (
+            // در HTML اول توضیح (dt) و بعد عدد (dd) می‌آید؛ flex-col-reverse عدد را بالا نشان می‌دهد
+            <div
+              key={item.id || index}
+              className={`flex flex-col-reverse px-2 py-7 text-center md:py-9 ${index > 0 ? 'border-s border-[var(--gold-soft)]' : ''}`}
+            >
+              <dt className="mt-3 text-[0.875rem] text-[var(--color-text-muted)] md:text-[0.9375rem]">{item.label}</dt>
+              {/* ترتیب نمایش همان ترتیب تایپ (مثلاً ۱۵+)، تا جهت راست‌به‌چپ علامت + را جابه‌جا نکند */}
+              <dd dir="ltr" className="text-[clamp(2rem,6vw,3.25rem)] font-extralight leading-none text-[var(--color-text)]">
+                {item.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )
+}
+
 const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock; ctx: PageContext }) => ReactNode | Promise<ReactNode>> = {
   hero: HeroBlockView,
   startGuide: StartGuideBlockView,
@@ -601,6 +628,7 @@ const BLOCK_VIEWS: Record<string, (props: { block: AnyBlock; ctx: PageContext })
   image: ImageBlockView,
   gallery: GalleryBlockView,
   beforeAfter: BeforeAfterBlockView,
+  statsStrip: StatsStripBlockView,
   video: VideoBlockView,
   packageList: PackageListBlockView,
   workshopList: WorkshopListBlockView,

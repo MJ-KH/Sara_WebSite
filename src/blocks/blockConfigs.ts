@@ -240,6 +240,27 @@ export const AboutIntroBlock: Block = {
   ],
 }
 
+/** نوار آمار زیر سربرگ: چند عدد درشت (سابقه، تعداد هنرجو و…) با توضیح کوتاه */
+export const StatsStripBlock: Block = {
+  slug: 'statsStrip',
+  labels: { singular: 'نوار آمار', plural: 'نوارهای آمار' },
+  fields: [
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 2,
+      maxRows: 4,
+      label: 'آمار',
+      admin: { description: 'فقط عددهای واقعی و قابل اثبات؛ مثلاً «۱۵+» و «سال سابقه».' },
+      fields: [
+        { name: 'value', type: 'text', required: true, label: 'عدد', admin: { description: 'همان‌طور که تایپ شود نمایش داده می‌شود، مثلاً ۱۵+ یا ۳۰۰۰+' } },
+        { name: 'label', type: 'text', required: true, label: 'توضیح' },
+      ],
+    },
+  ],
+}
+
 export const BeforeAfterBlock: Block = {
   slug: 'beforeAfter',
   labels: { singular: 'قبل و بعد', plural: 'قبل و بعدها' },
@@ -274,6 +295,7 @@ const rawBlocks: Block[] = [
   TextBlock,
   ImageBlock,
   GalleryBlock,
+  StatsStripBlock,
   BeforeAfterBlock,
   VideoBlock,
   PackageListBlock,
