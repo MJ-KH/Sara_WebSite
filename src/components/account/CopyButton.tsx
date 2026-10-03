@@ -17,7 +17,7 @@ export function CopyButton({ text, label = 'کپی' }: { text: string; label?: s
   }
 
   return (
-    <button type="button" onClick={copy} className="btn btn-primary btn-sm shrink-0" aria-live="polite">
+    <button type="button" onClick={copy} className="btn btn-sm shrink-0 border-transparent bg-[var(--ink-900)] text-[#f4ecee] hover:bg-[var(--color-primary)]" aria-live="polite">
       {copied ? 'کپی شد ✓' : label}
     </button>
   )

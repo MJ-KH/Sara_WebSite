@@ -1164,3 +1164,28 @@ html[data-font-scale='lg'] {
   border-radius: inherit;
   pointer-events: none;
 }
+
+/* ---------- حساب کاربری (نمونه «الف»: کارت عضویت) ---------- */
+.member-card {
+  background: radial-gradient(120% 140% at 100% 0%, #4a2433 0%, #2a1820 55%, #21151a 100%);
+}
+
+.member-card::after {
+  content: '';
+  position: absolute;
+  inset: 0.5rem;
+  border: 1px solid rgba(196, 164, 124, 0.35);
+  border-radius: 0.875rem;
+  pointer-events: none;
+}
+
+/* کارت‌ها و تیترهای صفحه‌های داخلی حساب: خط نازک به‌جای سایه، گوشه گردتر، تیتر هم‌وزن سایت */
+.account-shell .card-soft {
+  border-radius: 1.125rem;
+  box-shadow: none;
+}
+
+.account-shell .title-1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
