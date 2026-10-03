@@ -10,7 +10,7 @@ type Params = { params: Promise<{ slug: string }> }
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params
   const page = await getPageBySlug(slug)
-  return buildPageMetadata(page)
+  return buildPageMetadata(page, `/${slug}`)
 }
 
 async function findRedirect(fromPath: string) {

@@ -1,0 +1,40 @@
+# بررسی خودکار هر push و Pull Request: نوع‌ها (TypeScript)، قواعد کد (ESLint) و آزمون‌های واحد
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # فقط برای بارگذاری تنظیمات Payload در آزمون‌ها؛ هیچ سرویس واقعی‌ای صدا زده نمی‌شود
+      PAYLOAD_SECRET: ci-only-not-a-real-secret
+      DATABASE_URI: postgres://ci:ci@localhost:5432/ci
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # این دو فایل ساختنی‌اند و در مخزن نیستند (gitignore)
+      - name: Generate Payload types and import map
+        run: npx payload generate:types && npx payload generate:importmap
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: npx eslint src scripts tests
+      - name: Unit tests
+        run: npx vitest run

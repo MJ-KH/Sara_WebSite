@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { SwatchFan } from '@/components/brand/SwatchFan'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { PackageCard } from '@/components/packages/PackageCard'
 import { FaqAccordion } from '@/components/ui/FaqAccordion'
 import { Money } from '@/components/ui/Money'
@@ -18,6 +19,7 @@ import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { formatJalaliDate } from '@/lib/jalali'
 import { getPackageStats } from '@/lib/packages/stats'
+import { buildSeoMetadata, siteUrl } from '@/lib/seo/metadata'
 import { extractIdString } from '@/lib/relation'
 
 type Params = { params: Promise<{ slug: string }> }
@@ -70,10 +72,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const data = await getData(slug)
   if (!data) return {}
   const seo = data.pkg.seo || {}
-  return {
+  const cover = typeof data.pkg.coverImage === 'object' ? data.pkg.coverImage?.url : null
+  return buildSeoMetadata({
     title: seo.metaTitle || splitSampleMarker(data.pkg.title).text,
-    description: seo.metaDescription || splitSampleMarker(data.pkg.subtitle).text || undefined,
-  }
+    description: seo.metaDescription || splitSampleMarker(data.pkg.subtitle).text,
+    path: `/packages/${data.pkg.slug}`,
+    image: (typeof seo.ogImage === 'object' ? seo.ogImage?.url : null) || cover,
+  })
 }
 
 /** یک بخش از محتوای اصلی صفحه دوره */
@@ -206,8 +211,48 @@ export default async function PackageDetailPage({ params }: Params) {
     </div>
   )
 
+  const url = siteUrl()
+  const pageUrl = `${url}/packages/${pkg.slug}`
+  const coverUrl = typeof pkg.coverImage === 'object' && pkg.coverImage?.url ? new URL(pkg.coverImage.url, url).toString() : undefined
+  // فقط پرسش‌های واقعی؛ پرسش‌های علامت‌خورده «[نمونه]» به موتور جست‌وجو داده نمی‌شوند
+  const realFaqs = (pkg.faqs || []).filter((faq) => !splitSampleMarker(faq.question).isSample && !splitSampleMarker(faq.answer).isSample)
+
   return (
     <div className="pb-28 md:pb-0">
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Course',
+          name: title.text,
+          description: subtitle.text || title.text,
+          url: pageUrl,
+          inLanguage: 'fa',
+          ...(coverUrl ? { image: coverUrl } : {}),
+          provider: { '@type': 'Organization', name: settings.brand?.nameFa || 'سارا نقی‌زاده', url },
+          hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online' },
+          offers: {
+            '@type': 'Offer',
+            // مبلغ در دیتابیس ریال است و همان با واحد IRR گزارش می‌شود
+            price: pkg.priceRial,
+            priceCurrency: 'IRR',
+            availability: pkg.status === 'published' ? 'https://schema.org/InStock' : 'https://schema.org/Discontinued',
+            url: pageUrl,
+          },
+        }}
+      />
+      {realFaqs.length > 0 ? (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: realFaqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+            })),
+          }}
+        />
+      ) : null}
       {/* سربرگ دوره */}
       <header className="border-b border-[var(--color-border)]">
         <div className="container-x grid gap-8 pb-10 pt-6 md:grid-cols-[1.25fr_1fr] md:items-end md:gap-12 md:pb-14 md:pt-10">

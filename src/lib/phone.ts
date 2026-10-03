@@ -23,3 +23,9 @@ export function formatIranMobileForDisplay(e164: string): string {
   const national = phone.formatNational().replace(/\D/g, '')
   return national.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3')
 }
+
+/** شکل محلی بدون فاصله برای جست‌وجوی مدیر در پنل، مثلاً +989121234567 -> 09121234567 */
+export function toLocalIranMobile(e164: string): string {
+  const match = /^\+98(9\d{9})$/.exec(e164)
+  return match ? `0${match[1]}` : e164
+}

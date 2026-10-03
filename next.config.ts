@@ -6,8 +6,31 @@ const PUBLIC_BUCKET = process.env.S3_BUCKET_PUBLIC || 'media-public'
 // می‌شود چون rewrites در routes-manifest ثبت می‌شوند؛ ر.ک. build arg در Dockerfile.
 const S3_INTERNAL_URL = (process.env.S3_INTERNAL_URL || process.env.S3_ENDPOINT || '').replace(/\/$/, '')
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+/**
+ * هدرهای امنیتی همه پاسخ‌ها. CSP عمداً محدود است (فقط قاب‌گرفتن، base و object) تا پنل
+ * Payload و اسکریپت‌های داخلی Next نشکنند؛ HSTS فقط در محیط عملیاتی (روی HTTPS) فرستاده می‌شود.
+ */
+const securityHeaders = [
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), browsing-topics=()' },
+  { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'" },
+  ...(isProduction ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }] : []),
+]
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  async headers() {
+    return [{ source: '/:path*', headers: securityHeaders }]
+  },
+  async redirects() {
+    // صفحه CMS با نامک home همان صفحه اصلی است؛ نسخه تکراری /home به / منتقل می‌شود
+    return [{ source: '/home', destination: '/', permanent: true }]
+  },
   /**
    * تصاویر عمومی از همان دامنه سایت سرو می‌شوند (/media-public/...) و Next آن‌ها را به
    * ذخیره‌ساز داخلی می‌رساند. این کار هم در Docker محلی (که مرورگر به minio:9000 دسترسی

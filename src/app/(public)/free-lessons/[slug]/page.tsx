@@ -3,10 +3,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Ornament } from '@/components/brand/Ornament'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { SampleBadge } from '@/components/ui/SampleBadge'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { splitSampleMarker } from '@/lib/display'
 import { getPayloadClient } from '@/lib/get-payload'
+import { buildSeoMetadata, siteUrl } from '@/lib/seo/metadata'
 
 type Params = { params: Promise<{ slug: string }> }
 
@@ -30,7 +32,12 @@ async function getItem(slug: string) {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params
   const item = await getItem(slug)
-  return { title: item ? splitSampleMarker(item.title).text : undefined }
+  if (!item) return {}
+  return buildSeoMetadata({
+    title: splitSampleMarker(item.title).text,
+    path: `/free-lessons/${item.slug}`,
+    image: typeof item.coverImage === 'object' ? item.coverImage?.url : null,
+  })
 }
 
 export default async function FreeLessonDetailPage({ params }: Params) {
@@ -44,9 +51,24 @@ export default async function FreeLessonDetailPage({ params }: Params) {
   const relatedPackage = typeof item.relatedPackage === 'object' ? item.relatedPackage : null
   const category = typeof item.category === 'object' ? item.category : null
   const title = splitSampleMarker(item.title)
+  const url = siteUrl()
+  const cover = typeof item.coverImage === 'object' && item.coverImage?.url ? new URL(item.coverImage.url, url).toString() : undefined
 
   return (
     <article>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: title.text,
+          url: `${url}/free-lessons/${item.slug}`,
+          inLanguage: 'fa',
+          datePublished: item.createdAt,
+          dateModified: item.updatedAt,
+          ...(cover ? { image: cover } : {}),
+          author: { '@type': 'Person', name: 'سارا نقی‌زاده' },
+        }}
+      />
       <header className="band-alt">
         <div className="container-narrow py-12 text-center md:py-16">
           <nav aria-label="مسیر صفحه" className="text-[0.875rem] text-[var(--color-text-muted)]">

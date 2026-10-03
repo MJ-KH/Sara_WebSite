@@ -2,6 +2,7 @@ import type { Access, CollectionConfig } from 'payload'
 import type { AdminRole } from '@/access/roles'
 import { isAdminCollection, isAnyAdminStaff, isOwnerOrBusinessAdmin } from '@/access/roles'
 import { studentJwtStrategy } from '@/lib/auth/student-strategy'
+import { toLocalIranMobile } from '@/lib/phone'
 
 type ReqUser = { collection?: string; role?: AdminRole; id?: string | number } | null | undefined
 
@@ -35,7 +36,9 @@ export const Students: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'mobile',
-    defaultColumns: ['mobile', 'name', 'city', 'status', 'createdAt'],
+    defaultColumns: ['mobile', 'name', 'city', 'status', 'lastLoginAt', 'createdAt'],
+    // مدیر می‌تواند با 0912...، +98912...، نام یا ایمیل جست‌وجو کند
+    listSearchableFields: ['mobile', 'mobileLocal', 'name', 'email'],
     group: 'هنرجویان',
     description: 'بانک هنرجویان و علاقه‌مندان. ساخت پرونده فقط از طریق ورود با موبایل انجام می‌شود.',
   },
@@ -58,6 +61,22 @@ export const Students: CollectionConfig = {
       label: 'موبایل (نرمال‌شده)',
       access: { update: isOwnerOrBusinessAdmin },
       admin: { description: 'شکل استاندارد E.164 — فقط پشتیبانی می‌تواند در موارد استثنایی ویرایش کند.' },
+    },
+    {
+      name: 'mobileLocal',
+      type: 'text',
+      index: true,
+      label: 'موبایل (شکل محلی)',
+      admin: { readOnly: true, description: 'خودکار از موبایل ساخته می‌شود (مثل 09121234567) تا جست‌وجو در پنل آسان باشد.' },
+      hooks: {
+        // همیشه از روی موبایل بازسازی می‌شود؛ مقدار ارسالی از بیرون نادیده گرفته می‌شود
+        beforeChange: [
+          ({ siblingData, originalDoc, value }) => {
+            const mobile = siblingData.mobile ?? originalDoc?.mobile
+            return typeof mobile === 'string' ? toLocalIranMobile(mobile) : value
+          },
+        ],
+      },
     },
     { name: 'name', type: 'text', label: 'نام' },
     { name: 'email', type: 'email', label: 'ایمیل (اختیاری)' },
@@ -144,6 +163,14 @@ export const Students: CollectionConfig = {
         { label: 'مسدود', value: 'blocked' },
       ],
       access: { update: isOwnerOrBusinessAdmin },
+    },
+    {
+      name: 'lastLoginAt',
+      type: 'date',
+      label: 'آخرین ورود',
+      // فقط مسیر ورود OTP (با overrideAccess) آن را ثبت می‌کند
+      access: { update: () => false },
+      admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' } },
     },
   ],
 }

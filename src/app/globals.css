@@ -458,7 +458,8 @@ html[data-font-scale='lg'] {
   }
 
   .btn-sm {
-    min-height: 2.5rem;
+    /* حداقل ۴۴ پیکسل برای لمس راحت در موبایل */
+    min-height: 2.75rem;
     padding-inline: 1.125rem;
     font-size: 0.8125rem;
   }
@@ -1139,6 +1140,27 @@ html[data-font-scale='lg'] {
   position: absolute;
   inset: 0.4rem;
   border: 1px dashed rgba(255, 255, 255, 0.7);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* قاب طاقی صفحه‌های ۴۰۴ و خطا، با خط دوخت طلایی */
+.error-arch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 9.5rem;
+  aspect-ratio: 2 / 3;
+  background: var(--paper-2, #f7eef0);
+  border-radius: 50% 50% 1.125rem 1.125rem / 33.3% 33.3% 1.125rem 1.125rem;
+}
+
+.error-arch::after {
+  content: '';
+  position: absolute;
+  inset: 0.45rem;
+  border: 1px dashed var(--gold);
   border-radius: inherit;
   pointer-events: none;
 }

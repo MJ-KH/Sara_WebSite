@@ -47,6 +47,12 @@ export async function POST(req: NextRequest) {
   if (student.status === 'blocked') {
     return NextResponse.json({ ok: false, message: 'دسترسی این حساب مسدود شده است. با پشتیبانی تماس بگیرید.' }, { status: 403 })
   }
+  await payload.update({
+    collection: 'students',
+    id: student.id,
+    data: { lastLoginAt: new Date().toISOString() },
+    overrideAccess: true,
+  })
 
   const token = await signStudentSessionToken(String(student.id))
   const response = NextResponse.json({ ok: true, studentId: student.id })

@@ -3,8 +3,12 @@ import type { CSSProperties } from 'react'
 import { FreeLessonCard } from '@/components/free-lessons/FreeLessonCard'
 import { PageIntro } from '@/components/site/PageIntro'
 import { getPayloadClient } from '@/lib/get-payload'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
+import { normalizePersianText } from '@/lib/persian-text'
 
-export const metadata: Metadata = { title: 'آموزش رایگان' }
+export function generateMetadata(): Promise<Metadata> {
+  return buildSeoMetadata({ title: 'آموزش رایگان', path: '/free-lessons' })
+}
 
 type SearchParams = Promise<{ category?: string; q?: string }>
 
@@ -16,7 +20,9 @@ export default async function FreeLessonsPage({ searchParams }: { searchParams: 
 
   const where: any = { status: { equals: 'published' } }
   if (category) where.category = { equals: category }
-  if (q) where.title = { like: q }
+  // جست‌وجو با «ي/ك» عربی هم همان نتیجه «ی/ک» فارسی را بدهد
+  const query = q ? normalizePersianText(q) : ''
+  if (query) where.title = { like: query }
 
   const items = await payload.find({ collection: 'free-lessons', where, sort: '-createdAt', limit: 48, depth: 1 })
 

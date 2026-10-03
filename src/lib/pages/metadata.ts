@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export function buildPageMetadata(page: any): Metadata {
+/** متادیتای صفحه‌های صفحه‌ساز؛ canonical پیش‌فرض همان مسیر صفحه است مگر مدیر در پنل عوضش کرده باشد. */
+export function buildPageMetadata(page: any, path: string): Promise<Metadata> {
   const seo = page?.seo || {}
-  const ogImage = typeof seo.ogImage === 'object' ? seo.ogImage?.url : undefined
-  return {
+  return buildSeoMetadata({
     title: seo.metaTitle || page?.title,
-    description: seo.metaDescription || undefined,
-    alternates: seo.canonicalPath ? { canonical: seo.canonicalPath } : undefined,
-    robots: seo.noIndex ? { index: false, follow: false } : undefined,
-    openGraph: ogImage ? { images: [{ url: ogImage }] } : undefined,
-  }
+    description: seo.metaDescription,
+    path: seo.canonicalPath || path,
+    image: typeof seo.ogImage === 'object' ? seo.ogImage?.url : null,
+    noIndex: Boolean(seo.noIndex),
+  })
 }

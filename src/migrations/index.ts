@@ -5,6 +5,7 @@ import * as migration_20260930_161600_structure_contact_course_fields from './20
 import * as migration_20261001_133425_spotplayer_license from './20261001_133425_spotplayer_license';
 import * as migration_20261001_141724_brand_logo_on_dark from './20261001_141724_brand_logo_on_dark';
 import * as migration_20261003_040235_stats_strip_block from './20261003_040235_stats_strip_block';
+import * as migration_20261003_064007_students_last_login_mobile_local from './20261003_064007_students_last_login_mobile_local';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261003_040235_stats_strip_block.up,
     down: migration_20261003_040235_stats_strip_block.down,
-    name: '20261003_040235_stats_strip_block'
+    name: '20261003_040235_stats_strip_block',
+  },
+  {
+    up: migration_20261003_064007_students_last_login_mobile_local.up,
+    down: migration_20261003_064007_students_last_login_mobile_local.down,
+    name: '20261003_064007_students_last_login_mobile_local'
   },
 ];

@@ -2,10 +2,11 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
+import { normalizePersianMultiline, normalizePersianText } from '@/lib/persian-text'
 
 const bodySchema = z.object({
-  subject: z.string().min(1),
-  body: z.string().min(1),
+  subject: z.string().transform(normalizePersianText).pipe(z.string().min(1)),
+  body: z.string().transform(normalizePersianMultiline).pipe(z.string().min(1)),
   relatedOrder: z.string().optional(),
   relatedPackage: z.string().optional(),
 })

@@ -4,8 +4,11 @@ import { PageIntro } from '@/components/site/PageIntro'
 import { ConsultationForm } from '@/components/forms/ConsultationForm'
 import { phoneForDisplay, whatsappLink } from '@/lib/display'
 import { getSiteSettings } from '@/lib/get-site-settings'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export const metadata: Metadata = { title: 'تماس با ما' }
+export function generateMetadata(): Promise<Metadata> {
+  return buildSeoMetadata({ title: 'تماس با ما', path: '/contact' })
+}
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (

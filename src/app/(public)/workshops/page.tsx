@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { PageIntro } from '@/components/site/PageIntro'
 import { WorkshopSessionCard } from '@/components/workshops/WorkshopSessionCard'
 import { getPayloadClient } from '@/lib/get-payload'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export const metadata: Metadata = { title: 'ورکشاپ‌ها' }
+export function generateMetadata(): Promise<Metadata> {
+  return buildSeoMetadata({ title: 'ورکشاپ‌ها', path: '/workshops' })
+}
 
 export default async function WorkshopsPage() {
   const payload = await getPayloadClient()

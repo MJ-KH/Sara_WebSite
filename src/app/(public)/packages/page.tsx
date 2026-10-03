@@ -3,8 +3,12 @@ import { PackageCard } from '@/components/packages/PackageCard'
 import { PageIntro } from '@/components/site/PageIntro'
 import { getPackageStats } from '@/lib/packages/stats'
 import { getPayloadClient } from '@/lib/get-payload'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
+import { normalizePersianText } from '@/lib/persian-text'
 
-export const metadata: Metadata = { title: 'دوره‌های آموزشی' }
+export function generateMetadata(): Promise<Metadata> {
+  return buildSeoMetadata({ title: 'دوره‌های آموزشی', path: '/packages' })
+}
 
 type SearchParams = Promise<{ level?: string; topic?: string; sort?: string; q?: string }>
 
@@ -22,7 +26,9 @@ export default async function PackagesPage({ searchParams }: { searchParams: Sea
   const where: any = { status: { equals: 'published' } }
   if (level) where.level = { equals: level }
   if (topic) where.topics = { in: [topic] }
-  if (q) where.title = { like: q }
+  // جست‌وجو با «ي/ك» عربی هم همان نتیجه «ی/ک» فارسی را بدهد
+  const query = q ? normalizePersianText(q) : ''
+  if (query) where.title = { like: query }
 
   const sortKey = sort && SORT_OPTIONS[sort] ? sort : 'featured'
   const result = await payload.find({

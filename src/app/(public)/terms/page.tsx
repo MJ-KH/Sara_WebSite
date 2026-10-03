@@ -1,8 +1,11 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 import { getSiteSettings } from '@/lib/get-site-settings'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export const metadata: Metadata = { title: 'شرایط خرید' }
+export function generateMetadata(): Promise<Metadata> {
+  return buildSeoMetadata({ title: 'شرایط خرید', path: '/terms' })
+}
 
 export default async function TermsPage() {
   const settings = await getSiteSettings()

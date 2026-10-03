@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeIranMobile } from '@/lib/phone'
+import { normalizeIranMobile, toLocalIranMobile } from '@/lib/phone'
 
 describe('normalizeIranMobile', () => {
   it('شکل‌های رایج شماره ایران را به یک فرم استاندارد نرمال می‌کند', () => {
@@ -29,5 +29,12 @@ describe('normalizeIranMobile', () => {
   it('تلفن ثابت را به‌عنوان موبایل قبول نمی‌کند', () => {
     expect(normalizeIranMobile('02188683502')).toBeNull()
     expect(normalizeIranMobile('۰۲۱-۸۸۶۸۳۵۰۲')).toBeNull()
+  })
+})
+
+describe('toLocalIranMobile', () => {
+  it('شکل E.164 را به شکل محلی با صفر تبدیل می‌کند', () => {
+    expect(toLocalIranMobile('+989121234567')).toBe('09121234567')
+    expect(toLocalIranMobile('unknown')).toBe('unknown')
   })
 })

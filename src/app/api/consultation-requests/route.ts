@@ -2,15 +2,16 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
+import { normalizePersianMultiline, normalizePersianText } from '@/lib/persian-text'
 import { normalizeIranMobile } from '@/lib/phone'
 import { isRateLimited } from '@/lib/rate-limit'
 
 const bodySchema = z.object({
-  name: z.string().min(1),
+  name: z.string().transform(normalizePersianText).pipe(z.string().min(1)),
   mobile: z.string().min(5),
-  city: z.string().optional(),
+  city: z.string().transform(normalizePersianText).optional(),
   skillLevel: z.string().optional(),
-  goal: z.string().optional(),
+  goal: z.string().transform(normalizePersianMultiline).optional(),
 })
 
 export async function POST(req: NextRequest) {

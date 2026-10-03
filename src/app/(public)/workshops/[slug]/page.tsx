@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Money } from '@/components/ui/Money'
 import { SessionActionButton } from '@/components/workshops/SessionActionButton'
 import { getPayloadClient } from '@/lib/get-payload'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
 import { formatJalaliDate } from '@/lib/jalali'
 
 type Params = { params: Promise<{ slug: string }> }
@@ -27,7 +28,8 @@ async function getData(slug: string) {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params
   const data = await getData(slug)
-  return { title: data?.workshop.title }
+  if (!data) return {}
+  return buildSeoMetadata({ title: data.workshop.title, path: `/workshops/${data.workshop.slug}` })
 }
 
 export default async function WorkshopDetailPage({ params }: Params) {

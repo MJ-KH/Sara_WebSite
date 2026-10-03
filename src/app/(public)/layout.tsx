@@ -8,6 +8,7 @@ import { SocialRail } from '@/components/site/SocialRail'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { whatsappLink } from '@/lib/display'
 import { getSiteSettings } from '@/lib/get-site-settings'
+import { siteUrl } from '@/lib/seo/metadata'
 import '../globals.css'
 
 // این سایت کاملاً پویا و وابسته به دیتابیس/نشست کاربر است (قیمت، وضعیت فروش، ورود، سبد و ...)
@@ -17,6 +18,8 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
   return {
+    // پایه آدرس‌های نسبی canonical و تصویر OG
+    metadataBase: new URL(siteUrl()),
     title: {
       default: settings.seoDefaults?.metaTitle || settings.brand?.nameFa || 'سارا نقی‌زاده',
       template: `%s | ${settings.brand?.nameFa || 'سارا نقی‌زاده'}`,

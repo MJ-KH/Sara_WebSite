@@ -1,8 +1,11 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 import { getSiteSettings } from '@/lib/get-site-settings'
+import { buildSeoMetadata } from '@/lib/seo/metadata'
 
-export const metadata: Metadata = { title: 'حریم خصوصی' }
+export function generateMetadata(): Promise<Metadata> {
+  return buildSeoMetadata({ title: 'حریم خصوصی', path: '/privacy' })
+}
 
 export default async function PrivacyPage() {
   const settings = await getSiteSettings()
