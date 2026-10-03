@@ -16,6 +16,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   package_not_found: 'دوره یافت نشد',
   package_not_purchasable: 'فروش این دوره در حال حاضر متوقف است',
   already_has_access: 'شما قبلاً به این دوره دسترسی دارید',
+  bundle_part_owned: 'شما یکی از دوره‌های این پکیج را قبلاً دارید؛ دوره دیگر را جداگانه بخرید.',
   discount_code_invalid: 'کد تخفیف نامعتبر است',
   discount_code_not_started: 'کد تخفیف هنوز فعال نشده است',
   discount_code_expired: 'کد تخفیف منقضی شده است',

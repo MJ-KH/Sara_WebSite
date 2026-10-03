@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { hasActivePackageAccess } from '@/lib/packages/access'
 import { extractId } from '@/lib/relation'
 import type { Lesson } from '@/payload-types'
 
@@ -23,20 +24,8 @@ export async function checkLessonAccess(
   if (!studentId) return { ok: false, error: 'forbidden' }
 
   const packageId = extractId(lesson.package)
-  const entitlement = await payload.find({
-    collection: 'entitlements',
-    where: {
-      and: [
-        { student: { equals: studentId } },
-        { package: { equals: packageId } },
-        { revokedAt: { equals: null } },
-        { or: [{ expiresAt: { equals: null } }, { expiresAt: { greater_than: new Date().toISOString() } }] },
-      ],
-    },
-    limit: 1,
-    overrideAccess: true,
-  })
-
-  if (entitlement.totalDocs === 0) return { ok: false, error: 'forbidden' }
+  if (packageId === undefined) return { ok: false, error: 'not_found' }
+  // دسترسی مستقیم یا از راه پکیج چنددوره‌ای
+  if (!(await hasActivePackageAccess(payload, studentId, packageId))) return { ok: false, error: 'forbidden' }
   return { ok: true, lesson }
 }

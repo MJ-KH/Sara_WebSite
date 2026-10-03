@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { spotplayerCourseIdsFor } from '@/lib/packages/access'
 import { extractId } from '@/lib/relation'
 import { SPOTPLAYER_DOWNLOAD_ORIGIN } from './constants'
 import { getSpotPlayerClient } from './index'
@@ -30,8 +31,9 @@ export async function issueSpotPlayerLicense(payload: Payload, entitlementId: nu
   const studentId = extractId(entitlement.student)
   if (packageId === undefined || studentId === undefined) return { status: 'not_applicable' }
   const pkg = await payload.findByID({ collection: 'packages', id: packageId, depth: 0, overrideAccess: true, disableErrors: true })
-  const courseId = pkg?.spotplayerCourseId?.trim()
-  if (!courseId) return { status: 'not_applicable' }
+  // دوره معمولی یک شناسه؛ پکیج چنددوره‌ای همه دوره‌هایش در یک لایسنس (هر خرید = یک لایسنس)
+  const courseIds = pkg ? await spotplayerCourseIdsFor(payload, pkg) : []
+  if (courseIds.length === 0) return { status: 'not_applicable' }
 
   const staleBefore = new Date(Date.now() - STALE_ISSUING_MS).toISOString()
   const claim = await payload.update({
@@ -59,7 +61,7 @@ export async function issueSpotPlayerLicense(payload: Payload, entitlementId: nu
   let result
   try {
     result = await getSpotPlayerClient().createLicense({
-      courseIds: [courseId],
+      courseIds,
       name: student.name?.trim() || mobile,
       watermark: mobile,
       payload: `entitlement:${entitlement.id}`,

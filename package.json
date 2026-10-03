@@ -25,6 +25,7 @@
     "apply:about": "tsx scripts/apply-about-content.ts",
     "apply:faq": "tsx scripts/apply-home-faq.ts",
     "apply:seo": "tsx scripts/apply-seo-content.ts",
+    "apply:bundle": "tsx scripts/apply-pricing-bundle.ts",
     "create-first-admin": "tsx scripts/create-first-admin.ts",
     "worker": "tsx src/worker/index.ts",
     "test:unit": "vitest run",

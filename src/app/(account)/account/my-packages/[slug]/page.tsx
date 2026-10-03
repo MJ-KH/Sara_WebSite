@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
 import { extractIdString } from '@/lib/relation'
+import { hasActivePackageAccess } from '@/lib/packages/access'
 
 export default async function MyPackageEntryPage({ params }: { params: Promise<{ slug: string }> }) {
   const student = await requireStudent()
@@ -16,13 +17,8 @@ export default async function MyPackageEntryPage({ params }: { params: Promise<{
   // دوره‌های اسپات‌پلیر در نرم‌افزار اسپات تماشا می‌شوند؛ کد لایسنس در «دوره‌های من» است
   if (pkg.spotplayerCourseId) redirect('/account/my-packages')
 
-  const entitlement = await payload.find({
-    collection: 'entitlements',
-    where: { and: [{ student: { equals: student.id } }, { package: { equals: pkg.id } }, { revokedAt: { equals: null } }] },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (entitlement.totalDocs === 0) notFound()
+  // دسترسی مستقیم یا از راه پکیج چنددوره‌ای
+  if (!(await hasActivePackageAccess(payload, student.id, pkg.id))) notFound()
 
   const chapters = await payload.find({
     collection: 'chapters',

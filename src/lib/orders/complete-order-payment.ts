@@ -3,6 +3,7 @@ import { getPaymentGateway } from '@/lib/payments'
 import { extractId } from '@/lib/relation'
 import { SPOTPLAYER_JOB_TYPE } from '@/lib/spotplayer/constants'
 import { issueSpotPlayerLicense } from '@/lib/spotplayer/issue-license'
+import { spotplayerCourseIdsFor } from '@/lib/packages/access'
 import type { Order } from '@/payload-types'
 
 export type CompletePaymentResult = { ok: true; alreadyProcessed: boolean } | { ok: false; error: string }
@@ -139,7 +140,7 @@ async function grantPackageEntitlement(payload: Payload, order: Order, transacti
   if (packageId === undefined || studentId === undefined) return null
 
   const pkg = await payload.findByID({ collection: 'packages', id: packageId, depth: 0, req: { transactionID }, overrideAccess: true })
-  const usesSpotPlayer = Boolean(pkg.spotplayerCourseId?.trim())
+  const usesSpotPlayer = (await spotplayerCourseIdsFor(payload, pkg, { transactionID })).length > 0
 
   const accessDurationDays = order.accessDurationDaysSnapshot ?? null
   const expiresAt = accessDurationDays

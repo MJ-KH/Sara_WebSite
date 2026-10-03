@@ -22,6 +22,8 @@ export type PackageCardData = {
   priceRial: number
   compareAtPriceRial?: number | null
   coverImage?: { url?: string | null; alt?: string | null } | null
+  kind?: string | null
+  includedPackages?: unknown[] | null
 }
 
 export type PackageStats = { lessonCount: number }
@@ -34,9 +36,13 @@ export function PackageCard({ pkg, stats }: { pkg: PackageCardData; stats?: Pack
   const title = splitSampleMarker(pkg.title)
   const subtitle = splitSampleMarker(pkg.subtitle)
   const level = LEVEL_LABELS[pkg.level] ?? pkg.level
-  const meta = [level ? `سطح ${level}` : null, stats && stats.lessonCount > 0 ? `${toPersianDigits(stats.lessonCount)} درس` : null]
-    .filter(Boolean)
-    .join('، ')
+  // پکیج چنددوره‌ای: به‌جای سطح و تعداد درس، تعداد دوره‌هایش
+  const meta =
+    pkg.kind === 'bundle'
+      ? `پکیج ${toPersianDigits(pkg.includedPackages?.length || 0)} دوره`
+      : [level ? `سطح ${level}` : null, stats && stats.lessonCount > 0 ? `${toPersianDigits(stats.lessonCount)} درس` : null]
+          .filter(Boolean)
+          .join('، ')
 
   return (
     <Link href={`/packages/${pkg.slug}`} className="group flex gap-4 focus-visible:outline-offset-8 sm:flex-col sm:gap-0">

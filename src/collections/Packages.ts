@@ -71,7 +71,22 @@ export const Packages: CollectionConfig = {
       options: [
         { label: 'جامع', value: 'comprehensive' },
         { label: 'آموزش تخصصی کوتاه', value: 'short' },
+        { label: 'پکیج چند دوره (باندل)', value: 'bundle' },
       ],
+    },
+    {
+      name: 'includedPackages',
+      type: 'relationship',
+      relationTo: 'packages',
+      hasMany: true,
+      label: 'دوره‌های داخل پکیج',
+      // پکیج داخل پکیج معنا ندارد
+      filterOptions: { kind: { not_equals: 'bundle' } },
+      admin: {
+        condition: (data) => data?.kind === 'bundle',
+        description:
+          'خریدار پکیج به همه این دوره‌ها دسترسی می‌گیرد؛ برای دوره‌های اسپات‌پلیر یک لایسنس با همه دوره‌ها ساخته می‌شود (هر خرید = یک لایسنس).',
+      },
     },
     {
       name: 'problem',

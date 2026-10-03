@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { CheckoutFlow } from '@/components/checkout/CheckoutFlow'
 import { getRequestUser } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
+import { spotplayerCourseIdsFor } from '@/lib/packages/access'
 
 export const metadata: Metadata = { robots: { index: false, follow: false } }
 
@@ -28,7 +29,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ slug:
         packageSlug={pkg.slug}
         title={pkg.title}
         priceRial={pkg.priceRial}
-        deviceRequired={Boolean(pkg.spotplayerCourseId?.trim())}
+        deviceRequired={(await spotplayerCourseIdsFor(payload, pkg)).length > 0}
       />
     </div>
   )

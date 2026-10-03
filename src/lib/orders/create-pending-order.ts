@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { alreadyOwnsForPurchase, spotplayerCourseIdsFor } from '@/lib/packages/access'
 import { getPaymentGateway } from '@/lib/payments'
 import type { SpotPlayerDevice } from '@/lib/spotplayer/constants'
 import { computePackagePrice } from './pricing'
@@ -25,23 +26,13 @@ export async function createPendingPackageOrder(
   if (!pkg || pkg.status === 'draft') return { ok: false, error: 'package_not_found' }
   if (pkg.status === 'stopped') return { ok: false, error: 'package_not_purchasable' }
   // دوره اسپات‌پلیر: لایسنس یک‌دستگاهی است، پس دستگاه باید قبل از پرداخت معلوم باشد
-  const usesSpotPlayer = Boolean(pkg.spotplayerCourseId?.trim())
+  const usesSpotPlayer = (await spotplayerCourseIdsFor(payload, pkg)).length > 0
   if (usesSpotPlayer && !spotplayerDevice) return { ok: false, error: 'device_required' }
 
-  const existingEntitlement = await payload.find({
-    collection: 'entitlements',
-    where: {
-      and: [
-        { student: { equals: student.id } },
-        { package: { equals: pkg.id } },
-        { revokedAt: { equals: null } },
-        { or: [{ expiresAt: { equals: null } }, { expiresAt: { greater_than: new Date().toISOString() } }] },
-      ],
-    },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (existingEntitlement.totalDocs > 0) return { ok: false, error: 'already_has_access' }
+  // دسترسی قبلی: مستقیم، از راه پکیج چنددوره‌ای، یا (برای پکیج) داشتن یکی از دوره‌های داخلش
+  if (await alreadyOwnsForPurchase(payload, student.id, pkg)) {
+    return { ok: false, error: pkg.kind === 'bundle' ? 'bundle_part_owned' : 'already_has_access' }
+  }
 
   const priceResult = await computePackagePrice(payload, pkg, student.id, discountCodeText)
   if (!priceResult.ok) return { ok: false, error: priceResult.error }

@@ -19,6 +19,7 @@ import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { formatJalaliDate } from '@/lib/jalali'
 import { getPackageStats } from '@/lib/packages/stats'
+import { hasActivePackageAccess, includedPackageIds, spotplayerCourseIdsFor } from '@/lib/packages/access'
 import { buildBreadcrumb, entityIds } from '@/lib/seo/entities'
 import { buildSeoMetadata, siteUrl } from '@/lib/seo/metadata'
 import { extractIdString } from '@/lib/relation'
@@ -65,7 +66,42 @@ async function getData(slug: string) {
     related.map((p) => p.id),
   )
 
-  return { pkg, chapters: chapters.docs, lessons: lessons.docs, testimonials: testimonials.docs, related, relatedStats }
+  // پکیج چنددوره‌ای: دوره‌های داخلش؛ دوره معمولی: پکیج‌هایی که این دوره را با تخفیف دارند
+  const includedIds = includedPackageIds(pkg)
+  const included = includedIds.length
+    ? (await payload.find({ collection: 'packages', where: { id: { in: includedIds }, status: { equals: 'published' } }, depth: 1, limit: 20 })).docs.sort(
+        (a, b) => includedIds.indexOf(a.id) - includedIds.indexOf(b.id),
+      )
+    : []
+  const bundles =
+    pkg.kind === 'bundle'
+      ? []
+      : (
+          await payload.find({
+            collection: 'packages',
+            where: { and: [{ kind: { equals: 'bundle' } }, { status: { equals: 'published' } }, { includedPackages: { contains: pkg.id } }] },
+            depth: 1,
+            limit: 3,
+          })
+        ).docs
+  const includedStats = await getPackageStats(
+    payload,
+    included.map((p) => p.id),
+  )
+  const spotplayerCourseIds = await spotplayerCourseIdsFor(payload, pkg)
+
+  return {
+    pkg,
+    chapters: chapters.docs,
+    lessons: lessons.docs,
+    testimonials: testimonials.docs,
+    related,
+    relatedStats,
+    included,
+    includedStats,
+    bundles,
+    usesSpotPlayer: spotplayerCourseIds.length > 0,
+  }
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -139,7 +175,8 @@ export default async function PackageDetailPage({ params }: Params) {
   const { slug } = await params
   const data = await getData(slug)
   if (!data) notFound()
-  const { pkg, chapters, lessons, testimonials, related, relatedStats } = data
+  const { pkg, chapters, lessons, testimonials, related, relatedStats, included, includedStats, bundles, usesSpotPlayer } = data
+  const isBundle = pkg.kind === 'bundle'
   const settings = await getSiteSettings()
   const teacher = settings.brand?.nameFa || 'سارا نقی‌زاده'
 
@@ -147,19 +184,8 @@ export default async function PackageDetailPage({ params }: Params) {
   let hasAccess = false
   if (user?.collection === 'students') {
     const payload = await getPayloadClient()
-    const entitlement = await payload.find({
-      collection: 'entitlements',
-      where: {
-        and: [
-          { student: { equals: user.id } },
-          { package: { equals: pkg.id } },
-          { revokedAt: { equals: null } },
-          { or: [{ expiresAt: { equals: null } }, { expiresAt: { greater_than: new Date().toISOString() } }] },
-        ],
-      },
-      limit: 1,
-    })
-    hasAccess = entitlement.totalDocs > 0
+    // دسترسی مستقیم یا از راه پکیج چنددوره‌ای
+    hasAccess = await hasActivePackageAccess(payload, user.id, pkg.id)
   }
 
   const title = splitSampleMarker(pkg.title)
@@ -172,23 +198,27 @@ export default async function PackageDetailPage({ params }: Params) {
   const promoVideo = typeof pkg.promoVideo === 'object' && pkg.promoVideo?.url ? pkg.promoVideo : null
   const projects = pkg.projects || []
   const benefits = pkg.benefits || []
-  const meta = [KIND_LABELS[pkg.kind] ?? null, pkg.level ? `سطح ${LEVEL_LABELS[pkg.level] ?? pkg.level}` : null].filter(Boolean).join('، ')
+  const meta = isBundle
+    ? `پکیج ${toPersianDigits(included.length)} دوره`
+    : [KIND_LABELS[pkg.kind] ?? null, pkg.level ? `سطح ${LEVEL_LABELS[pkg.level] ?? pkg.level}` : null].filter(Boolean).join('، ')
 
   const facts: { label: string; value: string }[] = [
-    { label: 'تعداد درس', value: lessons.length > 0 ? `${toPersianDigits(lessons.length)} درس در ${toPersianDigits(Math.max(chapters.length, 1))} فصل` : 'به‌زودی' },
+    isBundle
+      ? { label: 'دوره‌ها', value: `${toPersianDigits(included.length)} دوره کامل` }
+      : { label: 'تعداد درس', value: lessons.length > 0 ? `${toPersianDigits(lessons.length)} درس در ${toPersianDigits(Math.max(chapters.length, 1))} فصل` : 'به‌زودی' },
     { label: 'مدت دسترسی', value: pkg.accessDurationDays ? `${toPersianDigits(pkg.accessDurationDays)} روز از زمان خرید` : 'مادام‌العمر' },
-    ...(pkg.spotplayerCourseId ? [{ label: 'محل تماشا', value: 'نرم‌افزار اسپات‌پلیر' }] : []),
+    ...(usesSpotPlayer ? [{ label: 'محل تماشا', value: isBundle ? 'اسپات‌پلیر؛ هر دو دوره با یک لایسنس' : 'نرم‌افزار اسپات‌پلیر' }] : []),
     ...(freePreviewCount > 0 ? [{ label: 'نمونه رایگان', value: `${toPersianDigits(freePreviewCount)} درس بدون خرید` }] : []),
     ...(pkg.contentUpdatedAt ? [{ label: 'آخرین به‌روزرسانی', value: formatJalaliDate(new Date(pkg.contentUpdatedAt)) }] : []),
   ]
 
   const action = hasAccess
-    ? pkg.spotplayerCourseId
+    ? usesSpotPlayer
       ? { kind: 'continue' as const, href: '/account/my-packages', label: 'مشاهده کد لایسنس' }
       : { kind: 'continue' as const, href: `/account/my-packages/${pkg.slug}`, label: 'ادامه آموزش' }
     : pkg.status === 'stopped'
       ? { kind: 'stopped' as const, label: 'فروش این دوره متوقف شده است' }
-      : { kind: 'buy' as const, href: `/checkout/${pkg.slug}`, label: 'خرید دوره' }
+      : { kind: 'buy' as const, href: `/checkout/${pkg.slug}`, label: isBundle ? 'خرید پکیج' : 'خرید دوره' }
 
   const actionButton = (extra = '') =>
     action.kind === 'stopped' ? (
@@ -276,7 +306,8 @@ export default async function PackageDetailPage({ params }: Params) {
             </div>
             <h1 className="display-2">{title.text}</h1>
             <p className="mt-3 text-[1rem]">
-              دوره‌ای از <span className="font-bold">{teacher}</span>
+              {isBundle ? 'دوره‌هایی از ' : 'دوره‌ای از '}
+              <span className="font-bold">{teacher}</span>
             </p>
             {subtitle.text ? <p className="lead mt-4 max-w-[36rem]">{subtitle.text}</p> : null}
           </div>
@@ -306,6 +337,43 @@ export default async function PackageDetailPage({ params }: Params) {
             ))}
           </dl>
 
+          {/* پکیج چنددوره‌ای: دوره‌های داخلش، هر کدام با لینک به صفحه کاملش */}
+          {isBundle && included.length > 0 ? (
+            <Block title="دوره‌های این پکیج">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                {included.map((item) => (
+                  <PackageCard key={item.id} pkg={item as never} stats={includedStats.get(String(item.id))} />
+                ))}
+              </div>
+            </Block>
+          ) : null}
+
+          {/* دوره معمولی که در پکیج تخفیف‌دار هم هست */}
+          {!hasAccess && bundles.length > 0
+            ? bundles.map((bundle) => {
+                const others = (bundle.includedPackages || [])
+                  .filter((p): p is Exclude<typeof p, string | number> => typeof p === 'object' && p !== null && p.id !== pkg.id)
+                  .map((p) => `«${splitSampleMarker(p.title).text}»`)
+                return (
+                  <aside key={bundle.id} className="card-soft mb-10 flex flex-col gap-3 border-[var(--gold-soft)] p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-[0.8125rem] font-semibold text-[var(--color-primary)]">پیشنهاد پکیج</p>
+                      <p className="mt-1 leading-8">
+                        این دوره را همراه {others.join(' و ')} با هم بگیرید:{' '}
+                        <Money rial={bundle.priceRial} className="font-semibold" /> برای هر دو دوره.
+                      </p>
+                    </div>
+                    <Link
+                      href={`/packages/${bundle.slug}`}
+                      className="flex min-h-11 shrink-0 items-center justify-center rounded-full border border-[var(--ink-900)] px-5 text-[0.875rem] font-medium transition-colors hover:bg-[var(--ink-900)] hover:text-[#f4ecee]"
+                    >
+                      مشاهده پکیج
+                    </Link>
+                  </aside>
+                )
+              })
+            : null}
+
           {pkg.problem ? (
             <Block title="مشکلی که حل می‌کند">
               <Prose text={pkg.problem} />
@@ -313,7 +381,7 @@ export default async function PackageDetailPage({ params }: Params) {
           ) : null}
 
           {pkg.description || pkg.expectedOutcome ? (
-            <Block title="این دوره چه چیزی یاد می‌دهد">
+            <Block title={isBundle ? 'این پکیج چه چیزی یاد می‌دهد' : 'این دوره چه چیزی یاد می‌دهد'}>
               {pkg.description ? (
                 <div className="rich-text max-w-[40rem]">
                   <RichText data={pkg.description} />

@@ -11,6 +11,7 @@ import * as migration_20261003_111422_students_first_last_name from './20261003_
 import * as migration_20261003_112841_students_province from './20261003_112841_students_province';
 import * as migration_20261003_113222_consultation_province from './20261003_113222_consultation_province';
 import * as migration_20261003_154036_site_settings_seo_local from './20261003_154036_site_settings_seo_local';
+import * as migration_20261003_161008_packages_bundle from './20261003_161008_packages_bundle';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20261003_154036_site_settings_seo_local.up,
     down: migration_20261003_154036_site_settings_seo_local.down,
-    name: '20261003_154036_site_settings_seo_local'
+    name: '20261003_154036_site_settings_seo_local',
+  },
+  {
+    up: migration_20261003_161008_packages_bundle.up,
+    down: migration_20261003_161008_packages_bundle.down,
+    name: '20261003_161008_packages_bundle'
   },
 ];

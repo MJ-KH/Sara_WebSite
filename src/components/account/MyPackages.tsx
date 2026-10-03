@@ -63,7 +63,7 @@ export async function MyPackages({ studentId }: { studentId: number }) {
     <div>
       <h2 className="title-1">دوره‌های من</h2>
       <p className="mb-6 mt-1 text-[0.875rem] text-[var(--color-text-muted)]">
-        {items.some(({ pkg }) => pkg.spotplayerCourseId)
+        {items.some(({ entitlement }) => entitlement.spotplayer?.status)
           ? 'کد لایسنس را در اسپات‌پلیر وارد کنید تا دوره باز شود.'
           : 'دوره‌هایی که خریده‌اید اینجا هستند.'}
       </p>
@@ -82,7 +82,12 @@ export async function MyPackages({ studentId }: { studentId: number }) {
       ) : (
         <ul className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-2">
           {items.map(({ entitlement, pkg }) => {
-            const usesSpotPlayer = Boolean(pkg.spotplayerCourseId)
+            // لایسنس اسپات‌پلیر (دوره یا پکیج چنددوره‌ای)
+            const usesSpotPlayer = Boolean(entitlement.spotplayer?.status)
+            const includedTitles =
+              pkg.kind === 'bundle'
+                ? (pkg.includedPackages || []).filter((p): p is Exclude<typeof p, string | number> => typeof p === 'object' && p !== null).map((p) => splitSampleMarker(p.title).text)
+                : []
             const title = splitSampleMarker(pkg.title)
             const cover = typeof pkg.coverImage === 'object' && pkg.coverImage?.url ? pkg.coverImage : null
             const packageLessons = lessons.docs.filter((l) => extractIdString(l.package) === String(pkg.id))
@@ -104,6 +109,9 @@ export async function MyPackages({ studentId }: { studentId: number }) {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-[1rem] font-medium leading-relaxed">{title.text}</h3>
+                    {includedTitles.length > 0 ? (
+                      <p className="mt-0.5 text-[0.8125rem] text-[var(--color-text-muted)]">شامل: {includedTitles.join('، ')}</p>
+                    ) : null}
                     {deviceLabel ? (
                       <span className="mt-1.5 inline-flex rounded-full border border-[var(--gold-soft)] px-2.5 py-0.5 text-[0.75rem] text-[var(--color-text-muted)]">
                         {deviceLabel}
