@@ -97,8 +97,15 @@ async function AccountSidebar({ studentId, logoOnDark }: { studentId: number; lo
         logo={logoOnDark}
       />
       <AccountMenu items={items} />
-      <form action="/api/auth/logout" method="post" className="text-center">
-        <button type="submit" className="min-h-11 px-4 text-[0.875rem] text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
+      <form action="/api/auth/logout" method="post">
+        <button
+          type="submit"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-[0.875rem] text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+            {/* در راست‌چین: در سمت راست، فلش خروج به سمت چپ */}
+            <path d="M14 5h5v14h-5M10 8l-4 4 4 4M6 12h10" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
           خروج از حساب
         </button>
       </form>

@@ -15,7 +15,10 @@ export function AccountLoginGate({
   return (
     <div className="band-alt flex min-h-screen flex-col">
       <header className="container-x relative flex h-16 items-center justify-between md:h-20">
-        <Link href="/" className="flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
+        <Link
+          href="/"
+          className="flex min-h-10 items-center gap-1.5 rounded-full border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3.5 text-[0.875rem] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+        >
           <span aria-hidden="true">→</span>
           بازگشت به سایت
         </Link>

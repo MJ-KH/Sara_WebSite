@@ -10,6 +10,10 @@ type Logo = { url: string; width: number; height: number } | null
 
 const ACCOUNT_HOME = '/account'
 
+/** دکمه بازگشت نوار بالا: کپسول کوچک با خط دور، تا مثل دکمه دیده شود نه متن ساده */
+const BACK_BUTTON =
+  'min-h-10 items-center gap-1.5 rounded-full border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3.5 text-[0.875rem] text-[var(--color-text)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]'
+
 function isAccountHome(pathname: string) {
   return pathname === ACCOUNT_HOME || pathname === `${ACCOUNT_HOME}/`
 }
@@ -24,7 +28,7 @@ export function AccountTopBar({ logo, brandName }: { logo: Logo; brandName: stri
     <header className="container-x relative flex h-16 items-center justify-between md:h-20">
       <Link
         href={home ? '/' : ACCOUNT_HOME}
-        className={`flex min-h-11 items-center gap-1.5 text-[0.9375rem] text-[var(--color-text-muted)] hover:text-[var(--color-text)] ${home ? '' : 'md:hidden'}`}
+        className={`${BACK_BUTTON} ${home ? 'flex' : 'flex md:hidden'}`}
       >
         <span aria-hidden="true">→</span>
         {home ? (
@@ -38,7 +42,7 @@ export function AccountTopBar({ logo, brandName }: { logo: Logo; brandName: stri
       </Link>
       {/* در دسکتاپ صفحه‌های داخلی هم منوی کنار را دارند؛ بازگشت به سایت آنجا همیشه دیده شود */}
       {!home ? (
-        <Link href="/" className="hidden min-h-11 items-center gap-1.5 text-[0.9375rem] text-[var(--color-text-muted)] hover:text-[var(--color-text)] md:flex">
+        <Link href="/" className={`${BACK_BUTTON} hidden md:flex`}>
           <span aria-hidden="true">→</span>
           بازگشت به سایت
         </Link>
