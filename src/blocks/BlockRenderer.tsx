@@ -194,7 +194,17 @@ async function TestimonialsBlockView({ block }: { block: AnyBlock }) {
   )
 }
 
-type ArchImage = { url?: string | null; alt?: string | null } | null
+type ArchImage = { url?: string | null; alt?: string | null; focalX?: number | null; focalY?: number | null } | null
+
+/**
+ * نقطه کانونی عکس (در پنل، روی عکس انتخاب می‌شود) برای قاب‌های باریک: قاب ۱ به ۲ فقط دو طرف عکس را
+ * می‌بُرد، پس focalX تعیین می‌کند کدام بخش (مثلاً صورت سارا) دیده شود. ۵۰/۵۰ یعنی انتخاب نشده.
+ */
+function focalPosition(image: ArchImage): string | undefined {
+  if (!image || image.focalX == null || image.focalY == null) return undefined
+  if (image.focalX === 50 && image.focalY === 50) return undefined
+  return `${image.focalX}% ${image.focalY}%`
+}
 
 /**
  * قاب طاقی به سبک مرجع Gloss Bar: سه قاب هم‌اندازه، بلند و باریک (حدود ۱ به ۲)، بالا کاملاً
@@ -212,8 +222,9 @@ function Arch({ image, position }: { image: ArchImage; position: 0 | 1 | 2 }) {
           fill
           priority={center}
           sizes="(max-width: 768px) 32vw, 13rem"
-          // صورت/ناخن زیر قوس طاق بیفتد، نه بریده شود
+          // صورت/ناخن زیر قوس طاق بیفتد، نه بریده شود؛ اگر نقطه کانونی در پنل انتخاب شده، همان
           className="object-cover object-[50%_25%]"
+          style={focalPosition(image) ? { objectPosition: focalPosition(image) } : undefined}
         />
       ) : center ? (
         <div className="absolute inset-x-[4%] bottom-[-4%]">
