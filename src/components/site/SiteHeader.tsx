@@ -42,7 +42,7 @@ export function SiteHeader({
         >
           {/* نام سایت کنارش نوشته شده، پس تصویر لوگو برای صفحه‌خوان تزئینی است */}
           {logo ? (
-            <Image src={logo.url} alt="" width={logo.width} height={logo.height} priority className="h-8 w-auto sm:h-9 md:h-11" />
+            <Image src={logo.url} alt="" width={logo.width} height={logo.height} priority className="h-7 w-auto sm:h-9 md:h-11" />
           ) : (
             <TipMark />
           )}
@@ -75,15 +75,14 @@ export function SiteHeader({
         </nav>
 
         <div className="ms-auto flex items-center">
-          <Link href="/account" className="btn btn-primary btn-sm whitespace-nowrap">
+          <Link href="/account" className="btn btn-primary btn-sm whitespace-nowrap max-sm:px-3.5">
             {isStudentLoggedIn ? (
               'حساب من'
             ) : (
-              <>
-                ورود
-                {/* در گوشی‌های خیلی باریک فقط «ورود» تا با لوگوی وسط تداخل نکند */}
-                <span className="max-[359px]:hidden">&nbsp;/ ثبت‌نام</span>
-              </>
+              // یک span تا فاصله (gap) دکمه بین «ورود» و «/ ثبت‌نام» نیفتد؛ در گوشی خیلی باریک فقط «ورود»
+              <span>
+                ورود<span className="max-[369px]:hidden"> / ثبت‌نام</span>
+              </span>
             )}
           </Link>
         </div>
