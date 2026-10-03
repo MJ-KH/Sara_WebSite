@@ -41,25 +41,28 @@ function Section({
   tone = 'plain',
   width = 'default',
   id,
+  variant = 'default',
 }: {
   heading?: string | null
   children: ReactNode
   tone?: 'plain' | 'alt'
   width?: 'default' | 'narrow'
   id?: string
+  /** text: بخش متنی جمع‌وجور (فاصله کمتر، تیتر نزدیک‌تر به متن؛ چند بخش متنی پشت هم به هم نزدیک می‌شوند) */
+  variant?: 'default' | 'text'
 }) {
   const title = splitSampleMarker(heading)
   return (
-    <section id={id} className={`section${tone === 'alt' ? ' band-alt' : ''}`}>
+    <section id={id} className={`${variant === 'text' ? 'section-text' : 'section'}${tone === 'alt' ? ' band-alt' : ''}`}>
       <div className={width === 'narrow' ? 'container-narrow' : 'container-x'}>
         {title.text ? (
-          <div className="mb-8 text-center md:mb-10">
+          <div className={`text-center ${variant === 'text' ? 'mb-5 md:mb-6' : 'mb-8 md:mb-10'}`}>
             {title.isSample ? (
               <div className="mb-3 flex justify-center">
                 <SampleBadge />
               </div>
             ) : null}
-            <h2 className="display-2">{title.text}</h2>
+            <h2 className={variant === 'text' ? 'title-1' : 'display-2'}>{title.text}</h2>
           </div>
         ) : null}
         {children}
@@ -392,8 +395,8 @@ function AboutIntroBlockView({ block }: { block: AnyBlock }) {
 function TextBlockView({ block }: { block: AnyBlock }) {
   if (!block.content) return null
   return (
-    <Section heading={block.heading} width="narrow">
-      <div className="rich-text">
+    <Section heading={block.heading} width="narrow" variant="text">
+      <div className="rich-text rich-text-justify">
         <RichText data={block.content} />
       </div>
     </Section>
@@ -666,7 +669,12 @@ export async function PageBlocks({ blocks }: { blocks: AnyBlock[] }) {
     visible.map(async (block, index) => {
       const View = BLOCK_VIEWS[block.blockType]
       if (!View) return null
-      return <div key={block.id || index}>{await View({ block, ctx })}</div>
+      // data-block برای فاصله‌گذاری بین بلوک‌های پشت‌سرهم در CSS (مثلاً چند بلوک «متن»)
+      return (
+        <div key={block.id || index} data-block={block.blockType}>
+          {await View({ block, ctx })}
+        </div>
+      )
     }),
   )
   return <>{rendered}</>

@@ -264,6 +264,24 @@ html[data-font-scale='lg'] {
     padding-block: var(--section-y-sm);
   }
 
+  /* بخش متنی (بلوک «متن»): فاصله کمتر؛ دو بخش متنی پشت هم فقط با یک فاصله کوچک جدا می‌شوند */
+  .section-text {
+    padding-block: var(--section-y-sm);
+  }
+
+  [data-block='text']:has(+ [data-block='text']) > .section-text {
+    padding-block-end: 1rem;
+  }
+
+  [data-block='text'] + [data-block='text'] > .section-text {
+    padding-block-start: 0.5rem;
+  }
+
+  /* متن درست زیر سربرگ صفحه (مثل «درباره من»): فاصله خود سربرگ کافی است */
+  [data-block='hero'] + [data-block='text'] > .section-text {
+    padding-block-start: 0;
+  }
+
   /* نوار تمام‌عرض صورتی خیلی ملایم و ساده — کم‌استفاده، فقط برای شکستن ریتم صفحه */
   .band-alt {
     background: var(--color-bg-alt);
@@ -872,6 +890,17 @@ html[data-font-scale='lg'] {
   .rich-text {
     line-height: 2.05;
     color: var(--ink-700);
+  }
+
+  /* متن‌های بلند صفحه‌ها: دوطرفه‌چین با خط‌های کمی فشرده‌تر و فاصله کمتر بین پاراگراف‌ها */
+  .rich-text-justify {
+    line-height: 1.95;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  .rich-text-justify > .payload-richtext > * + * {
+    margin-block-start: 0.875rem;
   }
 
   /* RichText پی‌لود محتوا را داخل یک div.payload-richtext می‌گذارد؛ فاصله پاراگراف‌ها باید به آن هم برسد */
