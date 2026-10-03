@@ -1,7 +1,23 @@
+import { SPOTPLAYER_DEVICE_COUNT, SPOTPLAYER_DEVICES, SPOTPLAYER_OFFLINE_DAYS } from './constants'
 import type { CreateLicenseInput, CreateLicenseResult, SpotPlayerClient } from './types'
 
 const ENDPOINT = 'https://panel.spotplayer.ir/license/edit/'
 const TIMEOUT_MS = 20_000
+
+/** p0 = کل دستگاه‌ها؛ p1..p6 = ویندوز، مک، لینوکس، اندروید، iOS، نسخه وب */
+const PLATFORM_FIELDS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'] as const
+
+/**
+ * محدودیت دستگاه لایسنس: همیشه یک دستگاه در کل، و اگر هنرجو دستگاهش را انتخاب کرده،
+ * فقط همان سیستم یک سهم دارد و بقیه صفر.
+ */
+export function buildDeviceLimits(device: CreateLicenseInput['device']): Record<string, number> {
+  const limits: Record<string, number> = { p0: SPOTPLAYER_DEVICE_COUNT }
+  if (!device) return limits
+  const chosen = SPOTPLAYER_DEVICES[device].apiField
+  for (const field of PLATFORM_FIELDS) limits[field] = field === chosen ? SPOTPLAYER_DEVICE_COUNT : 0
+  return limits
+}
 
 /**
  * اتصال واقعی به API لایسنس اسپات‌پلیر (https://spotplayer.ir/help/api).
@@ -27,7 +43,12 @@ export class SpotPlayerApiClient implements SpotPlayerClient {
           course: input.courseIds,
           name: input.name,
           payload: input.payload,
+          offline: SPOTPLAYER_OFFLINE_DAYS,
+          // همه جلسه‌ها از لحظه خرید باز است (فروش قسطی نداریم)
+          data: { limit: Object.fromEntries(input.courseIds.map((id) => [id, '0-'])) },
+          // فقط متن واترمارک (موبایل)؛ جا، اندازه و رنگ از پیش‌فرض پنل اسپات‌پلیر
           watermark: { texts: [{ text: input.watermark }] },
+          device: buildDeviceLimits(input.device),
         }),
         signal: controller.signal,
       })

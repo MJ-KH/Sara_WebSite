@@ -154,7 +154,7 @@ async function grantPackageEntitlement(payload: Payload, order: Order, transacti
       sourceOrder: order.id,
       grantedAt: new Date().toISOString(),
       expiresAt,
-      ...(usesSpotPlayer ? { spotplayer: { status: 'pending' as const } } : {}),
+      ...(usesSpotPlayer ? { spotplayer: { status: 'pending' as const, device: order.spotplayerDevice ?? null } } : {}),
     },
     req: { transactionID },
     overrideAccess: true,

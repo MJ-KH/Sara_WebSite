@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { SpotPlayerApiClient } from '@/lib/spotplayer/api'
+import { buildDeviceLimits, SpotPlayerApiClient } from '@/lib/spotplayer/api'
 
-const input = { courseIds: ['678105faed42c550e457adc1'], name: '09120000123', watermark: '09120000123', payload: 'entitlement:1' }
+const input = { courseIds: ['678105faed42c550e457adc1'], name: '09120000123', watermark: '09120000123', payload: 'entitlement:1', device: 'android' as const }
 
 function mockFetch(status: number, body: unknown) {
   const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }))
@@ -24,6 +24,16 @@ describe('SpotPlayerApiClient', () => {
     expect(init.headers).toMatchObject({ $API: 'secret-key', $LEVEL: '-1' })
     const body = JSON.parse(init.body)
     expect(body).toMatchObject({ test: true, course: input.courseIds, name: input.name, watermark: { texts: [{ text: '09120000123' }] } })
+    expect(body.offline).toBe(30)
+    expect(body.data).toEqual({ limit: { '678105faed42c550e457adc1': '0-' } })
+    expect(body.device).toEqual({ p0: 1, p1: 0, p2: 0, p3: 0, p4: 1, p5: 0, p6: 0 })
+  })
+
+  it('برای هر دستگاه انتخابی فقط همان سیستم یک سهم دارد', () => {
+    expect(buildDeviceLimits('windows')).toMatchObject({ p0: 1, p1: 1, p4: 0, p6: 0 })
+    expect(buildDeviceLimits('ios_web')).toMatchObject({ p0: 1, p1: 0, p5: 0, p6: 1 })
+    // بدون انتخاب: فقط سقف یک دستگاه، نوع از پیش‌فرض پنل
+    expect(buildDeviceLimits(null)).toEqual({ p0: 1 })
   })
 
   it('خطای اعلام‌شده اسپات‌پلیر (ex) را بدون تلاش دوباره برمی‌گرداند', async () => {

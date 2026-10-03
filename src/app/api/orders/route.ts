@@ -4,8 +4,13 @@ import { requireStudent } from '@/lib/auth/get-request-user'
 import { getPayloadClient } from '@/lib/get-payload'
 import { createPendingPackageOrder } from '@/lib/orders/create-pending-order'
 import { isRateLimited } from '@/lib/rate-limit'
+import { SPOTPLAYER_DEVICE_VALUES } from '@/lib/spotplayer/constants'
 
-const bodySchema = z.object({ packageSlug: z.string().min(1), discountCode: z.string().optional() })
+const bodySchema = z.object({
+  packageSlug: z.string().min(1),
+  discountCode: z.string().optional(),
+  spotplayerDevice: z.enum(SPOTPLAYER_DEVICE_VALUES).optional(),
+})
 
 const ERROR_MESSAGES: Record<string, string> = {
   package_not_found: 'دوره یافت نشد',
@@ -17,6 +22,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   discount_code_exhausted: 'ظرفیت استفاده از این کد تخفیف تمام شده است',
   discount_code_not_applicable: 'این کد تخفیف برای این دوره معتبر نیست',
   discount_code_already_used: 'شما قبلاً از این کد تخفیف استفاده کرده‌اید',
+  device_required: 'دستگاهی را که دوره را روی آن می‌بینید انتخاب کنید',
 }
 
 export async function POST(req: NextRequest) {
@@ -39,6 +45,7 @@ export async function POST(req: NextRequest) {
     parsed.data.packageSlug,
     parsed.data.discountCode || null,
     baseUrl,
+    parsed.data.spotplayerDevice ?? null,
   )
 
   if (!result.ok) {

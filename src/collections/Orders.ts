@@ -1,6 +1,7 @@
 import type { Access, CollectionConfig } from 'payload'
 import { isAdminCollection, isOwnerOrBusinessAdmin } from '@/access/roles'
 import { describeActor, recordAuditLog } from '@/lib/audit/log'
+import { SPOTPLAYER_DEVICE_OPTIONS } from '@/lib/spotplayer/constants'
 
 type ReqUser = { collection?: string; id?: string | number } | null | undefined
 
@@ -64,6 +65,13 @@ export const Orders: CollectionConfig = {
     { name: 'totalRialSnapshot', type: 'number', required: true, label: 'مبلغ نهایی قابل پرداخت (ریال)' },
     { name: 'accessDurationDaysSnapshot', type: 'number', label: 'مدت دسترسی در زمان خرید (روز، فقط پکیج)' },
     { name: 'termsVersionSnapshot', type: 'text', label: 'نسخه شرایط خرید در زمان سفارش' },
+    {
+      name: 'spotplayerDevice',
+      type: 'select',
+      label: 'دستگاه انتخابی برای لایسنس اسپات‌پلیر',
+      options: SPOTPLAYER_DEVICE_OPTIONS,
+      admin: { description: 'هنرجو موقع خرید انتخاب می‌کند؛ لایسنس فقط برای همین دستگاه ساخته می‌شود.' },
+    },
     {
       name: 'status',
       type: 'select',

@@ -1,8 +1,10 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { OtpLoginForm } from '@/components/auth/OtpLoginForm'
 import { Money } from '@/components/ui/Money'
+import { SPOTPLAYER_DEVICE_OPTIONS, type SpotPlayerDevice } from '@/lib/spotplayer/constants'
 
 export function CheckoutFlow({
   isLoggedIn: initialLoggedIn,
@@ -11,6 +13,7 @@ export function CheckoutFlow({
   workshopSessionId,
   title,
   priceRial,
+  deviceRequired = false,
 }: {
   isLoggedIn: boolean
   kind: 'package' | 'workshop_session'
@@ -18,18 +21,27 @@ export function CheckoutFlow({
   workshopSessionId?: string
   title: string
   priceRial: number
+  /** دوره روی اسپات‌پلیر است و لایسنس یک‌دستگاهی برای دستگاه انتخابی ساخته می‌شود */
+  deviceRequired?: boolean
 }) {
+  const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState(initialLoggedIn)
   const [discountCode, setDiscountCode] = useState('')
+  const [device, setDevice] = useState<SpotPlayerDevice | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function handlePay() {
+    if (deviceRequired && !device) {
+      setError('دستگاهی را که دوره را روی آن می‌بینید انتخاب کنید')
+      return
+    }
     setLoading(true)
     setError('')
     try {
       const endpoint = kind === 'package' ? '/api/orders' : `/api/workshops/${workshopSessionId}/reserve`
-      const body = kind === 'package' ? { packageSlug, discountCode: discountCode || undefined } : {}
+      const body =
+        kind === 'package' ? { packageSlug, discountCode: discountCode || undefined, spotplayerDevice: device ?? undefined } : {}
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,7 +59,13 @@ export function CheckoutFlow({
   if (!isLoggedIn) {
     return (
       <div className="mx-auto max-w-sm">
-        <OtpLoginForm onSuccess={() => setIsLoggedIn(true)} />
+        <OtpLoginForm
+          onSuccess={() => {
+            setIsLoggedIn(true)
+            // سربرگ سمت سرور ساخته می‌شود؛ تازه‌سازی تا «ورود / ثبت‌نام» به «حساب من» تبدیل شود
+            router.refresh()
+          }}
+        />
       </div>
     )
   }
@@ -61,6 +79,39 @@ export function CheckoutFlow({
           <Money rial={priceRial} className="font-bold text-[var(--color-primary)]" />
         </div>
       </div>
+      {deviceRequired ? (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="field-label">دوره را روی چه دستگاهی می‌بینید؟</legend>
+          <div className="grid grid-cols-1 gap-2">
+            {SPOTPLAYER_DEVICE_OPTIONS.map((option) => (
+              <label
+                key={option.value}
+                className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[var(--radius-base)] border px-4 transition-colors ${
+                  device === option.value
+                    ? 'border-[var(--color-primary)] bg-[var(--color-accent-soft)]'
+                    : 'border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="spotplayer-device"
+                  value={option.value}
+                  checked={device === option.value}
+                  onChange={() => {
+                    setDevice(option.value)
+                    setError('')
+                  }}
+                  className="accent-[var(--color-primary)]"
+                />
+                <span className="text-[0.9375rem]">{option.label}</span>
+              </label>
+            ))}
+          </div>
+          <p className="text-[0.8125rem] leading-6 text-[var(--color-text-muted)]">
+            لایسنس فقط روی یک دستگاه فعال می‌شود؛ همان دستگاهی را انتخاب کنید که با آن دوره را تماشا می‌کنید.
+          </p>
+        </fieldset>
+      ) : null}
       {kind === 'package' ? (
         <label className="flex flex-col gap-1 text-sm">
           کد تخفیف (اختیاری)

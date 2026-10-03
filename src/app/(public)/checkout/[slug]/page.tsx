@@ -28,6 +28,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ slug:
         packageSlug={pkg.slug}
         title={pkg.title}
         priceRial={pkg.priceRial}
+        deviceRequired={Boolean(pkg.spotplayerCourseId?.trim())}
       />
     </div>
   )

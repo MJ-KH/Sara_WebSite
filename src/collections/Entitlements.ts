@@ -1,7 +1,7 @@
 import type { Access, CollectionConfig } from 'payload'
 import { isAdminCollection, isOwnerOrBusinessAdmin } from '@/access/roles'
 import { describeActor, recordAuditLog } from '@/lib/audit/log'
-import { SPOTPLAYER_JOB_TYPE } from '@/lib/spotplayer/constants'
+import { SPOTPLAYER_DEVICE_OPTIONS, SPOTPLAYER_JOB_TYPE } from '@/lib/spotplayer/constants'
 
 type ReqUser = { collection?: string; id?: string | number } | null | undefined
 
@@ -56,6 +56,13 @@ export const Entitlements: CollectionConfig = {
             { label: 'صادر شد', value: 'issued' },
             { label: 'ناموفق', value: 'failed' },
           ],
+        },
+        {
+          name: 'device',
+          type: 'select',
+          label: 'دستگاه',
+          options: SPOTPLAYER_DEVICE_OPTIONS,
+          admin: { description: 'لایسنس برای همین دستگاه ساخته می‌شود (یک دستگاه). خالی = پیش‌فرض پنل اسپات‌پلیر.' },
         },
         { name: 'licenseKey', type: 'text', label: 'کلید لایسنس', admin: { readOnly: true } },
         { name: 'licenseId', type: 'text', label: 'شناسه لایسنس در اسپات‌پلیر', admin: { readOnly: true } },

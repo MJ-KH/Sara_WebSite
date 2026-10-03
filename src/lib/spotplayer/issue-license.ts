@@ -63,6 +63,7 @@ export async function issueSpotPlayerLicense(payload: Payload, entitlementId: nu
       name: student.name?.trim() || mobile,
       watermark: mobile,
       payload: `entitlement:${entitlement.id}`,
+      device: entitlement.spotplayer?.device ?? null,
     })
   } catch (error) {
     // خطای پیکربندی (مثلاً نبود کلید در محیط عملیاتی)؛ بدون تغییر تنظیمات با تلاش دوباره حل نمی‌شود
@@ -76,6 +77,7 @@ export async function issueSpotPlayerLicense(payload: Payload, entitlementId: nu
       data: {
         spotplayer: {
           status: 'issued',
+          device: entitlement.spotplayer?.device ?? null,
           licenseKey: result.key,
           licenseId: result.licenseId,
           downloadUrl: result.url ? `${SPOTPLAYER_DOWNLOAD_ORIGIN}${result.url}` : null,

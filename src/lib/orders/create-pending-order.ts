@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 import { getPaymentGateway } from '@/lib/payments'
+import type { SpotPlayerDevice } from '@/lib/spotplayer/constants'
 import { computePackagePrice } from './pricing'
 
 export type CreatePackageOrderResult =
@@ -12,6 +13,7 @@ export async function createPendingPackageOrder(
   packageSlug: string,
   discountCodeText: string | null,
   callbackBaseUrl: string,
+  spotplayerDevice: SpotPlayerDevice | null = null,
 ): Promise<CreatePackageOrderResult> {
   const packages = await payload.find({
     collection: 'packages',
@@ -22,6 +24,9 @@ export async function createPendingPackageOrder(
   const pkg = packages.docs[0]
   if (!pkg || pkg.status === 'draft') return { ok: false, error: 'package_not_found' }
   if (pkg.status === 'stopped') return { ok: false, error: 'package_not_purchasable' }
+  // دوره اسپات‌پلیر: لایسنس یک‌دستگاهی است، پس دستگاه باید قبل از پرداخت معلوم باشد
+  const usesSpotPlayer = Boolean(pkg.spotplayerCourseId?.trim())
+  if (usesSpotPlayer && !spotplayerDevice) return { ok: false, error: 'device_required' }
 
   const existingEntitlement = await payload.find({
     collection: 'entitlements',
@@ -58,6 +63,7 @@ export async function createPendingPackageOrder(
       totalRialSnapshot: price.totalRial,
       accessDurationDaysSnapshot: pkg.accessDurationDays || null,
       termsVersionSnapshot: siteSettings.legal?.purchaseTermsVersion || '1',
+      spotplayerDevice: usesSpotPlayer ? spotplayerDevice : null,
       status: 'pending',
     },
     overrideAccess: true,

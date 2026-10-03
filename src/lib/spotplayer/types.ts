@@ -1,3 +1,5 @@
+import type { SpotPlayerDevice } from './constants'
+
 export type CreateLicenseInput = {
   /** شناسه دوره‌ها در اسپات‌پلیر */
   courseIds: string[]
@@ -7,6 +9,8 @@ export type CreateLicenseInput = {
   watermark: string
   /** مقداری که هنگام رفتن هنرجو به صفحه پشتیبانی برگردانده می‌شود */
   payload?: string
+  /** دستگاهی که هنرجو هنگام خرید انتخاب کرده؛ بدون آن، نوع دستگاه از پیش‌فرض پنل اسپات‌پلیر می‌آید */
+  device?: SpotPlayerDevice | null
 }
 
 export type CreateLicenseResult =

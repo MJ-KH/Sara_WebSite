@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { SPOTPLAYER_APP_URL } from '@/lib/spotplayer/constants'
+import { SPOTPLAYER_APP_URL, SPOTPLAYER_DEVICES, SPOTPLAYER_WEB_APP_URL, isSpotPlayerDevice } from '@/lib/spotplayer/constants'
 import { CopyButton } from './CopyButton'
 
 export type SpotPlayerLicenseData = {
@@ -7,11 +7,14 @@ export type SpotPlayerLicenseData = {
   licenseKey?: string | null
   downloadUrl?: string | null
   isTest?: boolean | null
+  device?: string | null
 }
 
 /** وضعیت و کلید لایسنس اسپات‌پلیر یک دوره، با راهنمای کوتاه فعال‌سازی. */
 export function SpotPlayerLicense({ license }: { license: SpotPlayerLicenseData }) {
   if (license.status === 'issued' && license.licenseKey) {
+    const device = isSpotPlayerDevice(license.device) ? license.device : null
+    const isWeb = device === 'ios_web'
     return (
       <div className="flex flex-col gap-3">
         <div>
@@ -25,17 +28,36 @@ export function SpotPlayerLicense({ license }: { license: SpotPlayerLicenseData 
             <CopyButton text={license.licenseKey} />
           </div>
         </div>
-        <ol className="flex list-inside list-decimal flex-col gap-1 text-[0.875rem] leading-7 text-[var(--color-text-muted)]">
-          <li>
-            نرم‌افزار اسپات‌پلیر را از{' '}
-            <a href={SPOTPLAYER_APP_URL} target="_blank" rel="noreferrer" className="font-bold text-[var(--color-primary)] underline">
-              سایت اسپات‌پلیر
-            </a>{' '}
-            نصب کنید.
-          </li>
-          <li>کد لایسنس بالا را کپی و در نرم‌افزار وارد کنید.</li>
-          <li>دوره در نرم‌افزار باز می‌شود و می‌توانید تماشا کنید.</li>
-        </ol>
+        {device ? (
+          <p className="text-[0.875rem] text-[var(--color-text-muted)]">
+            این لایسنس برای یک دستگاه <strong className="text-[var(--color-text)]">{SPOTPLAYER_DEVICES[device].label}</strong> است.
+          </p>
+        ) : null}
+        {isWeb ? (
+          <ol className="flex list-inside list-decimal flex-col gap-1 text-[0.875rem] leading-7 text-[var(--color-text-muted)]">
+            <li>
+              در مرورگر آیفون (سافاری)،{' '}
+              <a href={SPOTPLAYER_WEB_APP_URL} target="_blank" rel="noreferrer" className="font-bold text-[var(--color-primary)] underline">
+                نسخه وب اسپات‌پلیر
+              </a>{' '}
+              را باز کنید.
+            </li>
+            <li>کد لایسنس بالا را کپی و آنجا وارد کنید.</li>
+            <li>دوره باز می‌شود و می‌توانید تماشا کنید.</li>
+          </ol>
+        ) : (
+          <ol className="flex list-inside list-decimal flex-col gap-1 text-[0.875rem] leading-7 text-[var(--color-text-muted)]">
+            <li>
+              نرم‌افزار اسپات‌پلیر {device ? `نسخه ${SPOTPLAYER_DEVICES[device].label}` : ''} را از{' '}
+              <a href={SPOTPLAYER_APP_URL} target="_blank" rel="noreferrer" className="font-bold text-[var(--color-primary)] underline">
+                سایت اسپات‌پلیر
+              </a>{' '}
+              نصب کنید.
+            </li>
+            <li>کد لایسنس بالا را کپی و در نرم‌افزار وارد کنید.</li>
+            <li>دوره در نرم‌افزار باز می‌شود و می‌توانید تماشا کنید.</li>
+          </ol>
+        )}
         {license.downloadUrl ? (
           <a href={license.downloadUrl} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm self-start">
             صفحه دانلود دوره
