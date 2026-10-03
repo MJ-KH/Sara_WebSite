@@ -258,6 +258,18 @@ export default async function PackageDetailPage({ params }: Params) {
           description: subtitle.text || title.text,
           url: pageUrl,
           inLanguage: 'fa',
+          ...(!isBundle && pkg.level ? { educationalLevel: LEVEL_LABELS[pkg.level] ?? pkg.level } : {}),
+          // پکیج چنددوره‌ای: دوره‌های داخلش، هر کدام با صفحه خودش
+          ...(isBundle && included.length > 0
+            ? {
+                hasPart: included.map((item) => ({
+                  '@type': 'Course',
+                  name: splitSampleMarker(item.title).text,
+                  url: `${url}/packages/${item.slug}`,
+                  provider: { '@id': entityIds(url).academy },
+                })),
+              }
+            : {}),
           ...(coverUrl ? { image: coverUrl } : {}),
           provider: { '@id': entityIds(url).academy },
           // مدرس دوره: سارا (همان موجودیت Person گراف سایت)

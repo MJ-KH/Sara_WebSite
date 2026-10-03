@@ -1,4 +1,5 @@
 import { toPersianDigits } from '@/lib/digits'
+import { formatToman } from '@/lib/money'
 import { getPayloadClient } from '@/lib/get-payload'
 import { getSiteSettings } from '@/lib/get-site-settings'
 import { splitSampleMarker } from '@/lib/display'
@@ -43,7 +44,10 @@ export async function GET() {
     '',
     '## دوره‌های آنلاین آموزش کاشت ناخن، پلی‌ژل و لمینت',
     '',
-    ...real(packages.docs).map((p) => `- [${splitSampleMarker(p.title).text}](${base}/packages/${p.slug}): ${splitSampleMarker(p.subtitle).text || ''}`.trim()),
+    ...real(packages.docs).map((p) => {
+      const price = `قیمت ${formatToman(p.priceRial)}${p.compareAtPriceRial && p.compareAtPriceRial > p.priceRial ? ` (به‌جای ${formatToman(p.compareAtPriceRial)})` : ''}`
+      return `- [${splitSampleMarker(p.title).text}](${base}/packages/${p.slug}): ${splitSampleMarker(p.subtitle).text || ''} — ${price}`.trim()
+    }),
     '- دوره‌ها روی نرم‌افزار اسپات‌پلیر تماشا می‌شوند؛ هر خرید یک لایسنس برای یک دستگاه (اندروید، ویندوز یا نسخه وب برای آیفون) و همه جلسه‌ها از لحظه خرید باز است.',
     '',
     '## سالن ناخن و زیبایی در سعادت‌آباد تهران (خدمات حضوری)',
