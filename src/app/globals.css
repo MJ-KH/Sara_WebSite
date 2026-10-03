@@ -179,8 +179,7 @@ html[data-font-scale='lg'] {
   }
 
   body {
-    /* اکلیل خیلی ریز طلایی/رزگلد روی کل سایت (تایل بی‌درز ساخته‌شده با scripts/brand) */
-    background: url('/textures/glitter-fine.png') 0 0 / 320px repeat, var(--color-bg);
+    background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
     font-weight: 400;
@@ -267,7 +266,7 @@ html[data-font-scale='lg'] {
 
   /* نوار تمام‌عرض صورتی خیلی ملایم و ساده — کم‌استفاده، فقط برای شکستن ریتم صفحه */
   .band-alt {
-    background: url('/textures/glitter-rich.png') 0 0 / 320px repeat, var(--color-bg-alt);
+    background: var(--color-bg-alt);
   }
 
   /* سطح سفید با خط مویی؛ سایه تقریباً محو */
@@ -302,8 +301,7 @@ html[data-font-scale='lg'] {
     --color-border: rgba(196, 164, 124, 0.26);
     --color-border-strong: rgba(196, 164, 124, 0.55);
     --color-primary: var(--gold);
-    /* روی آلویی تیره، اکلیل سفید و شامپاینی مثل آسمان پرستاره */
-    background: url('/textures/glitter-dark.png') 0 0 / 320px repeat, var(--ink-900);
+    background: var(--ink-900);
     color: var(--color-text);
   }
 
@@ -1121,92 +1119,9 @@ html[data-font-scale='lg'] {
    سربرگ «آتلیه»: زمینه سفید چینی با نور صورتی خیلی محو پشت قاب‌ها
    ========================================================================== */
 .hero-atelier {
-  position: relative;
   background:
-    url('/textures/glitter-rich.png') 0 0 / 320px repeat,
     radial-gradient(60% 55% at 50% 30%, var(--accent-100) 0%, transparent 70%),
     var(--color-bg);
-}
-
-/* =============================================================================
-   لحظه اول صفحه: برق لاک روی قاب‌ها، درخشش طلایی روی تیتر، چند جرقه اکلیل
-   فقط یک‌بار در بارگذاری (جرقه‌ها آرام و با مکث تکرار می‌شوند)؛ با «کاهش حرکت» خاموش.
-   ========================================================================== */
-
-/* نوار نور مورب که یک بار از روی عکس داخل قاب رد می‌شود، مثل نور روی لاک تازه */
-.arch-gloss::before {
-  content: '';
-  position: absolute;
-  inset: -10% -60%;
-  z-index: 1;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 255, 255, 0.85) 50%, transparent 60%);
-  transform: translateX(-120%);
-  animation: gloss-sweep 1.5s var(--ease) var(--gloss-delay, 0.3s) 1 both;
-  pointer-events: none;
-}
-
-@keyframes gloss-sweep {
-  from {
-    transform: translateX(-120%);
-  }
-  to {
-    transform: translateX(120%);
-  }
-}
-
-/* درخشش طلایی که یک بار روی تیتر می‌گذرد و تیتر به رنگ عادی برمی‌گردد */
-.shine-text {
-  background: linear-gradient(100deg, var(--ink-900) 42%, var(--gold) 50%, #f3e2c4 52%, var(--ink-900) 60%) 100% 0 / 260% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: text-shine 2.4s var(--ease) 0.9s 1 both;
-}
-
-@keyframes text-shine {
-  from {
-    background-position: 100% 0;
-  }
-  to {
-    background-position: 0 0;
-  }
-}
-
-/* جرقه چهارپر اکلیل: بیشتر وقت نامرئی، گاهی می‌درخشد (هر کدام با تأخیر خودش) */
-.sparkle {
-  position: absolute;
-  z-index: 2;
-  width: var(--size, 14px);
-  height: var(--size, 14px);
-  opacity: 0;
-  pointer-events: none;
-  animation: twinkle var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
-}
-
-@keyframes twinkle {
-  0%,
-  72%,
-  100% {
-    opacity: 0;
-    transform: scale(0.3) rotate(0deg);
-  }
-  82% {
-    opacity: 1;
-    transform: scale(1) rotate(45deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .arch-gloss::before,
-  .sparkle {
-    display: none;
-  }
-
-  .shine-text {
-    animation: none;
-    background: none;
-    color: var(--ink-900);
-  }
 }
 
 /*
