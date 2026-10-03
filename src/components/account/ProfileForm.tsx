@@ -1,6 +1,7 @@
 'use client'
 
 import type React from 'react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toPersianDigits } from '@/lib/digits'
 import { PROVINCE_OPTIONS } from '@/lib/iran-provinces'
@@ -42,6 +43,7 @@ const inputClass =
 const labelClass = 'mb-1.5 block text-[0.8125rem] text-[var(--color-text-muted)]'
 
 export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFormData; currentJalaliYear: number }) {
+  const router = useRouter()
   const [form, setForm] = useState({
     firstName: initial.firstName || '',
     lastName: initial.lastName || '',
@@ -90,6 +92,8 @@ export function ProfileForm({ initial, currentJalaliYear }: { initial: ProfileFo
       })
       if (!response.ok) throw new Error()
       setStatus('done')
+      // کارت عضویت و منوی کنار در سرور ساخته می‌شوند؛ تازه‌سازی تا نام جدید همان لحظه دیده شود
+      router.refresh()
     } catch {
       setStatus('error')
     }
