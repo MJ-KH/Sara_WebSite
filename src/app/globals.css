@@ -874,7 +874,9 @@ html[data-font-scale='lg'] {
     color: var(--ink-700);
   }
 
-  .rich-text > * + * {
+  /* RichText پی‌لود محتوا را داخل یک div.payload-richtext می‌گذارد؛ فاصله پاراگراف‌ها باید به آن هم برسد */
+  .rich-text > * + *,
+  .rich-text > .payload-richtext > * + * {
     margin-block-start: 1.25rem;
   }
 

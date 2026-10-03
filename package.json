@@ -22,6 +22,7 @@
     "apply:structure": "tsx scripts/apply-site-structure.ts",
     "apply:jozve": "tsx scripts/apply-jozve-content.ts",
     "apply:courses": "tsx scripts/apply-real-courses.ts",
+    "apply:about": "tsx scripts/apply-about-content.ts",
     "create-first-admin": "tsx scripts/create-first-admin.ts",
     "worker": "tsx src/worker/index.ts",
     "test:unit": "vitest run",
