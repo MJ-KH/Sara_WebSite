@@ -327,11 +327,11 @@ html[data-font-scale='lg'] {
     text-wrap: balance;
   }
 
-  /* تیتر بزرگ و نازک: تمایز تیتر از اندازه و فضای خالی می‌آید، نه از ضخامت */
+  /* تیتر بزرگ با وزن متوسط (۵۰۰): محکم و خوانا ولی هنوز ظریف؛ انتخاب کارفرما از بین چهار نمونه */
   .display-1 {
     font-family: var(--font-display);
     font-size: clamp(2.5rem, 7vw, 4.75rem);
-    font-weight: 250;
+    font-weight: 500;
     line-height: 1.35;
     color: var(--ink-900);
   }
@@ -339,7 +339,7 @@ html[data-font-scale='lg'] {
   .display-2 {
     font-family: var(--font-display);
     font-size: clamp(1.9rem, 4.4vw, 3.1rem);
-    font-weight: 300;
+    font-weight: 500;
     line-height: 1.45;
     color: var(--ink-900);
   }
