@@ -31,7 +31,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
                 minHeight: '2.875rem',
                 padding: '0 1.75rem',
                 border: 0,
-                borderRadius: '0.25rem',
+                borderRadius: '999px',
                 background: '#8e2a4a',
                 color: '#fff',
                 font: 'inherit',
